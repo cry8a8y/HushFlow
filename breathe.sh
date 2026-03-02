@@ -145,6 +145,7 @@ while true; do
     t=$cycle_tick
     if [ "$t" -lt "$IN_TICKS" ]; then
         phase="Breathe in"
+        remaining_ticks=$((IN_TICKS - t))
         linear=$(( t * 1000 / IN_TICKS ))
         if [ "$EX_TYPE" = "double_inhale" ]; then
             progress=$(( $(ease "$linear") * 850 / 1000 ))
@@ -153,6 +154,7 @@ while true; do
         fi
         color="$COLOR_BRIGHT"
     elif [ "$t" -lt "$((IN_TICKS + H1_TICKS))" ]; then
+        remaining_ticks=$((IN_TICKS + H1_TICKS - t))
         if [ "$EX_TYPE" = "double_inhale" ]; then
             phase="Sip in"
             pt=$((t - IN_TICKS))
@@ -165,12 +167,14 @@ while true; do
         color="$COLOR_BRIGHT"
     elif [ "$t" -lt "$((IN_TICKS + H1_TICKS + EX_TICKS))" ]; then
         phase="Breathe out"
+        remaining_ticks=$((IN_TICKS + H1_TICKS + EX_TICKS - t))
         pt=$((t - IN_TICKS - H1_TICKS))
         linear=$(( pt * 1000 / EX_TICKS ))
         progress=$((1000 - $(ease "$linear")))
         color="$COLOR_DEEP"
     else
         phase="Hold"
+        remaining_ticks=$((CYCLE_TICKS - t))
         progress=0
         color="$COLOR_DEEP"
     fi
@@ -284,14 +288,14 @@ while true; do
             ;;
     esac
 
-    # Row 10: phase text
-    ptxt="$phase..."
+    # Row 10: phase text with countdown
+    remaining_s=$(( (remaining_ticks + TICK_RATE - 1) / TICK_RATE ))
+    ptxt="$phase... ${remaining_s}s"
     pc=$(((PANE_W - ${#ptxt}) / 2 + 1))
     frame+="\033[10;1H${padded}\033[10;${pc}H${color}${ptxt}${RESET}"
 
-    # Row 11: exercise name + time
-    elapsed_s=$((tick / TICK_RATE))
-    info="${EX_NAME} · ${elapsed_s}s"
+    # Row 11: exercise name
+    info="${EX_NAME}"
     ic=$(((PANE_W - ${#info}) / 2 + 1))
     frame+="\033[11;1H${padded}\033[11;${ic}H${COLOR_BRIGHT}${info}${RESET}"
 
