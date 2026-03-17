@@ -9,7 +9,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/license-MIT-green" alt="License MIT" />
   <img src="https://img.shields.io/badge/platform-macOS%20|%20Linux%20|%20Windows-blue" alt="Platform Support" />
-  <img src="https://img.shields.io/badge/version-0.1.0-orange" alt="Version 0.1.0" />
+  <img src="https://img.shields.io/badge/version-1.0.0-orange" alt="Version 1.0.0" />
 </p>
 
 ---
@@ -53,7 +53,10 @@
 
 - 🧘 **4 種呼吸練習** — 諧振呼吸、生理嘆息、箱式呼吸、4-7-8 呼吸
 - 🎭 **6 種動畫風格** — 星座、漣漪、波浪、軌道、螺旋、落雨
-- 🌈 **3 種色彩主題** — 海洋青、暮光紫、琥珀暖
+- 🌈 **8+ 色彩主題** — 海洋青、暮光紫、琥珀暖 + 社群主題（Catppuccin、Dracula、Nord、Solarized、Gruvbox）
+- 📊 **使用統計** — 追蹤呼吸次數、正念時間、連續天數，執行 `hushflow stats` 查看
+- 🔄 **通用指令包裝** — `hushflow wrap -- <任何指令>` 讓任何等待都有呼吸陪伴
+- 🔔 **音效整合** — 可選的呼吸轉換提示音
 - 🚀 **不干擾工作** — 於獨立視窗運行；對 AI 工具的輸出零影響。
 - 📉 **專業渲染** — 高效能 Bash 引擎，使用 SIN64 查找表實現 10fps 無閃爍動畫。
 - 🔌 **外掛支援 (Plugin API)** — 支援透過 `~/.hushflow/plugins/` 自定義動畫。
@@ -133,6 +136,7 @@ exercise=0
 delay=5
 theme=teal
 animation=constellation
+sound=false
 ```
 
 ### ⌨️ CLI 指令
@@ -146,9 +150,21 @@ hushflow config 478            # 4-7-8 呼吸
 
 # 設定主題
 hushflow theme twilight        # 暮光紫
+hushflow theme catppuccin-mocha # 社群主題
+hushflow theme list            # 列出所有可用主題
 
 # 設定動畫
 hushflow animation orbit       # 雙彗星軌道
+
+# 音效
+hushflow sound on              # 啟用呼吸轉換提示音
+hushflow sound off             # 關閉音效
+
+# 統計
+hushflow stats                 # 查看使用統計與連續天數
+
+# 通用包裝
+hushflow wrap -- npm install   # 任何指令執行時都能呼吸
 
 # 診斷工具
 hushflow doctor                # 檢查安裝狀態與環境

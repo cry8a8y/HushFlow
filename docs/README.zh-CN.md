@@ -9,7 +9,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/license-MIT-green" alt="License MIT" />
   <img src="https://img.shields.io/badge/platform-macOS%20|%20Linux%20|%20Windows-blue" alt="Platform Support" />
-  <img src="https://img.shields.io/badge/version-0.1.0-orange" alt="Version 0.1.0" />
+  <img src="https://img.shields.io/badge/version-1.0.0-orange" alt="Version 1.0.0" />
 </p>
 
 ---
@@ -53,7 +53,10 @@
 
 - **4 种呼吸练习** — 谐振呼吸、生理叹息、箱式呼吸、4-7-8 呼吸
 - **6 种动画风格** — 星座、涟漪、波浪、轨道、螺旋、落雨
-- **3 种色彩主题** — 海洋青、暮光紫、琥珀暖
+- **8+ 色彩主题** — 海洋青、暮光紫、琥珀暖 + 社区主题（Catppuccin、Dracula、Nord、Solarized、Gruvbox）
+- **使用统计** — 追踪呼吸次数、正念时间、连续天数，运行 `hushflow stats` 查看
+- **通用命令包装** — `hushflow wrap -- <任何命令>` 让任何等待都有呼吸陪伴
+- **音效集成** — 可选的呼吸转换提示音
 - **不干扰工作** — 于独立窗口运行；对 AI 工具的输出零影响。
 - **专业渲染** — 高性能 Bash 引擎，使用 SIN64 查找表实现 10fps 无闪烁动画。
 - **插件支持 (Plugin API)** — 支持通过 `~/.hushflow/plugins/` 自定义动画。

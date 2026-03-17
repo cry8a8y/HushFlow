@@ -136,6 +136,7 @@ exercise=0
 delay=5
 theme=teal
 animation=constellation
+sound=false
 ```
 
 ### ⌨️ CLI Commands
@@ -173,6 +174,33 @@ hushflow doctor                # Check installation & environment
 > In Claude Code, you can also use the `/hushflow` slash command for interactive settings.
 
 ## 🛠️ Advanced Customization
+
+### 🎨 Community Themes
+
+HushFlow ships with 5 community themes: **Catppuccin Mocha**, **Dracula**, **Nord**, **Solarized Dark**, and **Gruvbox**.
+
+```bash
+hushflow theme catppuccin-mocha
+hushflow theme list              # See all available themes
+```
+
+Create your own theme as a JSON file in `~/.hushflow/themes/`:
+
+```json
+{
+  "name": "my-theme",
+  "author": "your-name",
+  "colors": {
+    "primary": "R;G;B",
+    "secondary": "R;G;B",
+    "mid": "R;G;B",
+    "mid_dim": "R;G;B",
+    "dim": "R;G;B"
+  }
+}
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for theme contribution guidelines.
 
 ### 🧩 Plugin API (Experimental)
 
