@@ -56,14 +56,7 @@ the newly created HushFlow window. This can resize the wrong window.
 
 **Potential fix:** Use Ghostty's window ID (`winId`) to find the correct System Events window. Need to map Ghostty script window ID to System Events window reference.
 
-### 2. Ghostty native title bar cannot be hidden (Low)
-The HushFlow window shows Ghostty's native macOS title bar (tab bar area).
-AppleScript `perform action "toggle_window_decorations"` returns `false` and has no effect.
-Ghostty's `surface configuration` does not expose `window-decoration` or `macos-titlebar-style`.
-
-**Status:** Cosmetic issue only. Not blocking.
-
-### 3. Window pixel size vs terminal grid mismatch
+### 2. Window pixel size vs terminal grid mismatch
 Previously hardcoded at 560x420 with COLS=58 ROWS=17. Now auto-calculated from
 font size (14) × grid dimensions (36×14), but the cell-size approximation
 (`fontSize * 0.6` width, `fontSize * 1.5` height) may not be exact for all fonts.
