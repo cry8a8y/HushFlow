@@ -1,4 +1,4 @@
-Configure the Mindful Breathing extension.
+Configure HushFlow.
 
 Read the config file at `~/.claude/mindful/config` to check current settings. If it doesn't exist, the defaults are: enabled=true, exercise=0, delay=5.
 

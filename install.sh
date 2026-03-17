@@ -1,5 +1,5 @@
 #!/bin/bash
-# Installer for Mindful Breathing for Claude Code
+# Installer for HushFlow
 # Adds hooks to ~/.claude/settings.json
 
 set -e
@@ -11,7 +11,7 @@ ON_STOP="$SCRIPT_DIR/hooks/on-stop.sh"
 
 # Handle --uninstall
 if [ "${1}" = "--uninstall" ]; then
-    echo "Uninstalling Mindful Breathing hooks..."
+    echo "Uninstalling HushFlow hooks..."
     if [ -f "$SETTINGS_FILE" ] && command -v jq &>/dev/null; then
         settings=$(cat "$SETTINGS_FILE")
         settings=$(echo "$settings" | jq \
@@ -35,16 +35,12 @@ if [ "${1}" = "--uninstall" ]; then
     exit 0
 fi
 
-echo "Mindful Breathing for Claude Code"
-echo "================================="
+echo "HushFlow"
+echo "========"
 echo ""
 
 # Check prerequisites
-if ! command -v tmux &>/dev/null; then
-    echo "Warning: tmux not found. The auto-launch feature requires tmux."
-    echo "Install it with: brew install tmux (macOS) or apt install tmux (Linux)"
-    echo ""
-elif tmux show-option -g mouse 2>/dev/null | grep -q "off"; then
+if command -v tmux &>/dev/null && tmux show-option -g mouse 2>/dev/null | grep -q "off"; then
     echo "Tip: Enable mouse scrolling in tmux for a better experience:"
     echo "  echo 'set -g mouse on' >> ~/.tmux.conf && tmux source-file ~/.tmux.conf"
     echo ""
@@ -58,10 +54,12 @@ fi
 
 # Make scripts executable
 chmod +x "$SCRIPT_DIR/breathe.sh"
+chmod +x "$SCRIPT_DIR/breathe-compact.sh"
 chmod +x "$SCRIPT_DIR/set-exercise.sh"
 chmod +x "$SCRIPT_DIR/hooks/on-start.sh"
 chmod +x "$SCRIPT_DIR/hooks/on-stop.sh"
 chmod +x "$SCRIPT_DIR/hooks/open-tmux-popup.sh"
+chmod +x "$SCRIPT_DIR/hooks/open-standalone-window.sh"
 
 # Create directories
 mkdir -p "$HOME/.claude"
@@ -123,6 +121,9 @@ echo "$settings" > "$SETTINGS_FILE"
 echo "Hooks installed to $SETTINGS_FILE"
 echo ""
 echo "Restart Claude Code or start a new session for hooks to take effect."
+echo ""
+echo "Default UI mode is a standalone Ghostty window. To use tmux instead:"
+echo "  export MINDFUL_UI_MODE=tmux-pane   # or tmux-popup / off"
 echo ""
 echo "In Claude Code, type /mindful to toggle on/off or change settings."
 echo ""
