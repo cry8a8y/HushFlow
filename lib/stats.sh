@@ -21,36 +21,6 @@ TODAY=$(date +%Y-%m-%d)
 WEEK_AGO=$(date -d "7 days ago" +%Y-%m-%d 2>/dev/null || date -v-7d +%Y-%m-%d 2>/dev/null || echo "")
 
 # Calculate streak (consecutive days with at least one session)
-calc_streak() {
-    awk -F'\t' '{print $1}' "$STATS_FILE" | while read -r ts; do
-        if [[ "$OSTYPE" == darwin* ]]; then
-            date -r "$ts" +%Y-%m-%d 2>/dev/null
-        else
-            date -d "@$ts" +%Y-%m-%d 2>/dev/null
-        fi
-    done | sort -u | awk '
-    BEGIN { streak=0; prev="" }
-    {
-        if (prev == "") {
-            streak=1
-        } else {
-            # Calculate day difference
-            cmd = "echo $(( ($(date -d \"" $0 "\" +%s 2>/dev/null || date -j -f %Y-%m-%d \"" $0 "\" +%s 2>/dev/null) - $(date -d \"" prev "\" +%s 2>/dev/null || date -j -f %Y-%m-%d \"" prev "\" +%s 2>/dev/null)) / 86400 ))"
-            cmd | getline diff
-            close(cmd)
-            if (diff == 1) {
-                streak++
-            } else if (diff > 1) {
-                streak=1
-            }
-        }
-        prev=$0
-    }
-    END { print streak }
-    '
-}
-
-# Simpler streak calculation using pure awk
 get_streak() {
     local dates
     dates=$(awk -F'\t' '{

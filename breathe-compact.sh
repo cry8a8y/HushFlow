@@ -46,11 +46,12 @@ if [ "$_theme_loaded" -eq 0 ] && [ -n "${theme:-}" ] && command -v jq &>/dev/nul
     for _theme_dir in "$HOME/.hushflow/themes" "$_hf_dir/themes"; do
         _theme_file="$_theme_dir/${theme}.json"
         if [ -f "$_theme_file" ]; then
-            C_B=$(jq -r '.colors.primary // empty' "$_theme_file" 2>/dev/null)
-            C_D=$(jq -r '.colors.secondary // empty' "$_theme_file" 2>/dev/null)
-            C_MID=$(jq -r '.colors.mid // empty' "$_theme_file" 2>/dev/null)
-            C_MDIM=$(jq -r '.colors.mid_dim // empty' "$_theme_file" 2>/dev/null)
-            C_DIM=$(jq -r '.colors.dim // empty' "$_theme_file" 2>/dev/null)
+            eval "$(jq -r '
+              .colors | to_entries | map(
+                {primary:"C_B",secondary:"C_D",mid:"C_MID",mid_dim:"C_MDIM",dim:"C_DIM"}[.key] as $var |
+                select($var) | "\($var)=\u0027\(.value)\u0027"
+              ) | join("\n")
+            ' "$_theme_file" 2>/dev/null)"
             if [ -n "$C_B" ] && [ -n "$C_D" ]; then
                 _theme_loaded=1
                 hf_log "loaded JSON theme: $theme from $_theme_file"
@@ -132,7 +133,7 @@ _BREATHE_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [ -f "$_BREATHE_SCRIPT_DIR/lib/sound.sh" ]; then
     source "$_BREATHE_SCRIPT_DIR/lib/sound.sh"
 fi
-_last_phase=""
+_last_phase="Breathe in"  # Initialize to first phase to avoid spurious sound on tick 0
 
 # === Timing ===
 TICK_RATE=10
@@ -554,8 +555,13 @@ log_session_stats() {
     local stats_dir="$HOME/.hushflow"
     local stats_file="$stats_dir/stats.log"
     mkdir -p "$stats_dir"
+    # Sanitize values: strip tabs and newlines to protect TSV format
+    local safe_ex="${EX_NAME//[$'\t\n']/ }"
+    local safe_anim="${animation//[$'\t\n']/ }"
+    local safe_theme="${theme:-teal}"
+    safe_theme="${safe_theme//[$'\t\n']/ }"
     printf '%s\t%s\t%s\t%s\t%s\t%s\n' \
-        "$(date +%s)" "$cycles" "$duration" "$EX_NAME" "$animation" "${theme:-teal}" \
+        "$(date +%s)" "$cycles" "$duration" "$safe_ex" "$safe_anim" "$safe_theme" \
         >> "$stats_file" 2>/dev/null
     hf_log "stats logged: cycles=$cycles duration=${duration}s"
 }

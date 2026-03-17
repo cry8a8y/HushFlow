@@ -32,7 +32,6 @@ if [ -f "$CONFIG_FILE" ]; then
 fi
 
 BREATHE_PID=""
-CMD_PID=""
 
 cleanup() {
     rm -f "$MARKER_FILE"
@@ -41,12 +40,6 @@ cleanup() {
         kill "$BREATHE_PID" 2>/dev/null || true
     fi
     rm -rf "$SESSION_DIR"
-}
-
-handle_signal() {
-    [ -n "$CMD_PID" ] && kill "$CMD_PID" 2>/dev/null
-    cleanup
-    exit 130
 }
 
 trap cleanup EXIT
@@ -64,12 +57,9 @@ trap handle_signal INT TERM
 ) &
 BREATHE_PID=$!
 
-# Run the wrapped command
-"$@" &
-CMD_PID=$!
-wait "$CMD_PID" 2>/dev/null
+# Run the wrapped command in foreground, capture exit code
+"$@"
 CMD_EXIT=$?
-CMD_PID=""
 
 # Command finished — stop breathing
 rm -f "$MARKER_FILE"
