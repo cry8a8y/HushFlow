@@ -145,6 +145,20 @@ else
     fail "install hooks missing HUSHFLOW_CONFIG_DIR"
 fi
 
+# Test: Ghostty launcher avoids ambiguous window 1 targeting
+if ! grep -q 'window 1' "$SCRIPT_DIR/hooks/open-window.sh"; then
+    pass "Ghostty launcher avoids window 1 targeting"
+else
+    fail "Ghostty launcher still targets window 1"
+fi
+
+# Test: Ghostty launcher passes a unique window title to the animation
+if grep -q 'HUSHFLOW_WINDOW_TITLE' "$SCRIPT_DIR/hooks/open-window.sh" && grep -q 'HUSHFLOW_WINDOW_TITLE' "$SCRIPT_DIR/breathe-compact.sh"; then
+    pass "Ghostty launcher uses HUSHFLOW_WINDOW_TITLE"
+else
+    fail "Ghostty launcher missing HUSHFLOW_WINDOW_TITLE wiring"
+fi
+
 # --- Debug logging ---
 section "Debug logging"
 
@@ -241,6 +255,20 @@ if command -v jq &>/dev/null; then
         fail "idempotency check fails"
     fi
 
+    # Test: partial install is repaired, not treated as fully installed
+    PARTIAL_HOME="$TMPDIR_TEST/partial-home"
+    mkdir -p "$PARTIAL_HOME/.claude/commands" "$PARTIAL_HOME/.claude/hushflow"
+    printf '%s\n' '{"hooks":{"UserPromptSubmit":[{"hooks":[{"type":"command","command":"HUSHFLOW_CONFIG_DIR='"$PARTIAL_HOME"'/.claude/hushflow '"$ON_START_T"'","async":true}]}]}}' > "$PARTIAL_HOME/.claude/settings.json"
+    HOME="$PARTIAL_HOME" bash "$SCRIPT_DIR/install.sh" --target claude >/dev/null 2>&1
+    partial_settings=$(cat "$PARTIAL_HOME/.claude/settings.json")
+    if echo "$partial_settings" | jq -e '.hooks.Stop[]?.hooks[]? | select(.command | contains("on-stop.sh"))' >/dev/null 2>&1; then
+        pass "install repairs missing stop hook"
+    else
+        fail "install failed to repair missing stop hook"
+    fi
+    start_count=$(echo "$partial_settings" | jq '[.hooks.UserPromptSubmit[]?.hooks[]? | select(.command | contains("on-start.sh"))] | length')
+    [ "$start_count" = "1" ] && pass "install does not duplicate existing start hook" || fail "install duplicated start hook ($start_count)"
+
     # Test: uninstall removes hooks
     on_start_str="$ON_START_T"
     on_stop_str="$ON_STOP_T"
@@ -275,6 +303,48 @@ echo "$(date +%s)" > "$SESSION_TEST/working"
 # Test: session cleanup removes entire directory
 rm -rf "$SESSION_TEST"
 [ ! -d "$SESSION_TEST" ] && pass "session dir fully cleaned up" || fail "session dir cleanup"
+
+# Test: on-stop recognizes terminal processes beyond bash
+for proc_name in 'sleep' 'gnome-terminal' 'konsole' 'xfce4-terminal' 'xterm' 'wt.exe' 'powershell'; do
+    if grep -q "$proc_name" "$SCRIPT_DIR/hooks/on-stop.sh"; then
+        pass "on-stop whitelist includes $proc_name"
+    else
+        fail "on-stop whitelist missing $proc_name"
+    fi
+done
+
+# Test: on-stop kills a recorded window pid and removes session dir
+SESSION_STOP_TEST="$TMPDIR_TEST/hushflow-stop"
+STOP_CONFIG="$TMPDIR_TEST/stop-config"
+mkdir -p "$SESSION_STOP_TEST" "$STOP_CONFIG"
+sleep 30 &
+window_pid=$!
+echo "$SESSION_STOP_TEST" > "$STOP_CONFIG/.session"
+echo "$window_pid" > "$SESSION_STOP_TEST/window-pid"
+echo "$(date +%s)" > "$SESSION_STOP_TEST/working"
+HUSHFLOW_CONFIG_DIR="$STOP_CONFIG" bash "$SCRIPT_DIR/hooks/on-stop.sh" >/dev/null 2>&1
+pid_cleared=0
+for _ in 1 2 3 4 5; do
+    if ! kill -0 "$window_pid" 2>/dev/null; then
+        pid_cleared=1
+        break
+    fi
+    pid_state=$(ps -p "$window_pid" -o stat= 2>/dev/null | awk '{print $1}' || true)
+    case "$pid_state" in
+        Z*|"")
+            pid_cleared=1
+            break
+            ;;
+    esac
+    sleep 0.1
+done
+if [ "$pid_cleared" -eq 1 ]; then
+    pass "on-stop kills recorded window pid"
+else
+    kill "$window_pid" 2>/dev/null || true
+    fail "on-stop left recorded window pid running"
+fi
+[ ! -d "$SESSION_STOP_TEST" ] && pass "on-stop removes session dir" || fail "on-stop leaves session dir"
 
 # --- Summary ---
 echo ""

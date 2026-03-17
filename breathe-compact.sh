@@ -8,6 +8,7 @@ hf_log() { [ "${HUSHFLOW_DEBUG:-}" = "1" ] && echo "$(date '+%H:%M:%S') [breathe
 SESSION_DIR="${HUSHFLOW_SESSION_DIR:-/tmp/hushflow-$$}"
 MARKER_FILE="$SESSION_DIR/working"
 CONFIG_FILE="${HUSHFLOW_CONFIG_DIR:-$HOME/.claude/hushflow}/config"
+WINDOW_TITLE="${HUSHFLOW_WINDOW_TITLE:-HushFlow}"
 
 # === Theme ===
 theme=""
@@ -178,7 +179,7 @@ read_size
 
 cleanup() { printf '\033[?25h\033[0m\033[2J'; }
 trap 'cleanup' EXIT
-printf '\033]0;HushFlow\a\033[?25l\033[2J'
+printf '\033]0;%s\a\033[?25l\033[2J' "$WINDOW_TITLE"
 trap read_size WINCH
 hf_log "started animation=$animation exercise=$EX_NAME theme=${theme:-teal} PANE=${PANE_W}x${PANE_H}"
 
