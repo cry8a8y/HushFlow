@@ -25,10 +25,25 @@ jobs:
 
       - name: Syntax check all scripts
         run: |
-          for f in breathe-compact.sh hooks/*.sh set-exercise.sh install.sh cli.sh doctor.sh lib/*.sh; do
-            bash -n "$f" || exit 1
+          for f in breathe-compact.sh hooks/*.sh set-exercise.sh install.sh cli.sh doctor.sh lib/*.sh plugins/*.sh; do
+            [ -f "$f" ] && { bash -n "$f" || exit 1; }
           done
           echo "All scripts pass syntax check"
+
+      - name: Validate community themes
+        run: |
+          if command -v jq &>/dev/null; then
+            for f in themes/*.json; do
+              jq empty "$f" || { echo "FAIL: invalid JSON in $f"; exit 1; }
+              jq -e '.name and .colors.primary and .colors.secondary' "$f" > /dev/null || {
+                echo "FAIL: $f missing required fields (name, colors.primary, colors.secondary)"
+                exit 1
+              }
+            done
+            echo "All themes valid"
+          else
+            echo "SKIP: jq not available"
+          fi
 
       - name: Verify install produces valid JSON
         run: |

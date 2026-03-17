@@ -9,7 +9,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/license-MIT-green" alt="License MIT" />
   <img src="https://img.shields.io/badge/platform-macOS%20|%20Linux%20|%20Windows-blue" alt="Platform Support" />
-  <img src="https://img.shields.io/badge/version-0.1.0-orange" alt="Version 0.1.0" />
+  <img src="https://img.shields.io/badge/version-1.0.0-orange" alt="Version 1.0.0" />
 </p>
 
 ---
@@ -53,7 +53,10 @@ Works with **Claude Code**, **Gemini CLI**, and **Codex CLI**. Runs on **macOS**
 
 - 🧘 **4 breathing exercises** — Coherent, Physiological Sigh, Box, 4-7-8
 - 🎭 **6 animation styles** — Constellation, Ripple, Wave, Orbit, Helix, Rain
-- 🌈 **3 color themes** — Teal, Twilight, Amber
+- 🌈 **8+ color themes** — Teal, Twilight, Amber + community themes (Catppuccin, Dracula, Nord, Solarized, Gruvbox)
+- 📊 **Session statistics** — Track cycles, mindful time, streaks with `hushflow stats`
+- 🔄 **Universal CLI wrapper** — `hushflow wrap -- <any-command>` for breathing during any wait
+- 🔔 **Sound integration** — Optional chime sounds at breath transitions
 - 🚀 **Non-blocking** — Runs in background/separate window; zero impact on AI tool output.
 - 📉 **Pro Graphics** — High-performance Bash engine using SIN64 trig lookups for 10fps no-flicker rendering.
 - 🔌 **Plugin API** — Support for custom animations via `~/.hushflow/plugins/`.
@@ -146,9 +149,21 @@ hushflow config 478            # 4-7-8 Breathing
 
 # Set theme
 hushflow theme twilight        # Soft purple
+hushflow theme catppuccin-mocha # Community theme
+hushflow theme list            # List all available themes
 
 # Set animation
 hushflow animation orbit       # Orbiting comets
+
+# Sound
+hushflow sound on              # Enable breath transition chimes
+hushflow sound off             # Disable sounds
+
+# Stats
+hushflow stats                 # View sessions, streaks, and mindful time
+
+# Universal wrapper
+hushflow wrap -- npm install   # Breathe while any command runs
 
 # Diagnostics
 hushflow doctor                # Check installation & environment
