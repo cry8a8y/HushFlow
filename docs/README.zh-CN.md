@@ -156,7 +156,16 @@ hushflow animation orbit       # 双彗星轨道
 
 ### 插件 API (实验性)
 
-你可以将自定义动画脚本放置于 `~/.hushflow/plugins/`。每个插件需定义一个 `render_<name>()` 函数，将 ANSI 转义码附加至 `$frame` 变量中。
+将自定义动画脚本放置于 `~/.hushflow/plugins/`。每个插件定义一个 `render_<name>()` 函数，将 ANSI 转义码附加至 `$frame` 变量中。
+
+```bash
+# 安装示例插件
+mkdir -p ~/.hushflow/plugins
+cp plugins/example-pulse.sh ~/.hushflow/plugins/pulse.sh
+hushflow animation pulse
+```
+
+详见 [Plugin API 文档](PLUGIN-API.md)，包含可用变量、三角函数表、色彩配置与性能建议。
 
 ### 环境变量
 

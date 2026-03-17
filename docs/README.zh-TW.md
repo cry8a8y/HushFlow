@@ -156,7 +156,16 @@ hushflow animation orbit       # 雙彗星軌道
 
 ### 外掛 API (實驗性)
 
-你可以將自定義動畫腳本放置於 `~/.hushflow/plugins/`。每個外掛需定義一個 `render_<name>()` 函數，將 ANSI 轉義碼附加至 `$frame` 變數中。
+將自定義動畫腳本放置於 `~/.hushflow/plugins/`。每個外掛定義一個 `render_<name>()` 函數，將 ANSI 轉義碼附加至 `$frame` 變數中。
+
+```bash
+# 安裝範例外掛
+mkdir -p ~/.hushflow/plugins
+cp plugins/example-pulse.sh ~/.hushflow/plugins/pulse.sh
+hushflow animation pulse
+```
+
+詳見 [Plugin API 文件](PLUGIN-API.md)，包含可用變數、三角函數表、色彩設定與效能建議。
 
 ### 環境變數
 
