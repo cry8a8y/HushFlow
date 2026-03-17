@@ -3,12 +3,26 @@
 </p>
 
 <p align="center">
+  <img src="https://img.shields.io/badge/license-MIT-blue" alt="License" />
+  <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-brightgreen" alt="Platform" />
+  <img src="https://img.shields.io/badge/version-0.1.0-orange" alt="Version" />
+</p>
+
+<p align="center">
   <b>English</b> | <a href="docs/README.zh-TW.md">繁體中文</a> | <a href="docs/README.zh-CN.md">简体中文</a> | <a href="docs/README.ja.md">日本語</a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/license-MIT-green" alt="License MIT" />
+  <img src="https://img.shields.io/badge/platform-macOS%20|%20Linux%20|%20Windows-blue" alt="Platform Support" />
+  <img src="https://img.shields.io/badge/version-0.1.0-orange" alt="Version 0.1.0" />
 </p>
 
 ---
 
 Every prompt you send to an AI coding assistant gives you 10–60+ seconds of idle time. HushFlow turns that wait into guided breathing exercises — auto-launches when the AI starts working, auto-dismisses when it's done.
+
+**Transform AI wait time into a moment of zen.**
 
 Works with **Claude Code**, **Gemini CLI**, and **Codex CLI**. Runs on **macOS**, **Linux**, and **Windows**.
 
@@ -18,7 +32,7 @@ Works with **Claude Code**, **Gemini CLI**, and **Codex CLI**. Runs on **macOS**
   <tr>
     <td align="center" width="25%">
       <strong>🫁 Guided Breathing</strong><br />
-      Four breathing patterns for calm, focus, and reset.
+      4 patterns: Coherent, Sigh, Box, and 4-7-8.
     </td>
     <td align="center" width="25%">
       <strong>🔌 Hook-Based</strong><br />
@@ -29,8 +43,8 @@ Works with **Claude Code**, **Gemini CLI**, and **Codex CLI**. Runs on **macOS**
       Companion window, tmux pane, popup, or inline mode.
     </td>
     <td align="center" width="25%">
-      <strong>🎨 Customizable</strong><br />
-      Switch exercises, themes, and animations from the CLI.
+      <strong>🎨 Pro Graphics</strong><br />
+      6 sub-pixel animations with 5-level color gradients.
     </td>
   </tr>
 </table>
@@ -46,25 +60,27 @@ Works with **Claude Code**, **Gemini CLI**, and **Codex CLI**. Runs on **macOS**
 - **4 breathing exercises** — Coherent, Physiological Sigh, Box, 4-7-8
 - **6 animation styles** — Constellation, Ripple, Wave, Orbit, Helix, Rain
 - **3 color themes** — Teal, Twilight, Amber
-- **Auto-launch / auto-dismiss** — appears after configurable delay, closes when AI finishes
-- **Cross-platform** — Ghostty, Terminal.app, iTerm2, GNOME Terminal, xterm, Windows Terminal
-- **Non-blocking** — opens in a separate companion window; optional tmux and inline modes
+- **Non-blocking** — Runs in background/separate window; zero impact on AI tool output.
+- **Pro Graphics** — High-performance Bash engine using SIN64 trig lookups for 10fps no-flicker rendering.
+- **Plugin API** — Support for custom animations via `~/.hushflow/plugins/`.
+- **Auto-launch / auto-dismiss** — Appears after configurable delay, closes when AI finishes.
+- **Cross-platform** — Ghostty, Terminal.app, iTerm2, GNOME Terminal, xterm, Windows Terminal.
 
 ## Quick Start
 
-### One-line install
+### Recommended: One-line install
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/cry8a8y/HushFlow/main/install-remote.sh | sh
 ```
 
-### Or with npx
+### With npx
 
 ```bash
 npx hushflow install
 ```
 
-### Or manually
+### Manually
 
 ```bash
 git clone https://github.com/cry8a8y/HushFlow.git
@@ -72,7 +88,7 @@ cd HushFlow
 ./install.sh
 ```
 
-The installer auto-detects which AI tools you have installed and configures hooks for all of them. Requires `jq`.
+Requires `jq` for JSON configuration management.
 
 ### Windows
 
