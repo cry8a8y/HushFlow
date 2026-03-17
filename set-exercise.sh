@@ -18,8 +18,10 @@ fi
 set_value() {
     local key=$1 val=$2
     if grep -q "^${key}=" "$CONFIG_FILE"; then
-        tmp=$(mktemp)
-        sed "s/^${key}=.*/${key}=${val}/" "$CONFIG_FILE" > "$tmp" && mv "$tmp" "$CONFIG_FILE"
+        local tmp
+        tmp=$(mktemp) || { echo "Error: failed to create temp file" >&2; return 1; }
+        # Use awk to avoid sed regex injection from key/val
+        awk -v k="$key" -v v="$val" 'BEGIN{FS=OFS="="} $1==k{$2=v} {print}' "$CONFIG_FILE" > "$tmp" && mv "$tmp" "$CONFIG_FILE"
     else
         echo "${key}=${val}" >> "$CONFIG_FILE"
     fi

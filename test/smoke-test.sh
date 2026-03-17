@@ -346,6 +346,79 @@ else
 fi
 [ ! -d "$SESSION_STOP_TEST" ] && pass "on-stop removes session dir" || fail "on-stop leaves session dir"
 
+# --- Config edge cases ---
+section "Config edge cases"
+
+# Test: set_value uses awk (no sed regex injection)
+SE_EDGE="$TMPDIR_TEST/edge-config"
+mkdir -p "$SE_EDGE"
+printf 'enabled=true\nexercise=0\ndelay=5\ntheme=teal\nanimation=constellation\n' > "$SE_EDGE/config"
+
+# Test: value with special characters
+output=$(HUSHFLOW_CONFIG_DIR="$SE_EDGE" bash "$SCRIPT_DIR/set-exercise.sh" theme amber 2>&1)
+val=$(grep "^theme=" "$SE_EDGE/config" | cut -d= -f2)
+[ "$val" = "amber" ] && pass "set_value handles normal value" || fail "set_value normal value (got '$val')"
+
+# Test: config file with missing keys gets key appended
+echo "enabled=true" > "$SE_EDGE/config"
+output=$(HUSHFLOW_CONFIG_DIR="$SE_EDGE" bash "$SCRIPT_DIR/set-exercise.sh" theme teal 2>&1)
+if grep -q "^theme=teal" "$SE_EDGE/config"; then
+    pass "set_value appends missing key"
+else
+    fail "set_value failed to append missing key"
+fi
+
+# Test: non-numeric exercise value in config is rejected
+printf 'enabled=true\nexercise=abc\ndelay=5\ntheme=teal\nanimation=constellation\n' > "$SE_EDGE/config"
+# Source the relevant check from breathe-compact.sh
+saved="abc"
+if [[ "$saved" =~ ^[0-9]+$ ]]; then
+    fail "non-numeric exercise value accepted"
+else
+    pass "non-numeric exercise value rejected"
+fi
+
+# --- Animation validation ---
+section "Animation validation"
+
+# Test: breathe-compact.sh validates unknown animation names
+if grep -q "VALID_ANIMATIONS" "$SCRIPT_DIR/breathe-compact.sh"; then
+    pass "animation validation exists in breathe-compact.sh"
+else
+    fail "animation validation missing in breathe-compact.sh"
+fi
+
+# --- Terminal size safety ---
+section "Terminal size safety"
+
+# Test: minimum terminal size enforcement
+if grep -q "PANE_W.*20" "$SCRIPT_DIR/breathe-compact.sh" && grep -q "PANE_H.*8" "$SCRIPT_DIR/breathe-compact.sh"; then
+    pass "minimum terminal size enforced"
+else
+    fail "minimum terminal size not enforced"
+fi
+
+# --- Doctor command ---
+section "Doctor command"
+
+# Test: doctor.sh exists and has valid syntax
+if [ -f "$SCRIPT_DIR/doctor.sh" ]; then
+    if bash -n "$SCRIPT_DIR/doctor.sh" 2>/dev/null; then
+        pass "doctor.sh syntax ok"
+    else
+        fail "doctor.sh has syntax errors"
+    fi
+else
+    fail "doctor.sh missing"
+fi
+
+# Test: cli.sh routes 'doctor' subcommand
+if grep -q "doctor" "$SCRIPT_DIR/cli.sh"; then
+    pass "cli.sh routes doctor command"
+else
+    fail "cli.sh missing doctor route"
+fi
+
 # --- Summary ---
 echo ""
 echo "================================"

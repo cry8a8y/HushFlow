@@ -45,7 +45,7 @@ EXERCISES=(
 current_exercise=0
 if [ -f "$CONFIG_FILE" ]; then
     saved=$(grep "^exercise=" "$CONFIG_FILE" 2>/dev/null | cut -d= -f2)
-    if [ "$saved" -ge 0 ] 2>/dev/null && [ "$saved" -lt ${#EXERCISES[@]} ] 2>/dev/null; then
+    if [[ "$saved" =~ ^[0-9]+$ ]] && [ "$saved" -ge 0 ] && [ "$saved" -lt ${#EXERCISES[@]} ]; then
         current_exercise=$saved
     fi
 fi
@@ -58,6 +58,15 @@ if [ -f "$CONFIG_FILE" ]; then
     animation=$(grep "^animation=" "$CONFIG_FILE" 2>/dev/null | cut -d= -f2)
 fi
 animation="${animation:-constellation}"
+VALID_ANIMATIONS="constellation ripple wave orbit helix rain"
+
+# Validate built-in animation name (plugins are validated at render time)
+_is_builtin_anim=0
+for _a in $VALID_ANIMATIONS; do [ "$animation" = "$_a" ] && _is_builtin_anim=1; done
+if [ "$_is_builtin_anim" -eq 0 ] && ! type "render_${animation}" &>/dev/null; then
+    hf_log "warning: unknown animation '$animation', will fall back to constellation"
+fi
+unset _is_builtin_anim _a
 
 # === Plugin: load custom animation if available ===
 # Plugins are bash scripts in ~/.hushflow/plugins/ or $HUSHFLOW_PLUGIN_DIR/
@@ -175,6 +184,9 @@ done
 read_size() {
     PANE_W=${HUSHFLOW_COLS:-$(tput cols 2>/dev/null || echo 59)}
     PANE_H=${HUSHFLOW_ROWS:-$(tput lines 2>/dev/null || echo 20)}
+    # Enforce minimum terminal size for safe rendering
+    [ "$PANE_W" -lt 20 ] && PANE_W=20
+    [ "$PANE_H" -lt 8 ] && PANE_H=8
     center_row=$((PANE_H / 2))
     center_col=$((PANE_W / 2))
     half_w=$((PANE_W / 2))
@@ -184,13 +196,12 @@ read_size() {
     done
     printf '\033[2J'
 }
-trap read_size WINCH
 read_size
 
 cleanup() { printf '\033[?25h\033[0m\033[2J'; }
 trap 'cleanup' EXIT
-printf '\033]0;%s\a\033[?25l\033[2J' "$WINDOW_TITLE"
 trap read_size WINCH
+printf '\033]0;%s\a\033[?25l\033[2J' "$WINDOW_TITLE"
 hf_log "started animation=$animation exercise=$EX_NAME theme=${theme:-teal} PANE=${PANE_W}x${PANE_H}"
 
 # ========== RENDER FUNCTIONS ==========
@@ -576,6 +587,7 @@ while true; do
             if type "render_${animation}" &>/dev/null; then
                 "render_${animation}"
             else
+                hf_log "unknown animation '$animation', falling back to constellation"
                 render_constellation
             fi
             ;;

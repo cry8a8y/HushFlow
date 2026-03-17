@@ -38,6 +38,15 @@ detect_terminal() {
     esac
 }
 
+# Warn if falling back to inline (only when HUSHFLOW_DEBUG is set)
+_hf_detect_warn() {
+    local t
+    t=$(detect_terminal)
+    if [ "$t" = "inline" ] && [ "${HUSHFLOW_DEBUG:-}" = "1" ]; then
+        echo "$(date '+%H:%M:%S') [detect-terminal] warning: no supported terminal detected, using inline mode" >> /tmp/hushflow-debug.log
+    fi
+}
+
 # If sourced, export function. If run directly, print result.
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     detect_terminal

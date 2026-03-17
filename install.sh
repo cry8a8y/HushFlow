@@ -21,22 +21,25 @@ check_dependencies() {
         echo "HushFlow requires 'jq' to manage settings.json for Claude/Gemini." >&2
         
         local install_cmd=""
-        if [[ "$OSTYPE" == "darwin"* ]]; then
-            install_cmd="brew install jq"
-        elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-            if command -v apt-get &>/dev/null; then
-                install_cmd="sudo apt-get update && sudo apt-get install -y jq"
-            elif command -v yum &>/dev/null; then
-                install_cmd="sudo yum install -y jq"
-            fi
-        fi
+        case "$OSTYPE" in
+            darwin*)
+                install_cmd="brew install jq"
+                ;;
+            linux-gnu*)
+                if command -v apt-get &>/dev/null; then
+                    install_cmd="sudo apt-get update && sudo apt-get install -y jq"
+                elif command -v yum &>/dev/null; then
+                    install_cmd="sudo yum install -y jq"
+                fi
+                ;;
+        esac
 
         if [ -n "$install_cmd" ]; then
             printf "Would you like to install it now? (y/N): "
             read -r ans
             if [[ "$ans" =~ ^[Yy]$ ]]; then
                 echo "Running: $install_cmd"
-                eval "$install_cmd"
+                bash -c "$install_cmd"
             else
                 echo "Please install 'jq' manually and run this script again." >&2
                 exit 1

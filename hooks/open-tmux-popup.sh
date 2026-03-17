@@ -58,7 +58,7 @@ fi
 
 # Cleanup lock on exit
 cleanup() {
-    rmdir "$LOCKFILE" 2>/dev/null
+    rmdir "$LOCKFILE" 2>/dev/null || true
 }
 trap cleanup EXIT
 
