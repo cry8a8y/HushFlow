@@ -41,8 +41,8 @@ fi
 # Stop the standalone window process if it exists
 if [ -f "$SESSION_DIR/window-pid" ]; then
     window_pid=$(cat "$SESSION_DIR/window-pid")
-    pid_user=$(ps -p "$window_pid" -o user= 2>/dev/null | awk '{print $1}' || true)
-    pid_comm=$(ps -p "$window_pid" -o comm= 2>/dev/null | awk '{print $1}' || true)
+    pid_user=$(ps -p "$window_pid" -o user= 2>/dev/null | tr -d ' ' || true)
+    pid_comm=$(ps -p "$window_pid" -o comm= 2>/dev/null | tr -d ' ' || true)
     if [ -z "$pid_comm" ]; then
         hf_log "window PID $window_pid already exited"
     elif [ -n "$CURRENT_USER" ] && [ -n "$pid_user" ] && [ "$pid_user" != "$CURRENT_USER" ]; then

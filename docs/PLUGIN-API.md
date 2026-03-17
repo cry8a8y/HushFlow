@@ -115,9 +115,9 @@ done
 # HushFlow Plugin: MyAnimation
 
 render_myanimation() {
-    # Draw within rows 2 to PANE_H-2, cols 1 to PANE_W
+    # Draw within rows 4 to PANE_H-2, cols 1 to PANE_W
     local row col
-    for ((row = 3; row < PANE_H - 1; row++)); do
+    for ((row = 4; row < PANE_H - 1; row++)); do
         for ((col = 1; col <= PANE_W; col += 4)); do
             if [ $(( (col + tick) % 8 )) -lt 2 ]; then
                 frame+="\033[${row};${col}H${color}·${RESET}"
@@ -135,7 +135,7 @@ Activate: `hushflow animation myanimation`
 
 2. **Append to `$frame`**: Do NOT `echo` or `printf` directly. The engine flushes `$frame` as a single write to avoid flicker.
 
-3. **Stay in bounds**: Draw only in rows 4 to `PANE_H - 2`. Row 1 is the title, row `PANE_H` is the status line. Columns 1 to `PANE_W`.
+3. **Stay in bounds**: Draw only in rows 4 to `PANE_H - 2`. Rows 1–3 are title/subtitle (engine-managed), row `PANE_H` is the status line. Columns 1 to `PANE_W`.
 
 4. **Use `progress` for breathing sync**: Scale your animation intensity with `progress` (0 = exhale → 1000 = inhale). This keeps your animation in sync with the breathing guide.
 

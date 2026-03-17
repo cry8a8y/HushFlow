@@ -149,6 +149,9 @@ hushflow theme twilight        # Soft purple
 
 # Set animation
 hushflow animation orbit       # Orbiting comets
+
+# Diagnostics
+hushflow doctor                # Check installation & environment
 ```
 
 > [!TIP]
@@ -175,6 +178,10 @@ See the [Plugin API documentation](docs/PLUGIN-API.md) for available variables, 
 |----------|---------|-------------|
 | `HUSHFLOW_UI_MODE` | `window` | `window`, `tmux-pane`, `tmux-popup`, `inline`, or `off` |
 | `HUSHFLOW_DELAY_SECONDS` | config `delay` | Override the startup delay |
+| `HUSHFLOW_COLS` | auto-detect | Override terminal width (columns) |
+| `HUSHFLOW_ROWS` | auto-detect | Override terminal height (rows) |
+| `HUSHFLOW_TERMINAL` | auto-detect | Force terminal type (e.g. `ghostty`, `iterm`, `xterm`) |
+| `HUSHFLOW_PLUGIN_DIR` | `~/.hushflow/plugins` | Custom plugin directory |
 | `HUSHFLOW_DEBUG` | off | Set to `1` to enable debug logging to `/tmp/hushflow-debug.log` |
 
 ## 🔍 Troubleshooting

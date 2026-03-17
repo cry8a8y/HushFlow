@@ -149,6 +149,9 @@ hushflow theme twilight        # 暮光紫
 
 # 設定動畫
 hushflow animation orbit       # 雙彗星軌道
+
+# 診斷工具
+hushflow doctor                # 檢查安裝狀態與環境
 ```
 
 > [!TIP]
@@ -175,6 +178,10 @@ hushflow animation pulse
 |------|--------|------|
 | `HUSHFLOW_UI_MODE` | `window` | `window`、`tmux-pane`、`tmux-popup`、`inline` 或 `off` |
 | `HUSHFLOW_DELAY_SECONDS` | 設定檔中的 `delay` | 覆寫啟動延遲時間 |
+| `HUSHFLOW_COLS` | 自動偵測 | 覆寫終端寬度（欄數） |
+| `HUSHFLOW_ROWS` | 自動偵測 | 覆寫終端高度（列數） |
+| `HUSHFLOW_TERMINAL` | 自動偵測 | 強制指定終端類型（如 `ghostty`、`iterm`、`xterm`） |
+| `HUSHFLOW_PLUGIN_DIR` | `~/.hushflow/plugins` | 自定義外掛目錄 |
 | `HUSHFLOW_DEBUG` | 關閉 | 設為 `1` 啟用除錯日誌，輸出至 `/tmp/hushflow-debug.log` |
 
 ## 🔍 疑難排解
