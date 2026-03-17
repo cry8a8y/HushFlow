@@ -72,8 +72,8 @@ case "$terminal" in
         window_id=$(
         osascript <<EOF
 -- Grid & font → pixel size (auto-adapt)
-set termCols to 36
-set termRows to 14
+set termCols to 40
+set termRows to 15
 set fontSize to 14
 -- Approximate cell metrics for monospace at given font size
 set charW to fontSize * 0.6
@@ -133,7 +133,7 @@ EOF
         # macOS Terminal.app — centered on same screen, respects other-app focus
         osascript <<EOF
 set winW to 560
-set winH to 420
+set winH to 480
 tell application "System Events"
     set frontApp to name of first application process whose frontmost is true
 end tell
@@ -158,7 +158,7 @@ EOF
         # macOS iTerm2 — centered on same screen, respects other-app focus
         osascript <<EOF
 set winW to 560
-set winH to 420
+set winH to 480
 tell application "System Events"
     set frontApp to name of first application process whose frontmost is true
 end tell
@@ -182,32 +182,32 @@ EOF
         ;;
 
     gnome-terminal)
-        gnome-terminal --title="$WINDOW_TITLE" --geometry=26x7+1260+80 -- bash -c "$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"" &
+        gnome-terminal --title="$WINDOW_TITLE" --geometry=40x20+1260+80 -- bash -c "$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"" &
         echo $! > "$WINDOW_PID_FILE"
         ;;
 
     konsole)
-        konsole --geometry 26x7+1260+80 -e bash -c "$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"" &
+        konsole --geometry 40x20+1260+80 -e bash -c "$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"" &
         echo $! > "$WINDOW_PID_FILE"
         ;;
 
     xfce4-terminal)
-        xfce4-terminal --title="$WINDOW_TITLE" --geometry=26x7+1260+80 -e "bash -c '$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"'" &
+        xfce4-terminal --title="$WINDOW_TITLE" --geometry=40x20+1260+80 -e "bash -c '$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"'" &
         echo $! > "$WINDOW_PID_FILE"
         ;;
 
     xterm)
-        xterm -title "$WINDOW_TITLE" -geometry 40x12+1260+80 -e bash -c "$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"" &
+        xterm -title "$WINDOW_TITLE" -geometry 40x20+1260+80 -e bash -c "$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"" &
         echo $! > "$WINDOW_PID_FILE"
         ;;
 
     ghostty-linux)
-        ghostty --window-width=26 --window-height=7 -e bash -c "$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"" &
+        ghostty --window-width=40 --window-height=20 -e bash -c "$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"" &
         echo $! > "$WINDOW_PID_FILE"
         ;;
 
     windows-terminal)
-        wt.exe new-tab --title "$WINDOW_TITLE" --size 26,7 bash -c "$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"" &
+        wt.exe new-tab --title "$WINDOW_TITLE" --size 40,20 bash -c "$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"" &
         echo $! > "$WINDOW_PID_FILE"
         ;;
 

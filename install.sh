@@ -15,6 +15,19 @@ LEGACY_COMMAND_FILE="$HOME/.claude/commands/mindful.md"
 
 # --- Helper functions ---
 
+check_dependencies() {
+    if ! command -v jq &>/dev/null; then
+        echo "Error: 'jq' is not installed." >&2
+        echo "HushFlow requires 'jq' to manage settings.json for Claude/Gemini." >&2
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            echo "Install it with: brew install jq" >&2
+        elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+            echo "Install it with: sudo apt-get install jq (Ubuntu/Debian) or sudo yum install jq (RHEL/CentOS)" >&2
+        fi
+        exit 1
+    fi
+}
+
 ensure_config() {
     local config_dir=$1
     mkdir -p "$config_dir"
@@ -23,6 +36,10 @@ ensure_config() {
         echo "  Created config at $config_dir/config"
     fi
 }
+
+# --- Main ---
+
+check_dependencies
 
 validate_and_write() {
     local json="$1"
