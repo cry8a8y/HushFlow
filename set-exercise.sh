@@ -30,6 +30,30 @@ set_value() {
 ARG1=$(lc "$1")
 ARG2=$(lc "$2")
 
+# Sound subcommand
+if [ "$ARG1" = "sound" ]; then
+    case "$ARG2" in
+        on|true|enable)
+            set_value sound true
+            echo "Sound enabled"
+            ;;
+        off|false|disable)
+            set_value sound false
+            echo "Sound disabled"
+            ;;
+        *)
+            current_sound=$(grep "^sound=" "$CONFIG_FILE" 2>/dev/null | cut -d= -f2)
+            echo "Sound: ${current_sound:-false} (off by default)"
+            echo "  hushflow sound on    Enable breath transition sounds"
+            echo "  hushflow sound off   Disable sounds"
+            echo ""
+            echo "Requires: ffplay, mpv, afplay, or paplay"
+            echo "Place sound files in ~/.hushflow/sounds/"
+            ;;
+    esac
+    exit 0
+fi
+
 # Animation subcommand
 if [ "$ARG1" = "animation" ] || [ "$ARG1" = "anim" ]; then
     case "$ARG2" in
@@ -88,14 +112,40 @@ if [ "$ARG1" = "theme" ]; then
             set_value theme amber
             echo "Theme set to Amber (warm)"
             ;;
-        *)
-            echo "Available themes:"
+        auto)
+            set_value theme auto
+            echo "Theme set to Auto (detects dark/light terminal)"
+            ;;
+        list|"")
+            echo "Built-in themes:"
             echo "  teal     - Ocean teal (default)"
             echo "  twilight - Soft purple"
             echo "  amber    - Warm sunset"
+            echo ""
+            echo "Community themes:"
+            _script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+            for _tdir in "$_script_dir/themes" "$HOME/.hushflow/themes"; do
+                if [ -d "$_tdir" ]; then
+                    for _tf in "$_tdir"/*.json; do
+                        [ -f "$_tf" ] || continue
+                        _tname=$(basename "$_tf" .json)
+                        if command -v jq &>/dev/null; then
+                            _tdesc=$(jq -r '.name // empty' "$_tf" 2>/dev/null)
+                            echo "  $_tname - $_tdesc"
+                        else
+                            echo "  $_tname"
+                        fi
+                    done
+                fi
+            done
             current_theme=$(grep "^theme=" "$CONFIG_FILE" 2>/dev/null | cut -d= -f2)
             echo ""
             echo "Current: ${current_theme:-teal}"
+            ;;
+        *)
+            # Accept any name — could be a JSON community theme
+            set_value theme "$ARG2"
+            echo "Theme set to $ARG2"
             ;;
     esac
     exit 0

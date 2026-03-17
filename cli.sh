@@ -19,6 +19,17 @@ case "${1:-help}" in
     animation|anim)
         exec bash "$SCRIPT_DIR/set-exercise.sh" animation "${@:2}"
         ;;
+    wrap)
+        shift
+        [ "${1:-}" = "--" ] && shift
+        exec bash "$SCRIPT_DIR/lib/wrap.sh" "$@"
+        ;;
+    sound)
+        exec bash "$SCRIPT_DIR/set-exercise.sh" sound "${@:2}"
+        ;;
+    stats)
+        exec bash "$SCRIPT_DIR/lib/stats.sh"
+        ;;
     doctor)
         exec bash "$SCRIPT_DIR/doctor.sh"
         ;;
@@ -29,8 +40,12 @@ case "${1:-help}" in
         echo "  hushflow install [--target claude|gemini|codex]"
         echo "  hushflow uninstall"
         echo "  hushflow config [hrv|sigh|box|478]"
-        echo "  hushflow theme [teal|twilight|amber]"
+        echo "  hushflow theme [teal|twilight|amber|<community-theme>]"
+        echo "  hushflow theme list"
         echo "  hushflow animation [constellation|ripple|wave|orbit|helix|rain]"
+        echo "  hushflow wrap -- <command>      Run breathing while a command executes"
+        echo "  hushflow sound [on|off]"
+        echo "  hushflow stats                  View session statistics and streak"
         echo "  hushflow doctor"
         echo "  hushflow help"
         ;;

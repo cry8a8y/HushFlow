@@ -419,6 +419,77 @@ else
     fail "cli.sh missing doctor route"
 fi
 
+# --- Community themes ---
+section "Community themes"
+
+if command -v jq &>/dev/null; then
+    for theme_file in "$SCRIPT_DIR/themes"/*.json; do
+        if [ -f "$theme_file" ]; then
+            tname=$(basename "$theme_file")
+            if jq empty "$theme_file" 2>/dev/null; then
+                pass "valid JSON: $tname"
+            else
+                fail "invalid JSON: $tname"
+            fi
+        fi
+    done
+else
+    # Fallback: just check files exist and look like JSON
+    for theme_file in "$SCRIPT_DIR/themes"/*.json; do
+        if [ -f "$theme_file" ]; then
+            tname=$(basename "$theme_file")
+            if grep -q '"colors"' "$theme_file"; then
+                pass "theme file exists: $tname"
+            else
+                fail "theme file malformed: $tname"
+            fi
+        fi
+    done
+fi
+
+# Test: theme loader handles unknown themes gracefully
+if grep -q '_theme_loaded' "$SCRIPT_DIR/breathe-compact.sh"; then
+    pass "theme loader has fallback logic"
+else
+    fail "theme loader missing fallback"
+fi
+
+# --- New features ---
+section "New features"
+
+# wrap.sh
+if [ -f "$SCRIPT_DIR/lib/wrap.sh" ]; then
+    bash -n "$SCRIPT_DIR/lib/wrap.sh" 2>/dev/null && pass "wrap.sh syntax ok" || fail "wrap.sh syntax error"
+else
+    fail "wrap.sh missing"
+fi
+
+# sound.sh
+if [ -f "$SCRIPT_DIR/lib/sound.sh" ]; then
+    bash -n "$SCRIPT_DIR/lib/sound.sh" 2>/dev/null && pass "sound.sh syntax ok" || fail "sound.sh syntax error"
+else
+    fail "sound.sh missing"
+fi
+
+# detect-background.sh
+if [ -f "$SCRIPT_DIR/lib/detect-background.sh" ]; then
+    bash -n "$SCRIPT_DIR/lib/detect-background.sh" 2>/dev/null && pass "detect-background.sh syntax ok" || fail "detect-background.sh syntax error"
+else
+    fail "detect-background.sh missing"
+fi
+
+# stats.sh
+if [ -f "$SCRIPT_DIR/lib/stats.sh" ]; then
+    bash -n "$SCRIPT_DIR/lib/stats.sh" 2>/dev/null && pass "stats.sh syntax ok" || fail "stats.sh syntax error"
+else
+    fail "stats.sh missing"
+fi
+
+# CLI routes new commands
+for cmd in wrap sound stats; do
+    grep -q "$cmd" "$SCRIPT_DIR/cli.sh" && pass "cli.sh routes $cmd" || fail "cli.sh missing $cmd route"
+done
+
 # --- Summary ---
 echo ""
 echo "================================"

@@ -15,11 +15,57 @@ theme=""
 if [ -f "$CONFIG_FILE" ]; then
     theme=$(grep "^theme=" "$CONFIG_FILE" 2>/dev/null | cut -d= -f2)
 fi
+
+# Auto-theme: detect terminal background
+if [ "${theme:-}" = "auto" ]; then
+    _breathe_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    if [ -f "$_breathe_dir/lib/detect-background.sh" ]; then
+        source "$_breathe_dir/lib/detect-background.sh"
+        _bg=$(detect_background 2>/dev/null || echo "unknown")
+        case "$_bg" in
+            dark)  theme="teal" ;;
+            light) theme="amber" ;;
+            *)     theme="teal" ;;
+        esac
+    else
+        theme="teal"
+    fi
+fi
+
+# Load theme colors — built-in first, then JSON community themes
+_theme_loaded=0
 case "${theme:-teal}" in
-    twilight) C_B='209;196;233' C_D='126;87;194' C_MID='167;141;213' C_MDIM='142;128;175' C_DIM='158;158;158' ;;
-    amber)    C_B='255;224;178' C_D='245;124;0'  C_MID='250;174;89'  C_MDIM='205;160;114' C_DIM='161;136;127' ;;
-    *)        C_B='128;203;196' C_D='0;121;107'  C_MID='64;162;151'  C_MDIM='90;144;140'  C_DIM='120;144;156' ;;
+    twilight) C_B='209;196;233' C_D='126;87;194' C_MID='167;141;213' C_MDIM='142;128;175' C_DIM='158;158;158'; _theme_loaded=1 ;;
+    amber)    C_B='255;224;178' C_D='245;124;0'  C_MID='250;174;89'  C_MDIM='205;160;114' C_DIM='161;136;127'; _theme_loaded=1 ;;
+    teal)     C_B='128;203;196' C_D='0;121;107'  C_MID='64;162;151'  C_MDIM='90;144;140'  C_DIM='120;144;156'; _theme_loaded=1 ;;
 esac
+
+# JSON community/custom theme loader
+if [ "$_theme_loaded" -eq 0 ] && [ -n "${theme:-}" ] && command -v jq &>/dev/null; then
+    _hf_dir="${HUSHFLOW_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
+    for _theme_dir in "$HOME/.hushflow/themes" "$_hf_dir/themes"; do
+        _theme_file="$_theme_dir/${theme}.json"
+        if [ -f "$_theme_file" ]; then
+            C_B=$(jq -r '.colors.primary // empty' "$_theme_file" 2>/dev/null)
+            C_D=$(jq -r '.colors.secondary // empty' "$_theme_file" 2>/dev/null)
+            C_MID=$(jq -r '.colors.mid // empty' "$_theme_file" 2>/dev/null)
+            C_MDIM=$(jq -r '.colors.mid_dim // empty' "$_theme_file" 2>/dev/null)
+            C_DIM=$(jq -r '.colors.dim // empty' "$_theme_file" 2>/dev/null)
+            if [ -n "$C_B" ] && [ -n "$C_D" ]; then
+                _theme_loaded=1
+                hf_log "loaded JSON theme: $theme from $_theme_file"
+                break
+            fi
+        fi
+    done
+fi
+
+# Fallback to teal if theme not found
+if [ "$_theme_loaded" -eq 0 ]; then
+    C_B='128;203;196' C_D='0;121;107' C_MID='64;162;151' C_MDIM='90;144;140' C_DIM='120;144;156'
+    hf_log "theme '${theme:-teal}' not found, using teal"
+fi
+unset _theme_loaded _theme_dir _theme_file _hf_dir
 
 # Environment variable overrides (e.g., HUSHFLOW_COLOR_IN='255;0;0')
 [ -n "${HUSHFLOW_COLOR_IN:-}" ] && C_B="$HUSHFLOW_COLOR_IN"
@@ -80,6 +126,13 @@ if [ -d "$PLUGIN_DIR" ]; then
     done
     hf_log "loaded plugins from $PLUGIN_DIR"
 fi
+
+# === Sound ===
+_BREATHE_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "$_BREATHE_SCRIPT_DIR/lib/sound.sh" ]; then
+    source "$_BREATHE_SCRIPT_DIR/lib/sound.sh"
+fi
+_last_phase=""
 
 # === Timing ===
 TICK_RATE=10
@@ -494,8 +547,30 @@ GREETING="${GREETINGS[$((RANDOM % ${#GREETINGS[@]}))]}"
 FADE_TICKS=10      # 10-frame fade-in
 FADEOUT_TICKS=15   # 1.5 second fade-out
 
-# Graceful exit: show "Done" message, fade out, then exit
+# === Stats: log session on exit ===
+log_session_stats() {
+    local cycles=$((tick / CYCLE_TICKS))
+    local duration=$((tick / TICK_RATE))
+    local stats_dir="$HOME/.hushflow"
+    local stats_file="$stats_dir/stats.log"
+    mkdir -p "$stats_dir"
+    printf '%s\t%s\t%s\t%s\t%s\t%s\n' \
+        "$(date +%s)" "$cycles" "$duration" "$EX_NAME" "$animation" "${theme:-teal}" \
+        >> "$stats_file" 2>/dev/null
+    hf_log "stats logged: cycles=$cycles duration=${duration}s"
+}
+
+# Graceful exit: show summary, "Done" message, fade out, then exit
 graceful_exit() {
+    type hf_play_sound &>/dev/null && hf_play_sound complete
+    # Log stats
+    log_session_stats
+
+    # Session summary
+    local cycles=$((tick / CYCLE_TICKS))
+    local duration=$((tick / TICK_RATE))
+    local summary="${cycles} cycles · ${duration}s"
+
     # Logo + Done centered on screen
     local logo="HushFlow"
     local done_msg="· Done ·"
@@ -514,6 +589,10 @@ graceful_exit() {
         out+="\033[${logo_row};${logo_col}H${COLOR_IN}${logo}${RESET}"
         # "Done" below logo
         out+="\033[${done_row};${done_col}H${COLOR_MID}${done_msg}${RESET}"
+        # Session summary below Done
+        local sum_row=$((PANE_H / 2 + 3))
+        local sum_col=$(( (PANE_W - ${#summary}) / 2 + 1 ))
+        out+="\033[${sum_row};${sum_col}H${DIM}${summary}${RESET}"
         # Fade: apply faint after first 5 frames
         if [ "$f" -ge 8 ]; then
             out="\033[2m${out}"
@@ -565,6 +644,16 @@ while true; do
         phase="Hold"; color="$COLOR_OUT"
         remaining_ticks=$((CYCLE_TICKS - t))
         progress=0
+    fi
+
+    # Play sound on phase transition
+    if [ "$phase" != "$_last_phase" ] && type hf_play_sound &>/dev/null; then
+        case "$phase" in
+            "Breathe in"|"Sip in") hf_play_sound inhale ;;
+            "Breathe out")         hf_play_sound exhale ;;
+            "Hold")                hf_play_sound hold ;;
+        esac
+        _last_phase="$phase"
     fi
 
     remaining_s=$(( (remaining_ticks + TICK_RATE - 1) / TICK_RATE ))

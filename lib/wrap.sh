@@ -1,0 +1,77 @@
+#!/bin/bash
+# HushFlow wrap — breathing exercises while any command runs
+# Usage: hushflow wrap -- npm install
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CONFIG_DIR="${HUSHFLOW_CONFIG_DIR:-$HOME/.claude/hushflow}"
+CONFIG_FILE="$CONFIG_DIR/config"
+
+# Exit if disabled — just run the command directly
+if [ -f "$CONFIG_FILE" ] && grep -q "^enabled=false" "$CONFIG_FILE"; then
+    exec "$@"
+fi
+
+if [ $# -eq 0 ]; then
+    echo "Usage: hushflow wrap -- <command>" >&2
+    echo "Example: hushflow wrap -- npm install" >&2
+    exit 1
+fi
+
+# Session setup
+SESSION_DIR="/tmp/hushflow-wrap-$$"
+mkdir -p "$SESSION_DIR"
+export HUSHFLOW_SESSION_DIR="$SESSION_DIR"
+MARKER_FILE="$SESSION_DIR/working"
+echo "$(date +%s)" > "$MARKER_FILE"
+
+# Read delay from config
+delay=3
+if [ -f "$CONFIG_FILE" ]; then
+    saved_delay=$(grep "^delay=" "$CONFIG_FILE" 2>/dev/null | cut -d= -f2)
+    [ -n "$saved_delay" ] && delay="$saved_delay"
+fi
+
+BREATHE_PID=""
+CMD_PID=""
+
+cleanup() {
+    rm -f "$MARKER_FILE"
+    if [ -n "$BREATHE_PID" ] && kill -0 "$BREATHE_PID" 2>/dev/null; then
+        sleep 0.3
+        kill "$BREATHE_PID" 2>/dev/null || true
+    fi
+    rm -rf "$SESSION_DIR"
+}
+
+handle_signal() {
+    [ -n "$CMD_PID" ] && kill "$CMD_PID" 2>/dev/null
+    cleanup
+    exit 130
+}
+
+trap cleanup EXIT
+trap handle_signal INT TERM
+
+# Launch breathing UI after delay
+(
+    sleep "$delay"
+    [ -f "$MARKER_FILE" ] || exit 0
+    HUSHFLOW_SESSION_DIR="$SESSION_DIR" \
+    HUSHFLOW_CONFIG_DIR="$CONFIG_DIR" \
+    HUSHFLOW_UI_MODE="${HUSHFLOW_UI_MODE:-window}" \
+    HUSHFLOW_DIR="$SCRIPT_DIR" \
+    bash "$SCRIPT_DIR/hooks/open-window.sh"
+) &
+BREATHE_PID=$!
+
+# Run the wrapped command
+"$@" &
+CMD_PID=$!
+wait "$CMD_PID" 2>/dev/null
+CMD_EXIT=$?
+CMD_PID=""
+
+# Command finished — stop breathing
+rm -f "$MARKER_FILE"
+
+exit "$CMD_EXIT"
