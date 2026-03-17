@@ -1,0 +1,218 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640">
+  <defs>
+    <!-- Background gradient -->
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a1e2e"/>
+      <stop offset="50%" stop-color="#232836"/>
+      <stop offset="100%" stop-color="#1a1e2e"/>
+    </linearGradient>
+    
+    <!-- Glow filter for sparkles -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    
+    <!-- Stronger glow for main elements -->
+    <filter id="glowStrong" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    
+    <!-- Subtle vignette -->
+    <radialGradient id="vignette" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="transparent"/>
+      <stop offset="100%" stop-color="#0d1017" stop-opacity="0.6"/>
+    </radialGradient>
+    
+    <!-- Cat silhouette - sleeping/curled -->
+    <symbol id="cat-sleeping" viewBox="0 0 110 100">
+      <!-- Body curl -->
+      <ellipse cx="50" cy="55" rx="45" ry="30" fill="#5b9a8b" opacity="0.9"/>
+      <!-- Head -->
+      <circle cx="85" cy="35" r="20" fill="#5b9a8b" opacity="0.9"/>
+      <!-- Left ear -->
+      <polygon points="72,20 66,0 80,14" fill="#5b9a8b"/>
+      <!-- Right ear -->
+      <polygon points="94,16 96,-2 104,12" fill="#5b9a8b"/>
+      <!-- Inner ears -->
+      <polygon points="73,19 69,5 78,15" fill="#4a8577" opacity="0.6"/>
+      <polygon points="95,15 96,2 102,12" fill="#4a8577" opacity="0.6"/>
+      <!-- Closed eyes (sleeping) -->
+      <path d="M77 34 Q80 37 83 34" fill="none" stroke="#232836" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M89 33 Q92 36 95 33" fill="none" stroke="#232836" stroke-width="1.8" stroke-linecap="round"/>
+      <!-- Nose -->
+      <polygon points="86,38 88,38 87,40" fill="#4a8577"/>
+      <!-- Tail wrapping around -->
+      <path d="M5 50 Q-15 30 -5 15 Q0 8 8 15 Q15 25 10 40" fill="none" stroke="#5b9a8b" stroke-width="5" stroke-linecap="round" opacity="0.9"/>
+      <!-- Paw tucked -->
+      <ellipse cx="75" cy="62" rx="8" ry="5" fill="#5b9a8b" opacity="0.85"/>
+    </symbol>
+    
+    <!-- 4-point sparkle -->
+    <symbol id="sparkle" viewBox="0 0 20 20">
+      <path d="M10 0 L12 8 L20 10 L12 12 L10 20 L8 12 L0 10 L8 8 Z" fill="#7ec8b0"/>
+    </symbol>
+    
+    <!-- Small diamond sparkle -->
+    <symbol id="sparkle-sm" viewBox="0 0 10 10">
+      <path d="M5 0 L6 4 L10 5 L6 6 L5 10 L4 6 L0 5 L4 4 Z" fill="#5b9a8b"/>
+    </symbol>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1280" height="640" fill="url(#bg)"/>
+  <rect width="1280" height="640" fill="url(#vignette)"/>
+  
+  <!-- Scattered tiny dots (stars) -->
+  <g opacity="0.3">
+    <circle cx="80" cy="60" r="1.2" fill="#5b9a8b"/>
+    <circle cx="200" cy="120" r="1" fill="#5b9a8b"/>
+    <circle cx="350" cy="80" r="0.8" fill="#5b9a8b"/>
+    <circle cx="450" cy="150" r="1.2" fill="#7ec8b0"/>
+    <circle cx="520" cy="50" r="1" fill="#5b9a8b"/>
+    <circle cx="680" cy="90" r="0.8" fill="#5b9a8b"/>
+    <circle cx="780" cy="130" r="1.2" fill="#7ec8b0"/>
+    <circle cx="900" cy="70" r="1" fill="#5b9a8b"/>
+    <circle cx="1020" cy="110" r="0.8" fill="#5b9a8b"/>
+    <circle cx="1150" cy="60" r="1.2" fill="#5b9a8b"/>
+    <circle cx="1220" cy="150" r="1" fill="#7ec8b0"/>
+    <circle cx="130" cy="200" r="1" fill="#5b9a8b"/>
+    <circle cx="310" cy="250" r="0.8" fill="#5b9a8b"/>
+    <circle cx="960" cy="220" r="1" fill="#5b9a8b"/>
+    <circle cx="1100" cy="260" r="1.2" fill="#5b9a8b"/>
+    <circle cx="100" cy="400" r="1" fill="#5b9a8b"/>
+    <circle cx="250" cy="450" r="0.8" fill="#7ec8b0"/>
+    <circle cx="400" cy="500" r="1.2" fill="#5b9a8b"/>
+    <circle cx="600" cy="520" r="1" fill="#5b9a8b"/>
+    <circle cx="750" cy="480" r="0.8" fill="#5b9a8b"/>
+    <circle cx="850" cy="530" r="1.2" fill="#7ec8b0"/>
+    <circle cx="1000" cy="450" r="1" fill="#5b9a8b"/>
+    <circle cx="1180" cy="500" r="0.8" fill="#5b9a8b"/>
+    <circle cx="60" cy="550" r="1" fill="#5b9a8b"/>
+    <circle cx="1240" cy="400" r="1.2" fill="#5b9a8b"/>
+    <circle cx="170" cy="320" r="0.8" fill="#5b9a8b"/>
+    <circle cx="1080" cy="350" r="1" fill="#5b9a8b"/>
+    <circle cx="550" cy="580" r="0.8" fill="#5b9a8b"/>
+    <circle cx="720" cy="560" r="1" fill="#7ec8b0"/>
+    <circle cx="430" cy="390" r="1" fill="#5b9a8b"/>
+    <circle cx="870" cy="380" r="0.8" fill="#5b9a8b"/>
+  </g>
+  
+  <!-- Sparkles scattered around - larger ones with glow -->
+  <g filter="url(#glow)">
+    <!-- Left region sparkles -->
+    <use href="#sparkle" x="110" y="170" width="14" height="14" opacity="0.5"/>
+    <use href="#sparkle" x="220" y="300" width="10" height="10" opacity="0.4"/>
+    <use href="#sparkle" x="160" y="440" width="12" height="12" opacity="0.35"/>
+    <use href="#sparkle-sm" x="280" y="190" width="8" height="8" opacity="0.5"/>
+    <use href="#sparkle-sm" x="90" y="350" width="6" height="6" opacity="0.4"/>
+    
+    <!-- Right region sparkles -->
+    <use href="#sparkle" x="1050" y="200" width="14" height="14" opacity="0.5"/>
+    <use href="#sparkle" x="1150" y="350" width="10" height="10" opacity="0.4"/>
+    <use href="#sparkle" x="1080" y="470" width="12" height="12" opacity="0.35"/>
+    <use href="#sparkle-sm" x="980" y="280" width="8" height="8" opacity="0.5"/>
+    <use href="#sparkle-sm" x="1200" y="250" width="6" height="6" opacity="0.4"/>
+    
+    <!-- Center region accent sparkles -->
+    <use href="#sparkle" x="480" y="180" width="11" height="11" opacity="0.3"/>
+    <use href="#sparkle" x="760" y="200" width="9" height="9" opacity="0.3"/>
+    <use href="#sparkle-sm" x="580" y="460" width="7" height="7" opacity="0.35"/>
+    <use href="#sparkle-sm" x="700" y="440" width="8" height="8" opacity="0.3"/>
+  </g>
+  
+  <!-- Cat sleeping on the left side -->
+  <use href="#cat-sleeping" x="120" y="330" width="120" height="110" filter="url(#glowStrong)" opacity="0.15"/>
+  <use href="#cat-sleeping" x="120" y="330" width="120" height="110"/>
+  
+  <!-- Small cat paw prints trail from cat towards center -->
+  <g fill="#5b9a8b" opacity="0.25">
+    <!-- Paw 1 -->
+    <circle cx="270" cy="400" r="3"/>
+    <circle cx="265" cy="394" r="1.5"/>
+    <circle cx="270" cy="392" r="1.5"/>
+    <circle cx="275" cy="394" r="1.5"/>
+    <!-- Paw 2 -->
+    <circle cx="310" cy="385" r="2.8"/>
+    <circle cx="305" cy="379" r="1.4"/>
+    <circle cx="310" cy="377" r="1.4"/>
+    <circle cx="315" cy="379" r="1.4"/>
+    <!-- Paw 3 -->
+    <circle cx="355" cy="375" r="2.5"/>
+    <circle cx="350" cy="370" r="1.3"/>
+    <circle cx="355" cy="368" r="1.3"/>
+    <circle cx="360" cy="370" r="1.3"/>
+    <!-- Paw 4 (fading) -->
+    <g opacity="0.6">
+      <circle cx="400" cy="368" r="2.2"/>
+      <circle cx="396" cy="363" r="1.1"/>
+      <circle cx="400" cy="361" r="1.1"/>
+      <circle cx="404" cy="363" r="1.1"/>
+    </g>
+  </g>
+  
+  <!-- Main Title: HushFlow -->
+  <g filter="url(#glowStrong)">
+    <text x="640" y="270" text-anchor="middle" font-family="'JetBrains Mono', 'Fira Code', 'SF Mono', monospace" font-size="80" font-weight="700" fill="#a8e6cf" letter-spacing="5">
+      HushFlow
+    </text>
+  </g>
+  <text x="640" y="270" text-anchor="middle" font-family="'JetBrains Mono', 'Fira Code', 'SF Mono', monospace" font-size="80" font-weight="700" fill="#a8e6cf" letter-spacing="5">
+    HushFlow
+  </text>
+  
+  <!-- Decorative line under title -->
+  <line x1="440" y1="295" x2="840" y2="295" stroke="#5b9a8b" stroke-width="1" opacity="0.4"/>
+  <use href="#sparkle-sm" x="436" y="291" width="8" height="8" opacity="0.6"/>
+  <use href="#sparkle-sm" x="836" y="291" width="8" height="8" opacity="0.6"/>
+  
+  <!-- Subtitle -->
+  <text x="640" y="335" text-anchor="middle" font-family="'JetBrains Mono', 'Fira Code', 'SF Mono', monospace" font-size="20" fill="#7ec8b0" opacity="0.85" letter-spacing="4">
+    Breathe while your AI thinks
+  </text>
+  
+  <!-- Tagline / description -->
+  <text x="640" y="380" text-anchor="middle" font-family="'JetBrains Mono', 'Fira Code', 'SF Mono', monospace" font-size="14" fill="#5b9a8b" opacity="0.6" letter-spacing="2">
+    mindful moments in your terminal
+  </text>
+  
+  <!-- Small cat ear icons flanking the title as decorative elements -->
+  <g transform="translate(370, 230)" opacity="0.5">
+    <!-- Left cat ears tiny -->
+    <polygon points="8,20 0,0 10,12" fill="#5b9a8b"/>
+    <polygon points="14,18 12,0 20,10" fill="#5b9a8b"/>
+  </g>
+  <g transform="translate(890, 230)" opacity="0.5">
+    <!-- Right cat ears tiny -->
+    <polygon points="2,10 8,0 12,18" fill="#5b9a8b"/>
+    <polygon points="10,12 20,0 12,20" fill="#5b9a8b"/>
+  </g>
+  
+  <!-- Bottom breathing indicator hint -->
+  <g opacity="0.4">
+    <text x="640" y="560" text-anchor="middle" font-family="'JetBrains Mono', 'Fira Code', 'SF Mono', monospace" font-size="13" fill="#5b9a8b" letter-spacing="8">
+      ○ ○ ○ ● ○ ○ ○
+    </text>
+  </g>
+  
+  <!-- Version / badge area -->
+  <g transform="translate(640, 590)">
+    <rect x="-60" y="-14" width="120" height="28" rx="14" fill="#5b9a8b" opacity="0.15"/>
+    <text x="0" y="5" text-anchor="middle" font-family="'JetBrains Mono', 'Fira Code', 'SF Mono', monospace" font-size="12" fill="#7ec8b0" opacity="0.7">
+      v1.0 · OSS
+    </text>
+  </g>
+  
+  <!-- GitHub ID with logo - top right area -->
+  <g transform="translate(1120, 48)">
+    <rect x="-70" y="-15" width="140" height="30" rx="15" fill="#5b9a8b" opacity="0.12"/>
+    <!-- GitHub Invertocat logo -->
+    <g transform="translate(-55, -10) scale(0.04)" fill="#7ec8b0" opacity="0.85">
+      <path d="M256 0C114.6 0 0 114.6 0 256c0 113.1 73.3 209 175.1 242.9 12.8 2.4 17.5-5.5 17.5-12.3 0-6.1-.2-26.2-.3-47.3-71.2 15.5-86.3-30.1-86.3-30.1-11.6-29.6-28.4-37.5-28.4-37.5-23.2-15.9 1.8-15.6 1.8-15.6 25.7 1.8 39.2 26.4 39.2 26.4 22.8 39.1 59.9 27.8 74.5 21.3 2.3-16.5 8.9-27.8 16.2-34.2-56.8-6.5-116.5-28.4-116.5-126.5 0-27.9 10-50.8 26.4-68.7-2.6-6.5-11.4-32.5 2.5-67.8 0 0 21.5-6.9 70.4 26.2 20.4-5.7 42.3-8.5 64.1-8.6 21.7.1 43.6 2.9 64.1 8.6 48.8-33.1 70.3-26.2 70.3-26.2 14 35.3 5.2 61.3 2.5 67.8 16.4 17.9 26.3 40.8 26.3 68.7 0 98.3-59.8 120-116.8 126.3 9.2 7.9 17.4 23.5 17.4 47.4 0 34.2-.3 61.8-.3 70.2 0 6.8 4.6 14.8 17.6 12.3C438.7 465 512 369.1 512 256 512 114.6 397.4 0 256 0z"/>
+    </g>
+    <text x="8" y="5" text-anchor="middle" font-family="'JetBrains Mono', 'Fira Code', 'SF Mono', monospace" font-size="13" fill="#7ec8b0" opacity="0.8">
+      cry8a8y
+    </text>
+  </g>
+</svg>

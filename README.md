@@ -1,19 +1,5 @@
 <p align="center">
-<pre align="center">
-
-            ·    ✦    ·    ✧    ·
-       ✧    ·    ·    ·    ✦    ·    ·
-  ·    ·    ✦    ·    ·    ·    ✧    ·    ·
-       ·    ✧    ·    ✦    ·    ·    ·
-            ·    ·    ✧    ·    ✦
-
-      ╻ ╻ ╻ ╻ ┏━╸ ╻ ╻ ┏━╸ ╻   ┏━┓ ╻ ╻
-      ┣━┫ ┃ ┃ ┗━┓ ┣━┫ ┣╸  ┃   ┃ ┃ ┃╻┃
-      ╹ ╹ ┗━┛ ━━┛ ╹ ╹ ╹   ┗━╸ ┗━┛ ┗┻┛
-
-   Turn AI thinking time into mindful breathing.
-
-</pre>
+  <img src="docs/hushflow-banner.svg" alt="HushFlow — Breathe while your AI thinks" width="720" />
 </p>
 
 <p align="center">
