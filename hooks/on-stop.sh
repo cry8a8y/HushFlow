@@ -4,6 +4,19 @@
 hf_log() { [ "${HUSHFLOW_DEBUG:-}" = "1" ] && echo "$(date '+%H:%M:%S') [on-stop] $*" >> /tmp/hushflow-debug.log; }
 
 CONFIG_DIR="${HUSHFLOW_CONFIG_DIR:-$HOME/.claude/hushflow}"
+CURRENT_USER="$(id -un 2>/dev/null || echo "${USER:-}")"
+
+is_hushflow_window_process() {
+    local comm="$1"
+    case "$comm" in
+        *bash*|*sh*|*zsh*|*sleep*|*ghostty*|*gnome-terminal*|*konsole*|*xfce4-terminal*|*xterm*|*wt.exe*|*WindowsTerminal*|*powershell*)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
 
 # Find session directory
 SESSION_DIR=""
@@ -28,12 +41,26 @@ fi
 # Stop the standalone window process if it exists
 if [ -f "$SESSION_DIR/window-pid" ]; then
     window_pid=$(cat "$SESSION_DIR/window-pid")
-    pid_comm=$(ps -p "$window_pid" -o comm= 2>/dev/null || true)
-    if [[ "$pid_comm" == *bash* ]] || [[ "$pid_comm" == *breathe* ]] || [[ "$pid_comm" == *sleep* ]]; then
-        kill "$window_pid" 2>/dev/null
-        hf_log "killed PID $window_pid ($pid_comm)"
+    pid_user=$(ps -p "$window_pid" -o user= 2>/dev/null | awk '{print $1}' || true)
+    pid_comm=$(ps -p "$window_pid" -o comm= 2>/dev/null | awk '{print $1}' || true)
+    if [ -z "$pid_comm" ]; then
+        hf_log "window PID $window_pid already exited"
+    elif [ -n "$CURRENT_USER" ] && [ -n "$pid_user" ] && [ "$pid_user" != "$CURRENT_USER" ]; then
+        hf_log "skipped kill PID $window_pid (owner=$pid_user, current=$CURRENT_USER)"
+    elif is_hushflow_window_process "$pid_comm"; then
+        kill "$window_pid" 2>/dev/null || true
+        for _ in 1 2 3 4 5; do
+            kill -0 "$window_pid" 2>/dev/null || break
+            sleep 0.1
+        done
+        if kill -0 "$window_pid" 2>/dev/null; then
+            kill -9 "$window_pid" 2>/dev/null || true
+            hf_log "force-killed PID $window_pid ($pid_comm)"
+        else
+            hf_log "killed PID $window_pid ($pid_comm)"
+        fi
     else
-        hf_log "skipped kill PID $window_pid (comm=$pid_comm, not a breathe process)"
+        hf_log "skipped kill PID $window_pid (comm=$pid_comm, not a HushFlow window process)"
     fi
 fi
 

@@ -14,9 +14,11 @@ WINDOW_ID_FILE="$SESSION_DIR/window-id"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BREATHE_SCRIPT="$SCRIPT_DIR/breathe-compact.sh"
 CONFIG_FILE="${HUSHFLOW_CONFIG_DIR:-$HOME/.claude/hushflow}/config"
-# Env vars to pass to breathe-compact.sh in new terminal windows
-BREATHE_ENV="export HUSHFLOW_SESSION_DIR='$SESSION_DIR' HUSHFLOW_CONFIG_DIR='${HUSHFLOW_CONFIG_DIR:-}'"
 WINDOW_TITLE="HushFlow"
+SESSION_NAME="$(basename "$SESSION_DIR")"
+WINDOW_MATCH_TITLE="$WINDOW_TITLE · $SESSION_NAME"
+# Env vars to pass to breathe-compact.sh in new terminal windows
+BREATHE_ENV="export HUSHFLOW_SESSION_DIR='$SESSION_DIR' HUSHFLOW_CONFIG_DIR='${HUSHFLOW_CONFIG_DIR:-}' HUSHFLOW_WINDOW_TITLE='$WINDOW_MATCH_TITLE'"
 
 # Source terminal detection
 source "$SCRIPT_DIR/lib/detect-terminal.sh"
@@ -92,19 +94,30 @@ if posY < 25 then set posY to 25
 
 tell application "Ghostty"
     set surfaceConfig to new surface configuration
-    set command of surfaceConfig to "/bin/bash -c '$BREATHE_ENV HUSHFLOW_COLS=" & termCols & " HUSHFLOW_ROWS=" & termRows & "; exec \"$BREATHE_SCRIPT\"'"
+    set breathePath to quoted form of POSIX path of "$BREATHE_SCRIPT"
+    set command of surfaceConfig to "/bin/bash -lc " & quoted form of ("exec " & breathePath)
     set font size of surfaceConfig to fontSize
     set wait after command of surfaceConfig to false
+    set environment variables of surfaceConfig to {"HUSHFLOW_SESSION_DIR=$SESSION_DIR", "HUSHFLOW_CONFIG_DIR=${HUSHFLOW_CONFIG_DIR:-$HOME/.claude/hushflow}", "HUSHFLOW_WINDOW_TITLE=$WINDOW_MATCH_TITLE", "HUSHFLOW_COLS=" & termCols, "HUSHFLOW_ROWS=" & termRows}
     set newWindow to new window with configuration surfaceConfig
     set winId to id of newWindow
 end tell
-delay 0.3
+set targetTitle to "$WINDOW_MATCH_TITLE"
+
 tell application "System Events"
     tell process "Ghostty"
-        try
-            set position of window 1 to {posX, posY}
-            set size of window 1 to {winW, winH}
-        end try
+        repeat with attempt from 1 to 20
+            repeat with targetWindow in windows
+                try
+                    if name of targetWindow is targetTitle then
+                        set position of targetWindow to {posX, posY}
+                        set size of targetWindow to {winW, winH}
+                        return winId
+                    end if
+                end try
+            end repeat
+            delay 0.15
+        end repeat
     end tell
 end tell
 

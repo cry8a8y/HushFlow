@@ -1,19 +1,5 @@
 <p align="center">
-<pre align="center">
-
-            ·    ✦    ·    ✧    ·
-       ✧    ·    ·    ·    ✦    ·    ·
-  ·    ·    ✦    ·    ·    ·    ✧    ·    ·
-       ·    ✧    ·    ✦    ·    ·    ·
-            ·    ·    ✧    ·    ✦
-
-      ╻ ╻ ╻ ╻ ┏━╸ ╻ ╻ ┏━╸ ╻   ┏━┓ ╻ ╻
-      ┣━┫ ┃ ┃ ┗━┓ ┣━┫ ┣╸  ┃   ┃ ┃ ┃╻┃
-      ╹ ╹ ┗━┛ ━━┛ ╹ ╹ ╹   ┗━╸ ┗━┛ ┗┻┛
-
-        把 AI 思考時間變成正念呼吸。
-
-</pre>
+  <img src="hushflow-banner.svg" alt="HushFlow — 把 AI 思考時間變成正念呼吸" width="720" />
 </p>
 
 <p align="center">
@@ -25,6 +11,35 @@
 每次你送出 prompt 給 AI 編程助手，都會有 10～60 秒以上的等待時間。HushFlow 把這段空白變成引導式呼吸練習 —— AI 開始工作時自動啟動，完成時自動關閉。
 
 支援 **Claude Code**、**Gemini CLI** 和 **Codex CLI**。可在 **macOS**、**Linux** 和 **Windows** 上運行。
+
+## 一眼看懂
+
+<table>
+  <tr>
+    <td align="center" width="25%">
+      <strong>🫁 引導呼吸</strong><br />
+      四種節奏，對應放鬆、專注與穩定。
+    </td>
+    <td align="center" width="25%">
+      <strong>🔌 自動 Hook</strong><br />
+      AI 一開始工作就啟動，結束就自動收掉。
+    </td>
+    <td align="center" width="25%">
+      <strong>🖥️ 彈性 UI</strong><br />
+      可用 companion window、tmux pane、popup 或 inline。
+    </td>
+    <td align="center" width="25%">
+      <strong>🎨 可自訂風格</strong><br />
+      呼吸法、主題、動畫都能用 CLI 快速切換。
+    </td>
+  </tr>
+</table>
+
+## DEMO
+
+<p align="center">
+  <img src="../demo.gif" alt="HushFlow DEMO，顯示呼吸伴隨視窗動畫" width="720" />
+</p>
 
 ## 功能特色
 
@@ -179,25 +194,18 @@ hushflow animation rain           # 落雨
 
 ## 運作原理
 
-```
-你送出 prompt 給 AI 工具
-         |
-         v
-    on-start.sh 觸發（透過工具特定的 hook）
-    |-- 檢查設定，若停用則退出
-    |-- 建立標記檔 /tmp/hushflow-working
-    '-- 延遲後啟動伴隨視窗
-         |
-         v
-    呼吸動畫在伴隨視窗中運行
-    |-- 自動偵測終端模擬器
-    |-- 以 10 FPS 渲染主題動畫
-    '-- 每幀檢查標記檔
-         |
-         v
-    AI 完成工作，on-stop.sh 觸發
-    |-- 刪除標記檔
-    '-- 關閉伴隨視窗
+```mermaid
+flowchart TD
+    A[你送出 prompt 給 AI 工具] --> B[工具 hook 呼叫 on-start.sh]
+    B --> C{enabled=true?}
+    C -- 否 --> Z[直接結束]
+    C -- 是 --> D[建立 session 暫存目錄與 working marker]
+    D --> E[等待設定的 delay]
+    E --> F[啟動 companion window 或 tmux UI]
+    F --> G[breathe-compact.sh 渲染呼吸動畫]
+    G --> H[AI 完成工作]
+    H --> I[on-stop.sh 移除 marker 並關閉 UI]
+    I --> J[清理 session 目錄]
 ```
 
 ## 解除安裝

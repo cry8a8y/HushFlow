@@ -12,6 +12,35 @@ Every prompt you send to an AI coding assistant gives you 10–60+ seconds of id
 
 Works with **Claude Code**, **Gemini CLI**, and **Codex CLI**. Runs on **macOS**, **Linux**, and **Windows**.
 
+## Quick Snapshot
+
+<table>
+  <tr>
+    <td align="center" width="25%">
+      <strong>🫁 Guided Breathing</strong><br />
+      Four breathing patterns for calm, focus, and reset.
+    </td>
+    <td align="center" width="25%">
+      <strong>🔌 Hook-Based</strong><br />
+      Starts when your AI starts, stops when it finishes.
+    </td>
+    <td align="center" width="25%">
+      <strong>🖥️ Flexible UI</strong><br />
+      Companion window, tmux pane, popup, or inline mode.
+    </td>
+    <td align="center" width="25%">
+      <strong>🎨 Customizable</strong><br />
+      Switch exercises, themes, and animations from the CLI.
+    </td>
+  </tr>
+</table>
+
+## Demo
+
+<p align="center">
+  <img src="demo.gif" alt="HushFlow demo showing the breathing companion window" width="720" />
+</p>
+
 ## Features
 
 - **4 breathing exercises** — Coherent, Physiological Sigh, Box, 4-7-8
@@ -165,25 +194,18 @@ In Claude Code, type `/hushflow` to view and change settings interactively.
 
 ## How It Works
 
-```
-You send a prompt to your AI tool
-         |
-         v
-    on-start.sh fires (via tool-specific hook)
-    |-- Checks config, exits if disabled
-    |-- Creates marker file /tmp/hushflow-working
-    '-- Launches companion window after delay
-         |
-         v
-    Breathing animation runs in companion window
-    |-- Detects terminal emulator automatically
-    |-- Renders themed animation at 10 FPS
-    '-- Checks marker file each tick
-         |
-         v
-    AI finishes, on-stop.sh fires
-    |-- Removes marker file
-    '-- Closes companion window
+```mermaid
+flowchart TD
+    A[Send a prompt to your AI tool] --> B[Tool hook runs on-start.sh]
+    B --> C{enabled=true?}
+    C -- No --> Z[Exit immediately]
+    C -- Yes --> D[Create session temp dir and working marker]
+    D --> E[Wait for configured delay]
+    E --> F[Open companion window or tmux UI]
+    F --> G[breathe-compact.sh renders the breathing animation]
+    G --> H[AI finishes]
+    H --> I[on-stop.sh removes marker and closes UI]
+    I --> J[Session directory is cleaned up]
 ```
 
 ## Uninstall

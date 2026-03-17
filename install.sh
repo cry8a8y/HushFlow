@@ -37,6 +37,30 @@ validate_and_write() {
     echo "$json" > "$dest"
 }
 
+has_hook() {
+    local settings="$1"
+    local event="$2"
+    local needle="$3"
+
+    echo "$settings" | jq -e \
+        --arg event "$event" \
+        --arg needle "$needle" \
+        '.hooks[$event][]?.hooks[]? | select(.command | contains($needle))' \
+        >/dev/null 2>&1
+}
+
+append_hook_group() {
+    local settings="$1"
+    local event="$2"
+    local hook_json="$3"
+
+    echo "$settings" | jq \
+        --arg event "$event" \
+        --argjson hook "$hook_json" \
+        '.hooks //= {} |
+         .hooks[$event] = (.hooks[$event] // []) + $hook'
+}
+
 install_claude() {
     local settings_file="$HOME/.claude/settings.json"
     local config_dir="$HOME/.claude/hushflow"
@@ -65,21 +89,25 @@ install_claude() {
         settings='{}'
     fi
 
-    # Check if already installed
-    if echo "$settings" | jq -e ".hooks.UserPromptSubmit[]?.hooks[]? | select(.command | contains(\"on-start.sh\"))" &>/dev/null; then
+    local has_start=0
+    local has_stop=0
+    has_hook "$settings" "UserPromptSubmit" "on-start.sh" && has_start=1
+    has_hook "$settings" "Stop" "on-stop.sh" && has_stop=1
+
+    if [ "$has_start" -eq 1 ] && [ "$has_stop" -eq 1 ]; then
         echo "  Hooks already installed."
         return
     fi
 
-    # Build and merge hooks (pass config dir so the right tool's config is used)
     local start_hook='[{"hooks": [{"type": "command", "command": "HUSHFLOW_CONFIG_DIR='"$config_dir"' '"$ON_START"'", "async": true}]}]'
     local stop_hook='[{"hooks": [{"type": "command", "command": "HUSHFLOW_CONFIG_DIR='"$config_dir"' '"$ON_STOP"'", "async": true}]}]'
-    settings=$(echo "$settings" | jq \
-        --argjson start_hook "$start_hook" \
-        --argjson stop_hook "$stop_hook" \
-        '.hooks //= {} |
-         .hooks.UserPromptSubmit = (.hooks.UserPromptSubmit // []) + $start_hook |
-         .hooks.Stop = (.hooks.Stop // []) + $stop_hook')
+
+    if [ "$has_start" -eq 0 ]; then
+        settings=$(append_hook_group "$settings" "UserPromptSubmit" "$start_hook")
+    fi
+    if [ "$has_stop" -eq 0 ]; then
+        settings=$(append_hook_group "$settings" "Stop" "$stop_hook")
+    fi
 
     # Validate and write
     validate_and_write "$settings" "$settings_file" || return 1
@@ -101,21 +129,25 @@ install_gemini() {
         settings='{}'
     fi
 
-    # Check if already installed
-    if echo "$settings" | jq -e ".hooks.BeforeAgent[]?.hooks[]? | select(.command | contains(\"on-start.sh\"))" &>/dev/null; then
+    local has_start=0
+    local has_stop=0
+    has_hook "$settings" "BeforeAgent" "on-start.sh" && has_start=1
+    has_hook "$settings" "AfterAgent" "on-stop.sh" && has_stop=1
+
+    if [ "$has_start" -eq 1 ] && [ "$has_stop" -eq 1 ]; then
         echo "  Hooks already installed."
         return
     fi
 
-    # Gemini uses BeforeAgent (start) and AfterAgent (stop)
     local start_hook='[{"hooks": [{"type": "command", "command": "HUSHFLOW_CONFIG_DIR='"$config_dir"' '"$ON_START"'", "timeout": 60000}]}]'
     local stop_hook='[{"hooks": [{"type": "command", "command": "HUSHFLOW_CONFIG_DIR='"$config_dir"' '"$ON_STOP"'", "timeout": 5000}]}]'
-    settings=$(echo "$settings" | jq \
-        --argjson start_hook "$start_hook" \
-        --argjson stop_hook "$stop_hook" \
-        '.hooks //= {} |
-         .hooks.BeforeAgent = (.hooks.BeforeAgent // []) + $start_hook |
-         .hooks.AfterAgent = (.hooks.AfterAgent // []) + $stop_hook')
+
+    if [ "$has_start" -eq 0 ]; then
+        settings=$(append_hook_group "$settings" "BeforeAgent" "$start_hook")
+    fi
+    if [ "$has_stop" -eq 0 ]; then
+        settings=$(append_hook_group "$settings" "AfterAgent" "$stop_hook")
+    fi
 
     validate_and_write "$settings" "$settings_file" || return 1
     echo "  Hooks installed to $settings_file"
@@ -136,21 +168,25 @@ install_codex() {
         settings='{}'
     fi
 
-    # Check if already installed
-    if echo "$settings" | jq -e ".hooks.Stop[]?.hooks[]? | select(.command | contains(\"on-stop.sh\"))" &>/dev/null; then
+    local has_start=0
+    local has_stop=0
+    has_hook "$settings" "SessionStart" "on-start.sh" && has_start=1
+    has_hook "$settings" "Stop" "on-stop.sh" && has_stop=1
+
+    if [ "$has_start" -eq 1 ] && [ "$has_stop" -eq 1 ]; then
         echo "  Hooks already installed."
         return
     fi
 
-    # Codex has SessionStart and Stop (no BeforeAgent yet)
     local start_hook='[{"hooks": [{"type": "command", "command": "HUSHFLOW_CONFIG_DIR='"$config_dir"' '"$ON_START"'", "timeout": 60}]}]'
     local stop_hook='[{"hooks": [{"type": "command", "command": "HUSHFLOW_CONFIG_DIR='"$config_dir"' '"$ON_STOP"'", "timeout": 5}]}]'
-    settings=$(echo "$settings" | jq \
-        --argjson start_hook "$start_hook" \
-        --argjson stop_hook "$stop_hook" \
-        '.hooks //= {} |
-         .hooks.SessionStart = (.hooks.SessionStart // []) + $start_hook |
-         .hooks.Stop = (.hooks.Stop // []) + $stop_hook')
+
+    if [ "$has_start" -eq 0 ]; then
+        settings=$(append_hook_group "$settings" "SessionStart" "$start_hook")
+    fi
+    if [ "$has_stop" -eq 0 ]; then
+        settings=$(append_hook_group "$settings" "Stop" "$stop_hook")
+    fi
 
     validate_and_write "$settings" "$hooks_file" || return 1
     echo "  Hooks installed to $hooks_file"
