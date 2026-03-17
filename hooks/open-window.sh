@@ -72,9 +72,9 @@ case "$terminal" in
         window_id=$(
         osascript <<EOF
 -- Grid & font → pixel size (auto-adapt)
-set termCols to 40
-set termRows to 15
-set fontSize to 14
+set termCols to 70
+set termRows to 20
+set fontSize to 16
 -- Approximate cell metrics for monospace at given font size
 set charW to fontSize * 0.6
 set lineH to fontSize * 1.5
@@ -102,7 +102,9 @@ tell application "Ghostty"
     set newWindow to new window with configuration surfaceConfig
     set winId to id of newWindow
 end tell
+-- Resize by matching window title, fallback to front window
 set targetTitle to "$WINDOW_MATCH_TITLE"
+set didResize to false
 
 tell application "System Events"
     tell process "Ghostty"
@@ -112,12 +114,20 @@ tell application "System Events"
                     if name of targetWindow is targetTitle then
                         set position of targetWindow to {posX, posY}
                         set size of targetWindow to {winW, winH}
+                        set didResize to true
                         return winId
                     end if
                 end try
             end repeat
             delay 0.15
         end repeat
+        -- Fallback: resize the front window (most recently created)
+        if not didResize then
+            try
+                set position of front window to {posX, posY}
+                set size of front window to {winW, winH}
+            end try
+        end if
     end tell
 end tell
 

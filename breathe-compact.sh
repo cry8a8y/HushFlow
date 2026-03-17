@@ -84,8 +84,10 @@ H2_TICKS=$(sec_to_ticks "$HOLD2_DUR")
 CYCLE_TICKS=$((IN_TICKS + H1_TICKS + EX_TICKS + H2_TICKS))
 
 ease() {
-    local x=$1
-    echo $(( x * (2000 - x) / 1000 ))
+    # Sine ease-in-out: smooth acceleration + deceleration (mimics natural breathing)
+    local idx=$(( $1 * 16 / 1000 ))
+    [ "$idx" -gt 16 ] && idx=16
+    echo $(( (1000 - COS32[idx]) / 2 ))
 }
 
 # === Trig lookup (32 entries, sin/cos * 1000) ===
@@ -580,27 +582,27 @@ while true; do
     # Cycle counter
     cycle_num=$(( tick / CYCLE_TICKS + 1 ))
 
-    # Title (row 1) — always visible
+    # Title (row 1) — bold, anchoring element
     title="HushFlow"
     tc=$(( (PANE_W - ${#title}) / 2 + 1 ))
     [ "$tc" -lt 1 ] && tc=1
-    frame+="\033[1;1H\033[2K\033[1;${tc}H${fade_prefix}${color}${title}${RESET}"
+    frame+="\033[1;1H\033[2K\033[1;${tc}H${fade_prefix}\033[1m${color}${title}${RESET}"
 
-    # Subtitle (row 2) — random greeting, always visible
+    # Subtitle (row 2) — dimmed, recedes into background
     gc=$(( (PANE_W - ${#GREETING}) / 2 + 1 ))
     [ "$gc" -lt 1 ] && gc=1
     frame+="\033[2;1H\033[2K\033[2;${gc}H${fade_prefix}${DIM}${GREETING}${RESET}"
 
-    # Status (bottom row)
+    # Status (bottom row) — bold, primary instruction the eye follows
     status="${phase}... ${remaining_s}s"
     sc_pos=$(( (PANE_W - ${#status}) / 2 + 1 ))
-    frame+="\033[${PANE_H};1H\033[2K\033[${PANE_H};${sc_pos}H${fade_prefix}${color}${status}${RESET}"
+    frame+="\033[${PANE_H};1H\033[2K\033[${PANE_H};${sc_pos}H${fade_prefix}\033[1m${color}${status}${RESET}"
 
-    # Exercise name + cycle (row above bottom)
+    # Exercise name + cycle (row above bottom) — subdued, secondary info
     info_row=$((PANE_H - 1))
     info_text="${EX_NAME}  ·  Cycle ${cycle_num}"
     ic=$(( (PANE_W - ${#info_text}) / 2 + 1 ))
-    frame+="\033[${info_row};1H\033[2K\033[${info_row};${ic}H${fade_prefix}${DIM}${info_text}${RESET}"
+    frame+="\033[${info_row};1H\033[2K\033[${info_row};${ic}H${fade_prefix}${COLOR_MDIM}${info_text}${RESET}"
 
     printf '%b' "$frame"
     sleep 0.1

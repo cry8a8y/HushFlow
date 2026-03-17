@@ -46,7 +46,7 @@
 ## DEMO
 
 <p align="center">
-  <img src="../demo.gif" alt="HushFlow DEMO，顯示呼吸伴隨視窗動畫" width="720" />
+  <img src="../demo.gif" alt="HushFlow — constellation 動畫搭配諧振呼吸" width="720" />
 </p>
 
 ## 功能特色

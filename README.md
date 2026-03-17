@@ -3,12 +3,6 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/license-MIT-blue" alt="License" />
-  <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-brightgreen" alt="Platform" />
-  <img src="https://img.shields.io/badge/version-0.1.0-orange" alt="Version" />
-</p>
-
-<p align="center">
   <b>English</b> | <a href="docs/README.zh-TW.md">繁體中文</a> | <a href="docs/README.zh-CN.md">简体中文</a> | <a href="docs/README.ja.md">日本語</a>
 </p>
 
@@ -52,7 +46,7 @@ Works with **Claude Code**, **Gemini CLI**, and **Codex CLI**. Runs on **macOS**
 ## Demo
 
 <p align="center">
-  <img src="demo.gif" alt="HushFlow demo showing the breathing companion window" width="720" />
+  <img src="demo.gif" alt="HushFlow — constellation animation with coherent breathing" width="720" />
 </p>
 
 ## Features
@@ -98,6 +92,22 @@ cd HushFlow
 .\install.ps1
 ```
 
+## How It Works
+
+```mermaid
+flowchart TD
+    A[Send a prompt to your AI tool] --> B[Tool hook runs on-start.sh]
+    B --> C{enabled=true?}
+    C -- No --> Z[Exit immediately]
+    C -- Yes --> D[Create session marker file]
+    D --> E[Wait for configured delay]
+    E --> F[Open companion window or tmux UI]
+    F --> G[breathe-compact.sh renders the breathing animation]
+    G --> H[AI finishes]
+    H --> I[on-stop.sh removes marker and closes UI]
+    I --> J[Session directory is cleaned up]
+```
+
 ## Supported AI Tools
 
 | Tool | Start Hook | Stop Hook | Status |
@@ -109,9 +119,7 @@ cd HushFlow
 Install for a specific tool:
 
 ```bash
-./install.sh --target claude
-./install.sh --target gemini
-./install.sh --target codex
+hushflow install --target gemini
 ```
 
 ## Configuration
@@ -126,68 +134,29 @@ theme=teal
 animation=constellation
 ```
 
-### Exercises
-
-| # | Exercise | Pattern | Best For |
-|---|----------|---------|----------|
-| 0 | **Coherent Breathing** | 5.5s in / 5.5s out | Sustained HRV improvement |
-| 1 | **Physiological Sigh** | Double inhale / long exhale | Quick calm-down |
-| 2 | **Box Breathing** | 4s in / 4s hold / 4s out / 4s hold | Focus and concentration |
-| 3 | **4-7-8 Breathing** | 4s in / 7s hold / 8s out | Deep relaxation |
-
-### Themes
-
-| Theme | Description |
-|-------|-------------|
-| `teal` | Ocean teal — calm, flowing (default) |
-| `twilight` | Soft purple — evening meditation |
-| `amber` | Warm sunset — cozy and grounding |
-
-### Animations
-
-| Animation | Description |
-|-----------|-------------|
-| `constellation` | Twinkling star field that expands with breath (default) |
-| `ripple` | Concentric ripples radiating from center |
-| `wave` | Flowing sine wave with gradient fill |
-| `orbit` | Dual orbiting comets with trail effects |
-| `helix` | DNA-style double helix with crossing highlights |
-| `rain` | Gentle rainfall with splash and puddle effects |
-
 ### CLI Commands
 
 ```bash
-# Exercises
+# Set exercise
 hushflow config hrv            # Coherent Breathing
 hushflow config sigh           # Physiological Sigh
 hushflow config box            # Box Breathing
 hushflow config 478            # 4-7-8 Breathing
 
-# Themes
-hushflow theme teal            # Ocean teal
+# Set theme
 hushflow theme twilight        # Soft purple
-hushflow theme amber           # Warm sunset
 
-# Animations
-hushflow animation constellation  # Star field
-hushflow animation ripple         # Concentric ripples
-hushflow animation wave           # Sine wave
-hushflow animation orbit          # Orbiting comets
-hushflow animation helix          # Double helix
-hushflow animation rain           # Rainfall
+# Set animation
+hushflow animation orbit       # Orbiting comets
 ```
 
-Or use the scripts directly:
+In Claude Code, you can also use the `/hushflow` slash command for interactive settings.
 
-```bash
-./set-exercise.sh box
-./set-exercise.sh theme twilight
-./set-exercise.sh animation rain
-```
+## Advanced Customization
 
-### Slash Command
+### Plugin API (Experimental)
 
-In Claude Code, type `/hushflow` to view and change settings interactively.
+Place custom animation scripts in `~/.hushflow/plugins/`. Each plugin should define a `render_<name>()` function that appends ANSI escape codes to the `$frame` variable.
 
 ### Environment Variables
 
@@ -195,45 +164,20 @@ In Claude Code, type `/hushflow` to view and change settings interactively.
 |----------|---------|-------------|
 | `HUSHFLOW_UI_MODE` | `window` | `window`, `tmux-pane`, `tmux-popup`, `inline`, or `off` |
 | `HUSHFLOW_DELAY_SECONDS` | config `delay` | Override the startup delay |
-| `HUSHFLOW_TERMINAL` | auto-detect | Force a specific terminal emulator |
 | `HUSHFLOW_DEBUG` | off | Set to `1` to enable debug logging to `/tmp/hushflow-debug.log` |
 
-## UI Modes
+## Troubleshooting
 
-| Mode | Description |
-|------|-------------|
-| `window` (default) | Opens a small companion window using the best available terminal |
-| `tmux-pane` | Non-focused pane below current tmux session |
-| `tmux-popup` | Centered tmux popup (tmux 3.2+) |
-| `inline` | No window — background process only |
-| `off` | Hooks active but no visual output |
+If animations don't appear as expected, run the built-in diagnostic tool:
 
-## How It Works
-
-```mermaid
-flowchart TD
-    A[Send a prompt to your AI tool] --> B[Tool hook runs on-start.sh]
-    B --> C{enabled=true?}
-    C -- No --> Z[Exit immediately]
-    C -- Yes --> D[Create session temp dir and working marker]
-    D --> E[Wait for configured delay]
-    E --> F[Open companion window or tmux UI]
-    F --> G[breathe-compact.sh renders the breathing animation]
-    G --> H[AI finishes]
-    H --> I[on-stop.sh removes marker and closes UI]
-    I --> J[Session directory is cleaned up]
+```bash
+hushflow doctor
 ```
 
 ## Uninstall
 
 ```bash
-./install.sh --uninstall
-```
-
-Windows:
-
-```powershell
-.\install.ps1 -Uninstall
+hushflow uninstall
 ```
 
 ## Acknowledgments
