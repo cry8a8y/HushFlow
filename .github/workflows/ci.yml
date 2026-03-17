@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install jq
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y jq
+
+      - name: Run smoke tests
+        run: bash test/smoke-test.sh
+
+      - name: Syntax check all scripts
+        run: |
+          for f in breathe-compact.sh hooks/*.sh set-exercise.sh install.sh cli.sh doctor.sh lib/*.sh; do
+            bash -n "$f" || exit 1
+          done
+          echo "All scripts pass syntax check"
+
+      - name: Verify install produces valid JSON
+        run: |
+          # Simulate a fresh install to a temp settings file
+          tmpdir=$(mktemp -d)
+          mkdir -p "$tmpdir/.claude/commands"
+          echo '{}' > "$tmpdir/.claude/settings.json"
+
+          # Extract and run the jq merge logic
+          config_dir="$tmpdir/.claude/hushflow"
+          mkdir -p "$config_dir"
+          ON_START="$(pwd)/hooks/on-start.sh"
+          ON_STOP="$(pwd)/hooks/on-stop.sh"
+
+          start_hook='[{"hooks": [{"type": "command", "command": "HUSHFLOW_CONFIG_DIR='"$config_dir"' '"$ON_START"'", "async": true}]}]'
+          stop_hook='[{"hooks": [{"type": "command", "command": "HUSHFLOW_CONFIG_DIR='"$config_dir"' '"$ON_STOP"'", "async": true}]}]'
+
+          result=$(echo '{}' | jq \
+            --argjson start_hook "$start_hook" \
+            --argjson stop_hook "$stop_hook" \
+            '.hooks //= {} |
+             .hooks.UserPromptSubmit = (.hooks.UserPromptSubmit // []) + $start_hook |
+             .hooks.Stop = (.hooks.Stop // []) + $stop_hook')
+
+          echo "$result" | jq empty || { echo "FAIL: invalid JSON output"; exit 1; }
+          echo "Install JSON output is valid"
+          rm -rf "$tmpdir"

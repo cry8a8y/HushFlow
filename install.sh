@@ -1,136 +1,315 @@
 #!/bin/bash
 # Installer for HushFlow
-# Adds hooks to ~/.claude/settings.json
+# Supports: Claude Code, Gemini CLI, Codex CLI
+# Usage: ./install.sh [--target claude|gemini|codex] [--uninstall]
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SETTINGS_FILE="$HOME/.claude/settings.json"
 ON_START="$SCRIPT_DIR/hooks/on-start.sh"
 ON_STOP="$SCRIPT_DIR/hooks/on-stop.sh"
 
-# Handle --uninstall
-if [ "${1}" = "--uninstall" ]; then
-    echo "Uninstalling HushFlow hooks..."
-    if [ -f "$SETTINGS_FILE" ] && command -v jq &>/dev/null; then
-        settings=$(cat "$SETTINGS_FILE")
-        settings=$(echo "$settings" | jq \
-            --arg on_start "$ON_START" \
-            --arg on_stop "$ON_STOP" \
-            '(.hooks.UserPromptSubmit // []) |= [.[] | select(.hooks | all(.command != $on_start))] |
-             (.hooks.Stop // []) |= [.[] | select(.hooks | all(.command != $on_stop))] |
-             if .hooks.UserPromptSubmit == [] then del(.hooks.UserPromptSubmit) else . end |
-             if .hooks.Stop == [] then del(.hooks.Stop) else . end |
-             if .hooks == {} then del(.hooks) else . end')
-        echo "$settings" > "$SETTINGS_FILE"
-        echo "Hooks removed from $SETTINGS_FILE"
-    else
-        echo "Nothing to uninstall."
+# Legacy paths (for migration from Mindful-Claude)
+LEGACY_CONFIG_DIR="$HOME/.claude/mindful"
+LEGACY_COMMAND_FILE="$HOME/.claude/commands/mindful.md"
+
+# --- Helper functions ---
+
+ensure_config() {
+    local config_dir=$1
+    mkdir -p "$config_dir"
+    if [ ! -f "$config_dir/config" ]; then
+        printf 'enabled=true\nexercise=0\ndelay=5\ntheme=teal\nanimation=constellation\n' > "$config_dir/config"
+        echo "  Created config at $config_dir/config"
     fi
-    rm -f /tmp/mindful-claude-working /tmp/mindful-tmux-pane-id /tmp/mindful-exercise
-    rmdir /tmp/mindful-tmux-popup.lock 2>/dev/null
-    rm -rf "$HOME/.claude/mindful"
-    rm -f "$HOME/.claude/commands/mindful.md"
+}
+
+validate_and_write() {
+    local json="$1"
+    local dest="$2"
+    if ! echo "$json" | jq empty 2>/dev/null; then
+        echo "  ERROR: jq produced invalid JSON. Aborting write to $dest" >&2
+        return 1
+    fi
+    if [ -f "$dest" ]; then
+        cp "$dest" "$dest.backup"
+    fi
+    echo "$json" > "$dest"
+}
+
+install_claude() {
+    local settings_file="$HOME/.claude/settings.json"
+    local config_dir="$HOME/.claude/hushflow"
+    local command_file="$HOME/.claude/commands/hushflow.md"
+
+    echo "Installing for Claude Code..."
+    mkdir -p "$HOME/.claude" "$HOME/.claude/commands"
+
+    # Migrate legacy config
+    if [ -d "$LEGACY_CONFIG_DIR" ] && [ ! -d "$config_dir" ]; then
+        mv "$LEGACY_CONFIG_DIR" "$config_dir"
+    fi
+
+    ensure_config "$config_dir"
+
+    # Install slash command
+    cp "$SCRIPT_DIR/commands/hushflow.md" "$command_file"
+    rm -f "$LEGACY_COMMAND_FILE"
+    echo "  Installed /hushflow slash command"
+
+    # Start from existing settings or empty object
+    local settings
+    if [ -f "$settings_file" ]; then
+        settings=$(cat "$settings_file")
+    else
+        settings='{}'
+    fi
+
+    # Check if already installed
+    if echo "$settings" | jq -e ".hooks.UserPromptSubmit[]?.hooks[]? | select(.command | contains(\"on-start.sh\"))" &>/dev/null; then
+        echo "  Hooks already installed."
+        return
+    fi
+
+    # Build and merge hooks (pass config dir so the right tool's config is used)
+    local start_hook='[{"hooks": [{"type": "command", "command": "HUSHFLOW_CONFIG_DIR='"$config_dir"' '"$ON_START"'", "async": true}]}]'
+    local stop_hook='[{"hooks": [{"type": "command", "command": "HUSHFLOW_CONFIG_DIR='"$config_dir"' '"$ON_STOP"'", "async": true}]}]'
+    settings=$(echo "$settings" | jq \
+        --argjson start_hook "$start_hook" \
+        --argjson stop_hook "$stop_hook" \
+        '.hooks //= {} |
+         .hooks.UserPromptSubmit = (.hooks.UserPromptSubmit // []) + $start_hook |
+         .hooks.Stop = (.hooks.Stop // []) + $stop_hook')
+
+    # Validate and write
+    validate_and_write "$settings" "$settings_file" || return 1
+    echo "  Hooks installed to $settings_file"
+}
+
+install_gemini() {
+    local settings_file="$HOME/.gemini/settings.json"
+    local config_dir="$HOME/.gemini/hushflow"
+
+    echo "Installing for Gemini CLI..."
+    mkdir -p "$HOME/.gemini"
+    ensure_config "$config_dir"
+
+    local settings
+    if [ -f "$settings_file" ]; then
+        settings=$(cat "$settings_file")
+    else
+        settings='{}'
+    fi
+
+    # Check if already installed
+    if echo "$settings" | jq -e ".hooks.BeforeAgent[]?.hooks[]? | select(.command | contains(\"on-start.sh\"))" &>/dev/null; then
+        echo "  Hooks already installed."
+        return
+    fi
+
+    # Gemini uses BeforeAgent (start) and AfterAgent (stop)
+    local start_hook='[{"hooks": [{"type": "command", "command": "HUSHFLOW_CONFIG_DIR='"$config_dir"' '"$ON_START"'", "timeout": 60000}]}]'
+    local stop_hook='[{"hooks": [{"type": "command", "command": "HUSHFLOW_CONFIG_DIR='"$config_dir"' '"$ON_STOP"'", "timeout": 5000}]}]'
+    settings=$(echo "$settings" | jq \
+        --argjson start_hook "$start_hook" \
+        --argjson stop_hook "$stop_hook" \
+        '.hooks //= {} |
+         .hooks.BeforeAgent = (.hooks.BeforeAgent // []) + $start_hook |
+         .hooks.AfterAgent = (.hooks.AfterAgent // []) + $stop_hook')
+
+    validate_and_write "$settings" "$settings_file" || return 1
+    echo "  Hooks installed to $settings_file"
+}
+
+install_codex() {
+    local hooks_file="$HOME/.codex/hooks.json"
+    local config_dir="$HOME/.codex/hushflow"
+
+    echo "Installing for Codex CLI..."
+    mkdir -p "$HOME/.codex"
+    ensure_config "$config_dir"
+
+    local settings
+    if [ -f "$hooks_file" ]; then
+        settings=$(cat "$hooks_file")
+    else
+        settings='{}'
+    fi
+
+    # Check if already installed
+    if echo "$settings" | jq -e ".hooks.Stop[]?.hooks[]? | select(.command | contains(\"on-stop.sh\"))" &>/dev/null; then
+        echo "  Hooks already installed."
+        return
+    fi
+
+    # Codex has SessionStart and Stop (no BeforeAgent yet)
+    local start_hook='[{"hooks": [{"type": "command", "command": "HUSHFLOW_CONFIG_DIR='"$config_dir"' '"$ON_START"'", "timeout": 60}]}]'
+    local stop_hook='[{"hooks": [{"type": "command", "command": "HUSHFLOW_CONFIG_DIR='"$config_dir"' '"$ON_STOP"'", "timeout": 5}]}]'
+    settings=$(echo "$settings" | jq \
+        --argjson start_hook "$start_hook" \
+        --argjson stop_hook "$stop_hook" \
+        '.hooks //= {} |
+         .hooks.SessionStart = (.hooks.SessionStart // []) + $start_hook |
+         .hooks.Stop = (.hooks.Stop // []) + $stop_hook')
+
+    validate_and_write "$settings" "$hooks_file" || return 1
+    echo "  Hooks installed to $hooks_file"
+}
+
+uninstall_tool() {
+    local tool=$1
+    case "$tool" in
+        claude)
+            local sf="$HOME/.claude/settings.json"
+            if [ -f "$sf" ] && command -v jq &>/dev/null; then
+                local s=$(cat "$sf")
+                s=$(echo "$s" | jq \
+                    --arg on_start "$ON_START" --arg on_stop "$ON_STOP" \
+                    '(.hooks.UserPromptSubmit // []) |= [.[] | select(.hooks | all(.command | contains($on_start) | not))] |
+                     (.hooks.Stop // []) |= [.[] | select(.hooks | all(.command | contains($on_stop) | not))] |
+                     if .hooks.UserPromptSubmit == [] then del(.hooks.UserPromptSubmit) else . end |
+                     if .hooks.Stop == [] then del(.hooks.Stop) else . end |
+                     if .hooks == {} then del(.hooks) else . end')
+                echo "$s" > "$sf"
+                echo "  Removed Claude Code hooks"
+            fi
+            rm -rf "$HOME/.claude/hushflow"
+            rm -f "$HOME/.claude/commands/hushflow.md"
+            ;;
+        gemini)
+            local sf="$HOME/.gemini/settings.json"
+            if [ -f "$sf" ] && command -v jq &>/dev/null; then
+                local s=$(cat "$sf")
+                s=$(echo "$s" | jq \
+                    --arg on_start "$ON_START" --arg on_stop "$ON_STOP" \
+                    '(.hooks.BeforeAgent // []) |= [.[] | select(.hooks | all(.command | contains($on_start) | not))] |
+                     (.hooks.AfterAgent // []) |= [.[] | select(.hooks | all(.command | contains($on_stop) | not))] |
+                     if .hooks.BeforeAgent == [] then del(.hooks.BeforeAgent) else . end |
+                     if .hooks.AfterAgent == [] then del(.hooks.AfterAgent) else . end |
+                     if .hooks == {} then del(.hooks) else . end')
+                echo "$s" > "$sf"
+                echo "  Removed Gemini CLI hooks"
+            fi
+            rm -rf "$HOME/.gemini/hushflow"
+            ;;
+        codex)
+            local sf="$HOME/.codex/hooks.json"
+            if [ -f "$sf" ] && command -v jq &>/dev/null; then
+                local s=$(cat "$sf")
+                s=$(echo "$s" | jq \
+                    --arg on_start "$ON_START" --arg on_stop "$ON_STOP" \
+                    '(.hooks.SessionStart // []) |= [.[] | select(.hooks | all(.command | contains($on_start) | not))] |
+                     (.hooks.Stop // []) |= [.[] | select(.hooks | all(.command | contains($on_stop) | not))] |
+                     if .hooks.SessionStart == [] then del(.hooks.SessionStart) else . end |
+                     if .hooks.Stop == [] then del(.hooks.Stop) else . end |
+                     if .hooks == {} then del(.hooks) else . end')
+                echo "$s" > "$sf"
+                echo "  Removed Codex CLI hooks"
+            fi
+            rm -rf "$HOME/.codex/hushflow"
+            ;;
+    esac
+}
+
+# --- Main ---
+
+# Handle --uninstall
+if [[ " $* " == *" --uninstall "* ]]; then
+    echo "Uninstalling HushFlow..."
+    uninstall_tool claude
+    uninstall_tool gemini
+    uninstall_tool codex
+    # Clean up session directories
+    rm -rf /tmp/hushflow-*/ 2>/dev/null || true
+    # Legacy cleanup (pre-session-dir files)
+    rm -f /tmp/hushflow-working /tmp/hushflow-tmux-pane-id /tmp/hushflow-window-pid /tmp/hushflow-window-id /tmp/hushflow-exercise
+    rmdir /tmp/hushflow-ui.lock 2>/dev/null || true
+    rmdir /tmp/hushflow-tmux-popup.lock 2>/dev/null || true
     echo "Done."
     exit 0
 fi
 
-echo "HushFlow"
-echo "========"
+echo ""
+echo "  HushFlow"
+echo "  Turn AI thinking time into mindful breathing."
 echo ""
 
 # Check prerequisites
-if command -v tmux &>/dev/null && tmux show-option -g mouse 2>/dev/null | grep -q "off"; then
-    echo "Tip: Enable mouse scrolling in tmux for a better experience:"
-    echo "  echo 'set -g mouse on' >> ~/.tmux.conf && tmux source-file ~/.tmux.conf"
-    echo ""
-fi
-
 if ! command -v jq &>/dev/null; then
-    echo "Error: jq is required to install hooks."
-    echo "Install it with: brew install jq (macOS) or apt install jq (Linux)"
+    echo "Error: jq is required."
+    echo "Install: brew install jq (macOS) or apt install jq (Linux)"
     exit 1
 fi
 
 # Make scripts executable
-chmod +x "$SCRIPT_DIR/breathe.sh"
-chmod +x "$SCRIPT_DIR/breathe-compact.sh"
-chmod +x "$SCRIPT_DIR/set-exercise.sh"
-chmod +x "$SCRIPT_DIR/hooks/on-start.sh"
-chmod +x "$SCRIPT_DIR/hooks/on-stop.sh"
+chmod +x "$SCRIPT_DIR/breathe-compact.sh" "$SCRIPT_DIR/set-exercise.sh"
+chmod +x "$SCRIPT_DIR/hooks/on-start.sh" "$SCRIPT_DIR/hooks/on-stop.sh"
 chmod +x "$SCRIPT_DIR/hooks/open-tmux-popup.sh"
-chmod +x "$SCRIPT_DIR/hooks/open-standalone-window.sh"
+chmod +x "$SCRIPT_DIR/hooks/open-standalone-window.sh" 2>/dev/null || true
+chmod +x "$SCRIPT_DIR/hooks/open-window.sh"
+chmod +x "$SCRIPT_DIR/lib/detect-terminal.sh"
 
-# Create directories
-mkdir -p "$HOME/.claude"
-mkdir -p "$HOME/.claude/mindful"
-mkdir -p "$HOME/.claude/commands"
-
-# Create default config if it doesn't exist
-if [ ! -f "$HOME/.claude/mindful/config" ]; then
-    # Migrate exercise preference from old /tmp location
-    old_exercise=0
-    if [ -f "/tmp/mindful-exercise" ]; then
-        old_exercise=$(cat /tmp/mindful-exercise 2>/dev/null)
-        [ -z "$old_exercise" ] && old_exercise=0
-    fi
-    printf 'enabled=true\nexercise=%s\ndelay=5\n' "$old_exercise" > "$HOME/.claude/mindful/config"
-    echo "Created config at ~/.claude/mindful/config"
+# Determine targets
+target=""
+if [[ " $* " == *" --target "* ]]; then
+    target=$(echo "$@" | sed 's/.*--target //' | awk '{print $1}')
 fi
 
-# Install /mindful slash command
-cp "$SCRIPT_DIR/commands/mindful.md" "$HOME/.claude/commands/mindful.md"
-echo "Installed /mindful slash command"
+installed=0
 
-# Start from existing settings or empty object
-if [ -f "$SETTINGS_FILE" ]; then
-    settings=$(cat "$SETTINGS_FILE")
+if [ -n "$target" ]; then
+    # Install for specific target
+    case "$target" in
+        claude)  install_claude; installed=1 ;;
+        gemini)  install_gemini; installed=1 ;;
+        codex)   install_codex;  installed=1 ;;
+        *)       echo "Unknown target: $target"; echo "Options: claude, gemini, codex"; exit 1 ;;
+    esac
 else
-    settings='{}'
+    # Auto-detect: install for all available AI tools
+    if [ -d "$HOME/.claude" ] || command -v claude &>/dev/null; then
+        install_claude
+        installed=$((installed + 1))
+    fi
+    if [ -d "$HOME/.gemini" ] || command -v gemini &>/dev/null; then
+        install_gemini
+        installed=$((installed + 1))
+    fi
+    if [ -d "$HOME/.codex" ] || command -v codex &>/dev/null; then
+        install_codex
+        installed=$((installed + 1))
+    fi
+
+    if [ "$installed" -eq 0 ]; then
+        echo "No AI tools detected. Installing for Claude Code by default."
+        install_claude
+        installed=1
+    fi
 fi
 
-# Check if our hooks are already installed
-if echo "$settings" | jq -e ".hooks.UserPromptSubmit[]?.hooks[]? | select(.command == \"$ON_START\")" &>/dev/null; then
-    echo "Hooks are already installed."
+echo ""
+echo "Installed for $installed tool(s). Restart your AI tool for hooks to take effect."
+echo ""
+
+# Quick demo: show a 3-second breathing preview
+if [ -t 1 ]; then
+    echo "  Preview:"
     echo ""
-    echo "In Claude Code, type /mindful to toggle on/off or change settings."
-    exit 0
+    dots=("·" "✧" "✦" "✧" "·" " " " " " ")
+    for ((i=0; i<24; i++)); do
+        idx=$((i % 8))
+        line="    ${dots[$idx]}  ${dots[$(( (idx+2) % 8 ))]}  ${dots[$(( (idx+4) % 8 ))]}  ${dots[$(( (idx+6) % 8 ))]}"
+        printf "\r%s" "$line"
+        sleep 0.125
+    done
+    printf "\r                              \r"
+    echo ""
 fi
 
-# Build the hook entries
-start_hook='[{"hooks": [{"type": "command", "command": "'"$ON_START"'", "async": true}]}]'
-stop_hook='[{"hooks": [{"type": "command", "command": "'"$ON_STOP"'", "async": true}]}]'
-
-# Merge hooks into settings (append to existing arrays or create new ones)
-settings=$(echo "$settings" | jq \
-    --argjson start_hook "$start_hook" \
-    --argjson stop_hook "$stop_hook" \
-    '.hooks //= {} |
-     .hooks.UserPromptSubmit = (.hooks.UserPromptSubmit // []) + $start_hook |
-     .hooks.Stop = (.hooks.Stop // []) + $stop_hook')
-
-# Back up existing settings
-if [ -f "$SETTINGS_FILE" ]; then
-    cp "$SETTINGS_FILE" "$SETTINGS_FILE.backup"
-    echo "Backed up existing settings to $SETTINGS_FILE.backup"
-fi
-
-# Write updated settings
-echo "$settings" > "$SETTINGS_FILE"
-
-echo "Hooks installed to $SETTINGS_FILE"
+echo "Configuration:"
+echo "  $SCRIPT_DIR/set-exercise.sh          # List exercises & themes"
+echo "  $SCRIPT_DIR/set-exercise.sh theme teal  # Change theme"
+echo "  $SCRIPT_DIR/set-exercise.sh box         # Change exercise"
 echo ""
-echo "Restart Claude Code or start a new session for hooks to take effect."
-echo ""
-echo "Default UI mode is a standalone Ghostty window. To use tmux instead:"
-echo "  export MINDFUL_UI_MODE=tmux-pane   # or tmux-popup / off"
-echo ""
-echo "In Claude Code, type /mindful to toggle on/off or change settings."
-echo ""
-echo "To change the breathing exercise from the terminal:"
-echo "  $SCRIPT_DIR/set-exercise.sh hrv    # Coherent Breathing"
-echo "  $SCRIPT_DIR/set-exercise.sh sigh   # Physiological Sigh"
-echo "  $SCRIPT_DIR/set-exercise.sh box    # Box Breathing"
-echo "  $SCRIPT_DIR/set-exercise.sh 478    # 4-7-8 Breathing"
-echo ""
-echo "To uninstall, run: $SCRIPT_DIR/install.sh --uninstall"
+echo "Doctor:    $SCRIPT_DIR/doctor.sh"
+echo "Uninstall: $SCRIPT_DIR/install.sh --uninstall"

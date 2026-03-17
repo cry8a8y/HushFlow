@@ -1,159 +1,220 @@
-# HushFlow
+<p align="center">
+<pre align="center">
 
-Every prompt you send to Claude gives you 10-60+ seconds of dead time. Stop wasting it.
+            ·    ✦    ·    ✧    ·
+       ✧    ·    ·    ·    ✦    ·    ·
+  ·    ·    ✦    ·    ·    ·    ✧    ·    ·
+       ·    ✧    ·    ✦    ·    ·    ·
+            ·    ·    ✧    ·    ✦
 
-This extension turns Claude's thinking time into guided breathing exercises. It auto-launches when Claude starts working and disappears when it's done. You stay in flow, your nervous system gets a workout, and you never leave your coding session.
+      ╻ ╻ ╻ ╻ ┏━╸ ╻ ╻ ┏━╸ ╻   ┏━┓ ╻ ╻
+      ┣━┫ ┃ ┃ ┗━┓ ┣━┫ ┣╸  ┃   ┃ ┃ ┃╻┃
+      ╹ ╹ ┗━┛ ━━┛ ╹ ╹ ╹   ┗━╸ ┗━┛ ┗┻┛
 
-## Why
+   Turn AI thinking time into mindful breathing.
 
-Slow, structured breathing at ~5.5 breaths per minute increases heart rate variability (HRV), a key biomarker of stress resilience and cardiovascular health. Even brief sessions reduce cortisol and sharpen focus. Every prompt becomes a micro-session for your nervous system.
+</pre>
+</p>
 
-## What You Get
+<p align="center">
+  <b>English</b> | <a href="docs/README.zh-TW.md">繁體中文</a> | <a href="docs/README.zh-CN.md">简体中文</a> | <a href="docs/README.ja.md">日本語</a>
+</p>
 
-- **4 breathing exercises** (see below)
-- **4 animation styles**: Pulse (gradient bars), Ripples (concentric lines), Dots (scattered particles), Wave (bell curve)
-- **Auto-launch**: Breathing starts after a configurable delay (default 5s) when Claude is working
-- **Auto-dismiss**: Animation closes the moment Claude finishes
-- **Non-blocking**: By default opens in a separate Ghostty window; optional tmux pane/popup modes are still available
+---
 
-## Demo
+Every prompt you send to an AI coding assistant gives you 10–60+ seconds of idle time. HushFlow turns that wait into guided breathing exercises — auto-launches when the AI starts working, auto-dismisses when it's done.
 
-![HushFlow demo](demo.gif)
+Works with **Claude Code**, **Gemini CLI**, and **Codex CLI**. Runs on **macOS**, **Linux**, and **Windows**.
+
+## Features
+
+- **4 breathing exercises** — Coherent, Physiological Sigh, Box, 4-7-8
+- **6 animation styles** — Constellation, Ripple, Wave, Orbit, Helix, Rain
+- **3 color themes** — Teal, Twilight, Amber
+- **Auto-launch / auto-dismiss** — appears after configurable delay, closes when AI finishes
+- **Cross-platform** — Ghostty, Terminal.app, iTerm2, GNOME Terminal, xterm, Windows Terminal
+- **Non-blocking** — opens in a separate companion window; optional tmux and inline modes
 
 ## Quick Start
 
-Requires **Ghostty** on macOS for the standalone window mode. Optional **tmux** support is available for pane/popup mode.
+### One-line install
 
 ```bash
-git clone https://github.com/halluton/Mindful-Claude.git
-cd Mindful-Claude
+curl -fsSL https://raw.githubusercontent.com/cry8a8y/HushFlow/main/install-remote.sh | sh
+```
+
+### Or with npx
+
+```bash
+npx hushflow install
+```
+
+### Or manually
+
+```bash
+git clone https://github.com/cry8a8y/HushFlow.git
+cd HushFlow
 ./install.sh
 ```
 
-The installer adds hooks to `~/.claude/settings.json`, creates a config at `~/.claude/mindful/config`, and installs the `/mindful` slash command. Requires `jq`.
+The installer auto-detects which AI tools you have installed and configures hooks for all of them. Requires `jq`.
 
-Start a Claude Code session and the breathing animation will appear automatically in a compact Ghostty window after the configured delay.
+### Windows
 
-> **Tip:** If you prefer the original embedded feel, set `MINDFUL_UI_MODE=tmux-pane` before launching Claude inside tmux.
-
-## `/mindful` Slash Command
-
-Type `/mindful` in any Claude Code session to view status and change settings: toggle on/off, switch exercise, or adjust the delay.
-
-### Exercises
-
-| Exercise | Pattern | Best For |
-|---|---|---|
-| **Coherent Breathing** | 5.5s in / 5.5s out | Sustained HRV improvement |
-| **Physiological Sigh** | Double inhale / long exhale | Quick calm-down |
-| **Box Breathing** | 4s in / 4s hold / 4s out / 4s hold | Focus and concentration |
-| **4-7-8 Breathing** | 4s in / 7s hold / 8s out | Deep relaxation |
-
-## How It Works
-
+```powershell
+git clone https://github.com/cry8a8y/HushFlow.git
+cd HushFlow
+.\install.ps1
 ```
-You send a prompt to Claude Code
-         |
-         v
-    on-start.sh fires
-    |-- Checks ~/.claude/mindful/config, exits if disabled
-    |-- Creates marker file /tmp/mindful-claude-working
-    '-- Launches a delayed UI helper in background
-         |
-         v
-    helper waits 5 seconds
-    |-- If Claude is still working: opens breathe.sh in a Ghostty window
-    '-- If Claude already finished: exits silently
-         |
-         v
-    Claude finishes, on-stop.sh fires
-    |-- Removes marker file
-    '-- Stops the window/pane
+
+## Supported AI Tools
+
+| Tool | Start Hook | Stop Hook | Status |
+|------|-----------|-----------|--------|
+| **Claude Code** | `UserPromptSubmit` | `Stop` | Full support |
+| **Gemini CLI** | `BeforeAgent` | `AfterAgent` | Full support |
+| **Codex CLI** | `SessionStart` | `Stop` | Session-level |
+
+Install for a specific tool:
+
+```bash
+./install.sh --target claude
+./install.sh --target gemini
+./install.sh --target codex
 ```
 
 ## Configuration
 
-### Config File
-
-Settings are stored in `~/.claude/mindful/config`:
+Settings are stored per-tool at `~/.<tool>/hushflow/config`:
 
 ```
 enabled=true
 exercise=0
 delay=5
+theme=teal
+animation=constellation
 ```
+
+### Exercises
+
+| # | Exercise | Pattern | Best For |
+|---|----------|---------|----------|
+| 0 | **Coherent Breathing** | 5.5s in / 5.5s out | Sustained HRV improvement |
+| 1 | **Physiological Sigh** | Double inhale / long exhale | Quick calm-down |
+| 2 | **Box Breathing** | 4s in / 4s hold / 4s out / 4s hold | Focus and concentration |
+| 3 | **4-7-8 Breathing** | 4s in / 7s hold / 8s out | Deep relaxation |
+
+### Themes
+
+| Theme | Description |
+|-------|-------------|
+| `teal` | Ocean teal — calm, flowing (default) |
+| `twilight` | Soft purple — evening meditation |
+| `amber` | Warm sunset — cozy and grounding |
+
+### Animations
+
+| Animation | Description |
+|-----------|-------------|
+| `constellation` | Twinkling star field that expands with breath (default) |
+| `ripple` | Concentric ripples radiating from center |
+| `wave` | Flowing sine wave with gradient fill |
+| `orbit` | Dual orbiting comets with trail effects |
+| `helix` | DNA-style double helix with crossing highlights |
+| `rain` | Gentle rainfall with splash and puddle effects |
+
+### CLI Commands
+
+```bash
+# Exercises
+hushflow config hrv            # Coherent Breathing
+hushflow config sigh           # Physiological Sigh
+hushflow config box            # Box Breathing
+hushflow config 478            # 4-7-8 Breathing
+
+# Themes
+hushflow theme teal            # Ocean teal
+hushflow theme twilight        # Soft purple
+hushflow theme amber           # Warm sunset
+
+# Animations
+hushflow animation constellation  # Star field
+hushflow animation ripple         # Concentric ripples
+hushflow animation wave           # Sine wave
+hushflow animation orbit          # Orbiting comets
+hushflow animation helix          # Double helix
+hushflow animation rain           # Rainfall
+```
+
+Or use the scripts directly:
+
+```bash
+./set-exercise.sh box
+./set-exercise.sh theme twilight
+./set-exercise.sh animation rain
+```
+
+### Slash Command
+
+In Claude Code, type `/hushflow` to view and change settings interactively.
 
 ### Environment Variables
 
-Environment variables override the config file. Set these in `.zshrc` or `.bashrc`:
-
 | Variable | Default | Description |
-|---|---|---|
-| `MINDFUL_UI_MODE` | `window` | UI mode: `window`, `tmux-pane`, `tmux-popup`, or `off` |
-| `MINDFUL_DELAY_SECONDS` | config `delay` | Seconds to wait before showing breathing animation |
+|----------|---------|-------------|
+| `HUSHFLOW_UI_MODE` | `window` | `window`, `tmux-pane`, `tmux-popup`, `inline`, or `off` |
+| `HUSHFLOW_DELAY_SECONDS` | config `delay` | Override the startup delay |
+| `HUSHFLOW_TERMINAL` | auto-detect | Force a specific terminal emulator |
+| `HUSHFLOW_DEBUG` | off | Set to `1` to enable debug logging to `/tmp/hushflow-debug.log` |
 
-## Manual Installation
+## UI Modes
 
-If you don't want to use the installer, you can set it up manually.
+| Mode | Description |
+|------|-------------|
+| `window` (default) | Opens a small companion window using the best available terminal |
+| `tmux-pane` | Non-focused pane below current tmux session |
+| `tmux-popup` | Centered tmux popup (tmux 3.2+) |
+| `inline` | No window — background process only |
+| `off` | Hooks active but no visual output |
 
-1. Make scripts executable:
+## How It Works
+
+```
+You send a prompt to your AI tool
+         |
+         v
+    on-start.sh fires (via tool-specific hook)
+    |-- Checks config, exits if disabled
+    |-- Creates marker file /tmp/hushflow-working
+    '-- Launches companion window after delay
+         |
+         v
+    Breathing animation runs in companion window
+    |-- Detects terminal emulator automatically
+    |-- Renders themed animation at 10 FPS
+    '-- Checks marker file each tick
+         |
+         v
+    AI finishes, on-stop.sh fires
+    |-- Removes marker file
+    '-- Closes companion window
+```
+
+## Uninstall
 
 ```bash
-chmod +x breathe.sh set-exercise.sh hooks/*.sh
+./install.sh --uninstall
 ```
 
-2. Add the hooks to your Claude Code settings. Edit `~/.claude/settings.json`:
+Windows:
 
-```json
-{
-  "hooks": {
-    "UserPromptSubmit": [
-      {
-        "command": "/full/path/to/hooks/on-start.sh"
-      }
-    ],
-    "Stop": [
-      {
-        "command": "/full/path/to/hooks/on-stop.sh"
-      }
-    ]
-  }
-}
+```powershell
+.\install.ps1 -Uninstall
 ```
 
-Use full absolute paths.
+## Acknowledgments
 
-3. (Optional) Install the `/mindful` slash command:
-
-```bash
-mkdir -p ~/.claude/commands
-cp commands/mindful.md ~/.claude/commands/mindful.md
-```
-
-4. Change exercise from the terminal:
-
-```bash
-./set-exercise.sh hrv    # Coherent Breathing (5.5s in, 5.5s out)
-./set-exercise.sh sigh   # Physiological Sigh (double inhale + long exhale)
-./set-exercise.sh box    # Box Breathing (4s in, 4s hold, 4s out, 4s hold)
-./set-exercise.sh 478    # 4-7-8 Breathing (4s in, 7s hold, 8s out)
-```
-
-5. Start a Claude Code session.
-
-### UI Modes
-
-- `window` (default): launches a dedicated Ghostty window on macOS
-- `tmux-pane`: opens a non-focused pane below the current tmux client
-- `tmux-popup`: opens a centered tmux popup
-- `off`: keeps the hooks installed but disables visuals
-
-Example:
-
-```bash
-export MINDFUL_UI_MODE=tmux-pane
-claude
-```
+HushFlow is derived from [Mindful-Claude](https://github.com/halluton/Mindful-Claude) by Halluton, licensed under the MIT License. See [THIRD-PARTY-NOTICES](THIRD-PARTY-NOTICES) for the original license.
 
 ## License
 

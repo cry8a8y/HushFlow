@@ -1,0 +1,35 @@
+{
+  "name": "hushflow",
+  "version": "0.1.0",
+  "description": "Turn AI thinking time into mindful breathing. Works with Claude Code, Gemini CLI, and Codex CLI.",
+  "bin": {
+    "hushflow": "./cli.sh"
+  },
+  "files": [
+    "*.sh",
+    "*.ps1",
+    "hooks/",
+    "lib/",
+    "commands/",
+    "cli.sh",
+    "LICENSE",
+    "THIRD-PARTY-NOTICES"
+  ],
+  "keywords": [
+    "hushflow",
+    "breathing",
+    "mindfulness",
+    "claude",
+    "gemini",
+    "codex",
+    "cli",
+    "wellness",
+    "developer-tools"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cry8a8y/HushFlow.git"
+  },
+  "license": "MIT",
+  "author": "cry8a8y"
+}

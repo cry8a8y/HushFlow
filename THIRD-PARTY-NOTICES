@@ -1,6 +1,14 @@
+THIRD-PARTY SOFTWARE NOTICES
+
+HushFlow is derived from Mindful-Claude (https://github.com/halluton/Mindful-Claude).
+
+The following license applies to the original work:
+
+---
+
 MIT License
 
-Copyright (c) 2026 cry8a8y
+Copyright (c) 2026 Halluton
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

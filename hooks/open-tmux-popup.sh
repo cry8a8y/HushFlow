@@ -2,25 +2,26 @@
 # Delayed tmux popup launcher for breathing exercises
 # Called by on-start.sh, runs in background
 
-MARKER_FILE="/tmp/mindful-claude-working"
-LOCKFILE="/tmp/mindful-tmux-popup.lock"
+SESSION_DIR="${HUSHFLOW_SESSION_DIR:-/tmp/hushflow-$$}"
+MARKER_FILE="$SESSION_DIR/working"
+LOCKFILE="$SESSION_DIR/ui.lock"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-BREATHE_SCRIPT="$SCRIPT_DIR/breathe.sh"
+BREATHE_SCRIPT="$SCRIPT_DIR/breathe-compact.sh"
 
 # Read config (env vars override config file, config file overrides defaults)
-CONFIG_FILE="$HOME/.claude/mindful/config"
+CONFIG_FILE="${HUSHFLOW_CONFIG_DIR:-$HOME/.claude/hushflow}/config"
 config_delay=""
 if [ -f "$CONFIG_FILE" ]; then
     config_delay=$(grep "^delay=" "$CONFIG_FILE" 2>/dev/null | cut -d= -f2)
 fi
 
 # Options: "pane" (default, non-blocking), "popup" (blocking), "off"
-MINDFUL_TMUX_UI="${MINDFUL_TMUX_UI:-pane}"
-MINDFUL_DELAY_SECONDS="${MINDFUL_DELAY_SECONDS:-${config_delay:-5}}"
-PANE_ID_FILE="/tmp/mindful-tmux-pane-id"
+HUSHFLOW_TMUX_UI="${HUSHFLOW_TMUX_UI:-pane}"
+HUSHFLOW_DELAY_SECONDS="${HUSHFLOW_DELAY_SECONDS:-${config_delay:-5}}"
+PANE_ID_FILE="$SESSION_DIR/tmux-pane-id"
 
 # Exit if UI mode is off
-if [ "$MINDFUL_TMUX_UI" = "off" ]; then
+if [ "$HUSHFLOW_TMUX_UI" = "off" ]; then
     exit 0
 fi
 
@@ -42,7 +43,7 @@ fi
 client=$(tmux display-message -p '#{client_tty}')
 
 # Wait for the configured delay
-sleep "$MINDFUL_DELAY_SECONDS"
+sleep "$HUSHFLOW_DELAY_SECONDS"
 
 # Re-check if Claude is still working
 if [ ! -f "$MARKER_FILE" ]; then
@@ -62,7 +63,7 @@ cleanup() {
 trap cleanup EXIT
 
 # Open UI based on mode
-if [ "$MINDFUL_TMUX_UI" = "pane" ]; then
+if [ "$HUSHFLOW_TMUX_UI" = "pane" ]; then
     # Split a small pane at bottom, don't focus it (-d)
     # -l 12: 12 lines tall
     # -d: don't switch focus
