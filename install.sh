@@ -65,6 +65,15 @@ check_terminal_color() {
     echo ""
 }
 
+ensure_config() {
+    local config_dir=$1
+    mkdir -p "$config_dir"
+    if [ ! -f "$config_dir/config" ]; then
+        printf 'enabled=true\nexercise=0\ndelay=5\ntheme=teal\nanimation=constellation\n' > "$config_dir/config"
+        echo "  Created config at $config_dir/config"
+    fi
+}
+
 # --- Main ---
 
 check_terminal_color

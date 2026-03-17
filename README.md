@@ -158,7 +158,16 @@ hushflow animation orbit       # Orbiting comets
 
 ### 🧩 Plugin API (Experimental)
 
-Place custom animation scripts in `~/.hushflow/plugins/`. Each plugin should define a `render_<name>()` function that appends ANSI escape codes to the `$frame` variable.
+Create custom animations by placing scripts in `~/.hushflow/plugins/`. Each plugin defines a `render_<name>()` function that appends ANSI escape codes to the `$frame` variable.
+
+```bash
+# Install the example plugin
+mkdir -p ~/.hushflow/plugins
+cp plugins/example-pulse.sh ~/.hushflow/plugins/pulse.sh
+hushflow animation pulse
+```
+
+See the [Plugin API documentation](docs/PLUGIN-API.md) for available variables, trig tables, color palette, and performance tips.
 
 ### 🌐 Environment Variables
 

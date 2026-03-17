@@ -39,7 +39,7 @@ Each plugin defines a `render_<name>()` function. When `animation=<name>` is set
 └─────────────────────────────────────────────┘
 ```
 
-Your `render_<name>()` function only draws the animation area (rows 2 to `PANE_H - 2`). The engine handles title, breathing status, info line, fade-in, and frame flushing.
+Your `render_<name>()` function only draws the animation area (rows 4 to `PANE_H - 2`). The engine handles title, breathing status, info line, fade-in, and frame flushing.
 
 ## Available Variables
 
@@ -135,7 +135,7 @@ Activate: `hushflow animation myanimation`
 
 2. **Append to `$frame`**: Do NOT `echo` or `printf` directly. The engine flushes `$frame` as a single write to avoid flicker.
 
-3. **Stay in bounds**: Draw only in rows 2 to `PANE_H - 2`. Row 1 is the title, row `PANE_H` is the status line. Columns 1 to `PANE_W`.
+3. **Stay in bounds**: Draw only in rows 4 to `PANE_H - 2`. Row 1 is the title, row `PANE_H` is the status line. Columns 1 to `PANE_W`.
 
 4. **Use `progress` for breathing sync**: Scale your animation intensity with `progress` (0 = exhale → 1000 = inhale). This keeps your animation in sync with the breathing guide.
 
