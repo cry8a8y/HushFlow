@@ -45,7 +45,7 @@ render_pulse() {
             local col=$(( center_col + r * COS64[si] * 2 / 1000 ))
 
             # Bounds check: stay within drawable area (row 2 to H-1)
-            if [ "$row" -ge 2 ] && [ "$row" -lt "$PANE_H" ] \
+            if [ "$row" -ge 4 ] && [ "$row" -lt "$PANE_H" ] \
             && [ "$col" -ge 1 ] && [ "$col" -le "$PANE_W" ]; then
                 frame+="\033[${row};${col}H${clr}${sym}${RESET}"
             fi

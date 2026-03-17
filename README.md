@@ -14,13 +14,13 @@
 
 ---
 
-Every prompt you send to an AI coding assistant gives you 10–60+ seconds of idle time. HushFlow turns that wait into guided breathing exercises — auto-launches when the AI starts working, auto-dismisses when it's done.
+Every prompt you send to an AI coding assistant gives you 10–60+ seconds of idle time. **HushFlow** turns that wait into guided breathing exercises — auto-launches when the AI starts working, auto-dismisses when it's done.
 
-**Transform AI wait time into a moment of zen.**
+**Transform AI wait time into a moment of zen.** 🧘‍♂️
 
 Works with **Claude Code**, **Gemini CLI**, and **Codex CLI**. Runs on **macOS**, **Linux**, and **Windows**.
 
-## Quick Snapshot
+## ⚡ Quick Snapshot
 
 <table>
   <tr>
@@ -43,38 +43,38 @@ Works with **Claude Code**, **Gemini CLI**, and **Codex CLI**. Runs on **macOS**
   </tr>
 </table>
 
-## Demo
+## 📺 Demo
 
 <p align="center">
   <img src="demo.gif" alt="HushFlow — constellation animation with coherent breathing" width="720" />
 </p>
 
-## Features
+## ✨ Features
 
-- **4 breathing exercises** — Coherent, Physiological Sigh, Box, 4-7-8
-- **6 animation styles** — Constellation, Ripple, Wave, Orbit, Helix, Rain
-- **3 color themes** — Teal, Twilight, Amber
-- **Non-blocking** — Runs in background/separate window; zero impact on AI tool output.
-- **Pro Graphics** — High-performance Bash engine using SIN64 trig lookups for 10fps no-flicker rendering.
-- **Plugin API** — Support for custom animations via `~/.hushflow/plugins/`.
-- **Auto-launch / auto-dismiss** — Appears after configurable delay, closes when AI finishes.
-- **Cross-platform** — Ghostty, Terminal.app, iTerm2, GNOME Terminal, xterm, Windows Terminal.
+- 🧘 **4 breathing exercises** — Coherent, Physiological Sigh, Box, 4-7-8
+- 🎭 **6 animation styles** — Constellation, Ripple, Wave, Orbit, Helix, Rain
+- 🌈 **3 color themes** — Teal, Twilight, Amber
+- 🚀 **Non-blocking** — Runs in background/separate window; zero impact on AI tool output.
+- 📉 **Pro Graphics** — High-performance Bash engine using SIN64 trig lookups for 10fps no-flicker rendering.
+- 🔌 **Plugin API** — Support for custom animations via `~/.hushflow/plugins/`.
+- 🤖 **Auto-launch / auto-dismiss** — Appears after configurable delay, closes when AI finishes.
+- 💻 **Cross-platform** — Ghostty, Terminal.app, iTerm2, GNOME Terminal, xterm, Windows Terminal.
 
-## Quick Start
+## 🚀 Quick Start
 
-### Recommended: One-line install
+### 📦 Recommended: One-line install
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/cry8a8y/HushFlow/main/install-remote.sh | sh
 ```
 
-### With npx
+### 🛠️ With npx
 
 ```bash
 npx hushflow install
 ```
 
-### Manually
+### 📖 Manually
 
 ```bash
 git clone https://github.com/cry8a8y/HushFlow.git
@@ -82,9 +82,10 @@ cd HushFlow
 ./install.sh
 ```
 
-Requires `jq` for JSON configuration management.
+> [!NOTE]
+> Requires `jq` for JSON configuration management.
 
-### Windows
+### 🪟 Windows
 
 ```powershell
 git clone https://github.com/cry8a8y/HushFlow.git
@@ -92,7 +93,7 @@ cd HushFlow
 .\install.ps1
 ```
 
-## How It Works
+## 🧠 How It Works
 
 ```mermaid
 flowchart TD
@@ -108,13 +109,13 @@ flowchart TD
     I --> J[Session directory is cleaned up]
 ```
 
-## Supported AI Tools
+## 🛠️ Supported AI Tools
 
-| Tool | Start Hook | Stop Hook | Status |
+| Tool | 🟢 Start Hook | 🔴 Stop Hook | Status |
 |------|-----------|-----------|--------|
-| **Claude Code** | `UserPromptSubmit` | `Stop` | Full support |
-| **Gemini CLI** | `BeforeAgent` | `AfterAgent` | Full support |
-| **Codex CLI** | `SessionStart` | `Stop` | Session-level |
+| **Claude Code** | `UserPromptSubmit` | `Stop` | ✅ Full support |
+| **Gemini CLI** | `BeforeAgent` | `AfterAgent` | ✅ Full support |
+| **Codex CLI** | `SessionStart` | `Stop` | ⏳ Session-level |
 
 Install for a specific tool:
 
@@ -122,11 +123,11 @@ Install for a specific tool:
 hushflow install --target gemini
 ```
 
-## Configuration
+## ⚙️ Configuration
 
 Settings are stored per-tool at `~/.<tool>/hushflow/config`:
 
-```
+```ini
 enabled=true
 exercise=0
 delay=5
@@ -134,7 +135,7 @@ theme=teal
 animation=constellation
 ```
 
-### CLI Commands
+### ⌨️ CLI Commands
 
 ```bash
 # Set exercise
@@ -150,11 +151,12 @@ hushflow theme twilight        # Soft purple
 hushflow animation orbit       # Orbiting comets
 ```
 
-In Claude Code, you can also use the `/hushflow` slash command for interactive settings.
+> [!TIP]
+> In Claude Code, you can also use the `/hushflow` slash command for interactive settings.
 
-## Advanced Customization
+## 🛠️ Advanced Customization
 
-### Plugin API (Experimental)
+### 🧩 Plugin API (Experimental)
 
 Create custom animations by placing scripts in `~/.hushflow/plugins/`. Each plugin defines a `render_<name>()` function that appends ANSI escape codes to the `$frame` variable.
 
@@ -167,7 +169,7 @@ hushflow animation pulse
 
 See the [Plugin API documentation](docs/PLUGIN-API.md) for available variables, trig tables, color palette, and performance tips.
 
-### Environment Variables
+### 🌐 Environment Variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
@@ -175,7 +177,7 @@ See the [Plugin API documentation](docs/PLUGIN-API.md) for available variables, 
 | `HUSHFLOW_DELAY_SECONDS` | config `delay` | Override the startup delay |
 | `HUSHFLOW_DEBUG` | off | Set to `1` to enable debug logging to `/tmp/hushflow-debug.log` |
 
-## Troubleshooting
+## 🔍 Troubleshooting
 
 If animations don't appear as expected, run the built-in diagnostic tool:
 
@@ -183,16 +185,16 @@ If animations don't appear as expected, run the built-in diagnostic tool:
 hushflow doctor
 ```
 
-## Uninstall
+## 🗑️ Uninstall
 
 ```bash
 hushflow uninstall
 ```
 
-## Acknowledgments
+## 💖 Acknowledgments
 
 HushFlow is derived from [Mindful-Claude](https://github.com/halluton/Mindful-Claude) by Halluton, licensed under the MIT License. See [THIRD-PARTY-NOTICES](THIRD-PARTY-NOTICES) for the original license.
 
-## License
+## 📄 License
 
 MIT. See [LICENSE](LICENSE) for details.
