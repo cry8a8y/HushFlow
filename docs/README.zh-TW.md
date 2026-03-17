@@ -14,13 +14,13 @@
 
 ---
 
-每次你送出 prompt 給 AI 編程助手，都會有 10～60 秒以上的等待時間。HushFlow 把這段空白變成引導式呼吸練習 —— AI 開始工作時自動啟動，完成時自動關閉。
+每次你送出 prompt 給 AI 編程助手，都會有 10–60 秒以上的等待時間。**HushFlow** 把這段空白變成引導式呼吸練習 —— AI 開始工作時自動啟動，完成時自動關閉。
 
-**將 AI 的等待時間，轉化為片刻的寧靜。**
+**將 AI 的等待時間，轉化為片刻的正念寧靜。** 🧘‍♂️
 
 支援 **Claude Code**、**Gemini CLI** 和 **Codex CLI**。可在 **macOS**、**Linux** 和 **Windows** 上運行。
 
-## 一眼看懂
+## ⚡ 一眼看懂
 
 <table>
   <tr>
@@ -43,38 +43,38 @@
   </tr>
 </table>
 
-## DEMO
+## 📺 DEMO
 
 <p align="center">
   <img src="../demo.gif" alt="HushFlow — constellation 動畫搭配諧振呼吸" width="720" />
 </p>
 
-## 功能特色
+## ✨ 功能特色
 
-- **4 種呼吸練習** — 諧振呼吸、生理嘆息、箱式呼吸、4-7-8 呼吸
-- **6 種動畫風格** — 星座、漣漪、波浪、軌道、螺旋、落雨
-- **3 種色彩主題** — 海洋青、暮光紫、琥珀暖
-- **不干擾工作** — 於獨立視窗運行；對 AI 工具的輸出零影響。
-- **專業渲染** — 高效能 Bash 引擎，使用 SIN64 查找表實現 10fps 無閃爍動畫。
-- **外掛支援 (Plugin API)** — 支援透過 `~/.hushflow/plugins/` 自定義動畫。
-- **自動啟動 / 自動關閉** — 可設定延遲啟動，AI 完成後自動消失。
-- **跨平台** — Ghostty、Terminal.app、iTerm2、GNOME Terminal、xterm、Windows Terminal。
+- 🧘 **4 種呼吸練習** — 諧振呼吸、生理嘆息、箱式呼吸、4-7-8 呼吸
+- 🎭 **6 種動畫風格** — 星座、漣漪、波浪、軌道、螺旋、落雨
+- 🌈 **3 種色彩主題** — 海洋青、暮光紫、琥珀暖
+- 🚀 **不干擾工作** — 於獨立視窗運行；對 AI 工具的輸出零影響。
+- 📉 **專業渲染** — 高效能 Bash 引擎，使用 SIN64 查找表實現 10fps 無閃爍動畫。
+- 🔌 **外掛支援 (Plugin API)** — 支援透過 `~/.hushflow/plugins/` 自定義動畫。
+- 🤖 **自動啟動 / 自動關閉** — 可設定延遲啟動，AI 完成後自動消失。
+- 💻 **跨平台** — Ghostty、Terminal.app、iTerm2、GNOME Terminal、xterm、Windows Terminal。
 
-## 快速開始
+## 🚀 快速開始
 
-### 推薦：一行安裝
+### 📦 推薦：一行安裝
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/cry8a8y/HushFlow/main/install-remote.sh | sh
 ```
 
-### 使用 npx
+### 🛠️ 使用 npx
 
 ```bash
 npx hushflow install
 ```
 
-### 手動安裝
+### 📖 手動安裝
 
 ```bash
 git clone https://github.com/cry8a8y/HushFlow.git
@@ -82,9 +82,10 @@ cd HushFlow
 ./install.sh
 ```
 
-需要安裝 `jq` 以管理 JSON 設定檔。
+> [!NOTE]
+> 需要安裝 `jq` 以管理 JSON 設定檔。
 
-### Windows
+### 🪟 Windows
 
 ```powershell
 git clone https://github.com/cry8a8y/HushFlow.git
@@ -92,7 +93,7 @@ cd HushFlow
 .\install.ps1
 ```
 
-## 運作原理
+## 🧠 運作原理
 
 ```mermaid
 flowchart TD
@@ -108,13 +109,13 @@ flowchart TD
     I --> J[清理 session 目錄]
 ```
 
-## 支援的 AI 工具
+## 🛠️ 支援的 AI 工具
 
-| 工具 | 啟動 Hook | 停止 Hook | 狀態 |
+| 工具 | 🟢 啟動 Hook | 🔴 停止 Hook | 狀態 |
 |------|----------|----------|------|
-| **Claude Code** | `UserPromptSubmit` | `Stop` | 完整支援 |
-| **Gemini CLI** | `BeforeAgent` | `AfterAgent` | 完整支援 |
-| **Codex CLI** | `SessionStart` | `Stop` | Session 層級 |
+| **Claude Code** | `UserPromptSubmit` | `Stop` | ✅ 完整支援 |
+| **Gemini CLI** | `BeforeAgent` | `AfterAgent` | ✅ 完整支援 |
+| **Codex CLI** | `SessionStart` | `Stop` | ⏳ Session 層級 |
 
 指定安裝特定工具：
 
@@ -122,11 +123,11 @@ flowchart TD
 hushflow install --target gemini
 ```
 
-## 設定
+## ⚙️ 設定
 
 設定檔位於各工具目錄下 `~/.<tool>/hushflow/config`：
 
-```
+```ini
 enabled=true
 exercise=0
 delay=5
@@ -134,7 +135,7 @@ theme=teal
 animation=constellation
 ```
 
-### CLI 指令
+### ⌨️ CLI 指令
 
 ```bash
 # 設定呼吸練習
@@ -150,24 +151,18 @@ hushflow theme twilight        # 暮光紫
 hushflow animation orbit       # 雙彗星軌道
 ```
 
-在 Claude Code 中，也可以使用 `/hushflow` 指令進行互動式設定。
+> [!TIP]
+> 在 Claude Code 中，也可以使用 `/hushflow` 指令進行互動式設定。
 
-## 進階自定義
+## 🛠️ 進階自定義
 
-### 外掛 API (實驗性)
+### 🧩 外掛 API (實驗性)
 
 將自定義動畫腳本放置於 `~/.hushflow/plugins/`。每個外掛定義一個 `render_<name>()` 函數，將 ANSI 轉義碼附加至 `$frame` 變數中。
 
-```bash
-# 安裝範例外掛
-mkdir -p ~/.hushflow/plugins
-cp plugins/example-pulse.sh ~/.hushflow/plugins/pulse.sh
-hushflow animation pulse
-```
-
 詳見 [Plugin API 文件](PLUGIN-API.md)，包含可用變數、三角函數表、色彩設定與效能建議。
 
-### 環境變數
+### 🌐 環境變數
 
 | 變數 | 預設值 | 說明 |
 |------|--------|------|
@@ -175,7 +170,7 @@ hushflow animation pulse
 | `HUSHFLOW_DELAY_SECONDS` | 設定檔中的 `delay` | 覆寫啟動延遲時間 |
 | `HUSHFLOW_DEBUG` | 關閉 | 設為 `1` 啟用除錯日誌，輸出至 `/tmp/hushflow-debug.log` |
 
-## 疑難排解
+## 🔍 疑難排解
 
 如果動畫未如預期出現，請執行內建的診斷工具：
 
@@ -183,16 +178,16 @@ hushflow animation pulse
 hushflow doctor
 ```
 
-## 解除安裝
+## 🗑️ 解除安裝
 
 ```bash
 hushflow uninstall
 ```
 
-## 致謝
+## 💖 致謝
 
 HushFlow 衍生自 [Mindful-Claude](https://github.com/halluton/Mindful-Claude)（作者：Halluton），基於 MIT 授權。詳見 [THIRD-PARTY-NOTICES](../THIRD-PARTY-NOTICES)。
 
-## 授權
+## 📄 授權
 
 MIT。詳見 [LICENSE](../LICENSE)。

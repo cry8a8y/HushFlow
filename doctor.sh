@@ -147,9 +147,27 @@ echo ""
 
 # --- Terminal detection ---
 echo "Terminal detection:"
-source "$SCRIPT_DIR/lib/detect-terminal.sh" 2>/dev/null
-terminal=$(detect_terminal 2>/dev/null || echo "unknown")
-ok "Detected: $terminal"
+if [ -f "$SCRIPT_DIR/lib/detect-terminal.sh" ]; then
+    source "$SCRIPT_DIR/lib/detect-terminal.sh" 2>/dev/null
+    terminal=$(detect_terminal 2>/dev/null || echo "unknown")
+    ok "Detected: $terminal"
+else
+    ok "Terminal: $TERM"
+fi
+
+# TrueColor check
+if [ "$COLORTERM" = "truecolor" ] || [ "$COLORTERM" = "24bit" ]; then
+    ok "TrueColor: Supported (COLORTERM=$COLORTERM)"
+else
+    case "$TERM" in
+        iterm*|ghostty*|wezterm*|alacritty*|kitty*)
+            ok "TrueColor: Supported via $TERM"
+            ;;
+        *)
+            warn "TrueColor: Not detected — colors may look grainy (try Ghostty, iTerm2, or WezTerm)"
+            ;;
+    esac
+fi
 
 echo ""
 

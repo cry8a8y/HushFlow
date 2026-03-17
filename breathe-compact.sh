@@ -20,6 +20,14 @@ case "${theme:-teal}" in
     amber)    C_B='255;224;178' C_D='245;124;0'  C_MID='250;174;89'  C_MDIM='205;160;114' C_DIM='161;136;127' ;;
     *)        C_B='128;203;196' C_D='0;121;107'  C_MID='64;162;151'  C_MDIM='90;144;140'  C_DIM='120;144;156' ;;
 esac
+
+# Environment variable overrides (e.g., HUSHFLOW_COLOR_IN='255;0;0')
+[ -n "${HUSHFLOW_COLOR_IN:-}" ] && C_B="$HUSHFLOW_COLOR_IN"
+[ -n "${HUSHFLOW_COLOR_OUT:-}" ] && C_D="$HUSHFLOW_COLOR_OUT"
+[ -n "${HUSHFLOW_COLOR_MID:-}" ] && C_MID="$HUSHFLOW_COLOR_MID"
+[ -n "${HUSHFLOW_COLOR_MDIM:-}" ] && C_MDIM="$HUSHFLOW_COLOR_MDIM"
+[ -n "${HUSHFLOW_COLOR_DIM:-}" ] && C_DIM="$HUSHFLOW_COLOR_DIM"
+
 COLOR_IN="\033[38;2;${C_B}m"
 COLOR_OUT="\033[38;2;${C_D}m"
 COLOR_MID="\033[38;2;${C_MID}m"

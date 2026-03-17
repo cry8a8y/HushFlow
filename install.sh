@@ -17,28 +17,57 @@ LEGACY_COMMAND_FILE="$HOME/.claude/commands/mindful.md"
 
 check_dependencies() {
     if ! command -v jq &>/dev/null; then
-        echo "Error: 'jq' is not installed." >&2
+        echo "⚠️  'jq' is not installed." >&2
         echo "HushFlow requires 'jq' to manage settings.json for Claude/Gemini." >&2
+        
+        local install_cmd=""
         if [[ "$OSTYPE" == "darwin"* ]]; then
-            echo "Install it with: brew install jq" >&2
+            install_cmd="brew install jq"
         elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-            echo "Install it with: sudo apt-get install jq (Ubuntu/Debian) or sudo yum install jq (RHEL/CentOS)" >&2
+            if command -v apt-get &>/dev/null; then
+                install_cmd="sudo apt-get update && sudo apt-get install -y jq"
+            elif command -v yum &>/dev/null; then
+                install_cmd="sudo yum install -y jq"
+            fi
         fi
-        exit 1
+
+        if [ -n "$install_cmd" ]; then
+            printf "Would you like to install it now? (y/N): "
+            read -r ans
+            if [[ "$ans" =~ ^[Yy]$ ]]; then
+                echo "Running: $install_cmd"
+                eval "$install_cmd"
+            else
+                echo "Please install 'jq' manually and run this script again." >&2
+                exit 1
+            fi
+        else
+            echo "Please install 'jq' manually and run this script again." >&2
+            exit 1
+        fi
     fi
 }
 
-ensure_config() {
-    local config_dir=$1
-    mkdir -p "$config_dir"
-    if [ ! -f "$config_dir/config" ]; then
-        printf 'enabled=true\nexercise=0\ndelay=5\ntheme=teal\nanimation=constellation\n' > "$config_dir/config"
-        echo "  Created config at $config_dir/config"
+check_terminal_color() {
+    # Check for TrueColor (24-bit) support
+    if [ "$COLORTERM" = "truecolor" ] || [ "$COLORTERM" = "24bit" ]; then
+        return 0
     fi
+    
+    # Some terminals don't set COLORTERM but support it
+    case "$TERM" in
+        iterm*|ghostty*|wezterm*|alacritty*|kitty*) return 0 ;;
+    esac
+
+    echo "💡 Note: Your terminal might not support TrueColor (24-bit)."
+    echo "   HushFlow animations look best with TrueColor enabled."
+    echo "   If animations look grainy, try using a modern terminal like Ghostty, iTerm2, or WezTerm."
+    echo ""
 }
 
 # --- Main ---
 
+check_terminal_color
 check_dependencies
 
 validate_and_write() {
