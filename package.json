@@ -1,11 +1,12 @@
 {
   "name": "hushflow",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Turn AI thinking time into mindful breathing. Works with Claude Code, Gemini CLI, and Codex CLI.",
   "bin": {
-    "hushflow": "./cli.sh"
+    "hushflow": "./bin/hushflow.js"
   },
   "files": [
+    "bin/",
     "*.sh",
     "*.ps1",
     "hooks/",
