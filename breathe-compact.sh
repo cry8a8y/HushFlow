@@ -293,7 +293,15 @@ read_size() {
 }
 read_size
 
-cleanup() { printf '\033[?25h\033[0m\033[2J'; }
+cleanup() {
+    printf '\033[?25h\033[0m\033[2J'
+    # Auto-close Ghostty window (avoids "Press any key to close" message)
+    if [ -f "$SESSION_DIR/window-id" ] && [ -d "/Applications/Ghostty.app" ]; then
+        local wid
+        wid=$(cat "$SESSION_DIR/window-id" 2>/dev/null || true)
+        [ -n "$wid" ] && osascript -e "tell application \"Ghostty\" to close (window id \"$wid\")" &>/dev/null &
+    fi
+}
 trap 'cleanup' EXIT
 trap read_size WINCH
 printf '\033]0;%s\a\033[?25l\033[2J' "$WINDOW_TITLE"
