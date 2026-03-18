@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "HUSHFLOW_CONFIG_DIR='/tmp/test' /tmp/test/hooks/on-start.sh",
+            "async": true
+          }
+        ]
+      }
+    ]
+  }
+}

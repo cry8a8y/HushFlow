@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  test:
+  test-unix:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
@@ -22,6 +22,9 @@ jobs:
 
       - name: Run smoke tests
         run: bash test/smoke-test.sh
+
+      - name: Run installer contract tests
+        run: bash test/install-contract-test.sh
 
       - name: Syntax check all scripts
         run: |
@@ -45,29 +48,26 @@ jobs:
             echo "SKIP: jq not available"
           fi
 
-      - name: Verify install produces valid JSON
+      - name: Install tmux
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y tmux
+
+      - name: UI layout tests (tmux + inline)
+        if: runner.os == 'Linux'
+        run: bash scripts/test-ui-layout.sh --ci
+
+  test-windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run PowerShell installer tests
+        run: pwsh test/install-ps1-test.ps1
+
+      - name: Syntax check install.ps1
         run: |
-          # Simulate a fresh install to a temp settings file
-          tmpdir=$(mktemp -d)
-          mkdir -p "$tmpdir/.claude/commands"
-          echo '{}' > "$tmpdir/.claude/settings.json"
-
-          # Extract and run the jq merge logic
-          config_dir="$tmpdir/.claude/hushflow"
-          mkdir -p "$config_dir"
-          ON_START="$(pwd)/hooks/on-start.sh"
-          ON_STOP="$(pwd)/hooks/on-stop.sh"
-
-          start_hook='[{"hooks": [{"type": "command", "command": "HUSHFLOW_CONFIG_DIR='"$config_dir"' '"$ON_START"'", "async": true}]}]'
-          stop_hook='[{"hooks": [{"type": "command", "command": "HUSHFLOW_CONFIG_DIR='"$config_dir"' '"$ON_STOP"'", "async": true}]}]'
-
-          result=$(echo '{}' | jq \
-            --argjson start_hook "$start_hook" \
-            --argjson stop_hook "$stop_hook" \
-            '.hooks //= {} |
-             .hooks.UserPromptSubmit = (.hooks.UserPromptSubmit // []) + $start_hook |
-             .hooks.Stop = (.hooks.Stop // []) + $stop_hook')
-
-          echo "$result" | jq empty || { echo "FAIL: invalid JSON output"; exit 1; }
-          echo "Install JSON output is valid"
-          rm -rf "$tmpdir"
+          $null = [System.Management.Automation.PSParser]::Tokenize(
+            (Get-Content install.ps1 -Raw), [ref]$null
+          )
+          Write-Host "install.ps1 syntax OK"
