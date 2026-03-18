@@ -1,6 +1,6 @@
 # HushFlow — Project Status
 
-## Completed (v1.0)
+## Completed (v1.0 + v1.0.1)
 
 - **Multiple Breathing Patterns**: Coherent, Physiological Sigh, Box, and 4-7-8 rhythms.
 - **6 Animation Styles**: Constellation, Ripple, Wave, Orbit, Helix, Rain — all with SIN64 trig lookups.
@@ -13,36 +13,32 @@
 - **Universal CLI Wrapper**: `hushflow wrap -- <command>` for any long-running command.
 - **Sound Integration**: Optional chime sounds at breath transitions (ffplay/mpv/afplay/paplay).
 - **Auto-Theme Detection**: OSC 11 terminal background color detection for dark/light theme selection.
-- **Streak Counter**: Consecutive-day tracking in session statistics.
-- **Go Public Prep**: CONTRIBUTING.md, CLAUDE.md, CI (GitHub Actions), README v1.0 + 4 語言翻譯同步.
+- **Go Public Prep**: CONTRIBUTING.md, CLAUDE.md, CI, README v1.0 + 4 語言翻譯同步.
+- **v1.1 Bug Fixes (2026-03-18)**: All P0/P1/P2 from product audit — 10 items fixed.
+- **Repo Public (2026-03-18)**: GitHub repo set to public.
+- **npm Published (2026-03-18)**: `hushflow@1.0.1` on npm, `npx hushflow install` works.
+- **GitHub Release v1.0.0**: First public release with release notes.
+- **README CEO Review (2026-03-18)**: Dynamic badges, emotional hook, mobile-friendly layout, Contributing section, Stars badge.
 
 ---
 
-## v1.1 Bug Fixes & Polish — ✅ All Fixed (2026-03-18)
-
-- ~~P0: wrap.sh handle_signal 未定義~~ → 已定義 `handle_signal()`
-- ~~P0: Slash command `/hushflow` 過時~~ → 已更新含所有 v1.0 功能
-- ~~P1: 主題驗證~~ → `set-exercise.sh` 設定時驗證 theme 是否存在
-- ~~P1: CLI 打錯字只顯示 help~~ → 加 "Unknown command" 錯誤訊息
-- ~~P1: Stats 空值顯示~~ → 加空值檢查
-- ~~P1: 安裝後無 onboarding~~ → 加使用說明
-- ~~P2: Config delay 非數字保護~~ → wrap.sh + open-window.sh 驗證
-- ~~P2: install.ps1 缺少 backup~~ → 寫入前備份
-- ~~P2: Plugin source 無錯誤處理~~ → bash -n 語法檢查後才 source
-
-- ~~P2: Hook 開視窗失敗靜默~~ → inline fallback 寫入 debug log + ui-fallback 標記，doctor 可偵測
-
----
-
-## Future Items (Deferred)
-
-### ~~Repo → Public~~ ✅ (2026-03-18)
+## Next Up (v1.1)
 
 ### Homebrew Formula
 - **What**: `brew install hushflow` via a Homebrew tap (`cry8a8y/homebrew-hushflow`).
 - **Why**: One-line install for macOS/Linux users. 需要建獨立 repo。
 - **Priority**: P2
 - **Effort**: S
+
+### npm bin warning fix
+- **What**: `npm publish` 時 `bin[hushflow]` 被 auto-corrected。目前可運作但有警告。
+- **Fix**: 確認 `bin/hushflow.js` 的 shebang 和 package.json bin entry 格式正確。
+- **Priority**: P2
+- **Effort**: S
+
+---
+
+## Future Items (Deferred)
 
 ### Guided Onboarding / First-Run Experience
 - **What**: Interactive first-run wizard that walks users through choosing exercise, theme, and animation.
