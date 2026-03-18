@@ -616,14 +616,14 @@ else
 fi
 
 # Test: ESC hint text exists
-if grep -q 'ESC to close' "$SCRIPT_DIR/breathe-compact.sh"; then
+if grep -qi 'esc to close' "$SCRIPT_DIR/breathe-compact.sh"; then
     pass "ESC hint text in breathe-compact.sh"
 else
     fail "ESC hint text missing"
 fi
 
 # Test: ESC hint gated on terminal check
-if grep -B2 '_esc_hint' "$SCRIPT_DIR/breathe-compact.sh" | grep -q '\-t 0'; then
+if grep -B5 '_esc_hint' "$SCRIPT_DIR/breathe-compact.sh" | grep -q '\-t 0'; then
     pass "ESC hint gated on terminal check"
 else
     fail "ESC hint missing terminal check"

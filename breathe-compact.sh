@@ -332,7 +332,7 @@ render_constellation() {
         local dist=${DOT_DIST[$i]}
         if [ "$dist" -le "$progress" ]; then
             local sr=${DOT_SROW[$i]} sc=${DOT_SCOL[$i]}
-            if [ "$sr" -ge 4 ] && [ "$sr" -lt "$PANE_H" ] && [ "$sc" -ge 1 ] && [ "$sc" -le "$PANE_W" ]; then
+            if [ "$sr" -ge 5 ] && [ "$sr" -lt "$PANE_H" ] && [ "$sc" -ge 1 ] && [ "$sc" -le "$PANE_W" ]; then
                 local tw=$(( (i * 7 + tick) % 10 ))
                 if [ "$dist" -lt 150 ]; then
                     if [ "$tw" -lt 2 ]; then
@@ -368,7 +368,7 @@ render_ripple() {
         if [ "$dist" -le "$progress" ]; then
             local sr=$((center_row + RIP_ROW[$i]))
             local sc=$((center_col + RIP_COL[$i]))
-            if [ "$sr" -ge 4 ] && [ "$sr" -lt "$PANE_H" ] && [ "$sc" -ge 1 ] && [ "$sc" -le "$PANE_W" ]; then
+            if [ "$sr" -ge 5 ] && [ "$sr" -lt "$PANE_H" ] && [ "$sc" -ge 1 ] && [ "$sc" -le "$PANE_W" ]; then
                 local edge=$(( progress - dist + (tick % 5) * 20 ))
                 if [ "$dist" -eq 0 ]; then
                     frame+="\033[${sr};${sc}H${color}●${RESET}"
@@ -411,7 +411,7 @@ render_wave() {
         fi
         local depth=0
         for ((fr=fill_start; fr<=fill_end && depth<3; fr++)); do
-            if [ "$fr" -ge 4 ] && [ "$fr" -lt "$((PANE_H - 1))" ]; then
+            if [ "$fr" -ge 5 ] && [ "$fr" -lt "$((PANE_H - 1))" ]; then
                 if [ "$depth" -eq 0 ]; then
                     frame+="\033[${fr};${c}H${color}●${RESET}"
                 elif [ "$depth" -eq 1 ]; then
@@ -428,7 +428,7 @@ render_wave() {
         if [ "$abs_sin" -gt 950 ] && [ "$amplitude" -gt 2 ]; then
             local spray_r=$((crest - 1))
             [ "$y_off" -lt 0 ] && spray_r=$((crest + 1))
-            if [ "$spray_r" -ge 4 ] && [ "$spray_r" -lt "$((PANE_H - 1))" ]; then
+            if [ "$spray_r" -ge 5 ] && [ "$spray_r" -lt "$((PANE_H - 1))" ]; then
                 frame+="\033[${spray_r};${c}H${DIM}·${RESET}"
             fi
         fi
@@ -458,12 +458,12 @@ render_helix() {
 
         if [ "$diff" -le 1 ]; then
             # Crossing point
-            if [ "$row1" -ge 4 ] && [ "$row1" -lt "$((PANE_H - 1))" ]; then
+            if [ "$row1" -ge 5 ] && [ "$row1" -lt "$((PANE_H - 1))" ]; then
                 frame+="\033[${row1};${c}H${color}╳${RESET}"
             fi
         else
             # Strand 1 (bright)
-            if [ "$row1" -ge 4 ] && [ "$row1" -lt "$((PANE_H - 1))" ]; then
+            if [ "$row1" -ge 5 ] && [ "$row1" -lt "$((PANE_H - 1))" ]; then
                 if [ "$abs_sin1" -gt 800 ]; then
                     frame+="\033[${row1};${c}H${color}●${RESET}"
                 elif [ "$abs_sin1" -gt 400 ]; then
@@ -473,7 +473,7 @@ render_helix() {
                 fi
             fi
             # Strand 2 (mid tone)
-            if [ "$row2" -ge 4 ] && [ "$row2" -lt "$((PANE_H - 1))" ]; then
+            if [ "$row2" -ge 5 ] && [ "$row2" -lt "$((PANE_H - 1))" ]; then
                 if [ "$abs_sin2" -gt 800 ]; then
                     frame+="\033[${row2};${c}H${COLOR_MID}●${RESET}"
                 elif [ "$abs_sin2" -gt 400 ]; then
@@ -485,7 +485,7 @@ render_helix() {
             # Rungs every 6 columns
             if [ $((c % 6)) -eq 0 ] && [ "$diff" -gt 2 ]; then
                 local mid=$(( (row1 + row2) / 2 ))
-                if [ "$mid" -ge 4 ] && [ "$mid" -lt "$((PANE_H - 1))" ]; then
+                if [ "$mid" -ge 5 ] && [ "$mid" -lt "$((PANE_H - 1))" ]; then
                     frame+="\033[${mid};${c}H${DIM}┊${RESET}"
                 fi
             fi
@@ -514,7 +514,7 @@ render_rain() {
             local offset=${DROP_OFFSET[$d]}
             local row=$(( (tick * speed + offset) % drop_area + 2 ))
 
-            if [ "$col" -ge 1 ] && [ "$col" -le "$PANE_W" ] && [ "$row" -ge 4 ] && [ "$row" -lt "$((PANE_H - 1))" ]; then
+            if [ "$col" -ge 1 ] && [ "$col" -le "$PANE_W" ] && [ "$row" -ge 5 ] && [ "$row" -lt "$((PANE_H - 1))" ]; then
                 if [ "$row" -ge "$splash_zone" ]; then
                     # Splash
                     frame+="\033[${row};${col}H${COLOR_MID}∙${RESET}"
@@ -523,13 +523,13 @@ render_rain() {
                 elif [ "$speed" -eq 3 ]; then
                     frame+="\033[${row};${col}H${color}│${RESET}"
                     local t1=$((row - 1))
-                    [ "$t1" -ge 4 ] && frame+="\033[${t1};${col}H${COLOR_MID}┆${RESET}"
+                    [ "$t1" -ge 5 ] && frame+="\033[${t1};${col}H${COLOR_MID}┆${RESET}"
                     local t2=$((row - 2))
-                    [ "$t2" -ge 4 ] && frame+="\033[${t2};${col}H${DIM}·${RESET}"
+                    [ "$t2" -ge 5 ] && frame+="\033[${t2};${col}H${DIM}·${RESET}"
                 elif [ "$speed" -eq 2 ]; then
                     frame+="\033[${row};${col}H${color}┆${RESET}"
                     local t1=$((row - 1))
-                    [ "$t1" -ge 4 ] && frame+="\033[${t1};${col}H${DIM}·${RESET}"
+                    [ "$t1" -ge 5 ] && frame+="\033[${t1};${col}H${DIM}·${RESET}"
                 else
                     frame+="\033[${row};${col}H${COLOR_MID}·${RESET}"
                 fi
@@ -560,7 +560,7 @@ render_orbit() {
     for ((j=0; j<64; j++)); do
         local row=$(( center_row - SIN64[j] * b / 1000 ))
         local col=$(( center_col + COS64[j] * a / 1000 ))
-        if [ "$row" -ge 4 ] && [ "$row" -lt "$PANE_H" ] && [ "$col" -ge 1 ] && [ "$col" -le "$PANE_W" ]; then
+        if [ "$row" -ge 5 ] && [ "$row" -lt "$PANE_H" ] && [ "$col" -ge 1 ] && [ "$col" -le "$PANE_W" ]; then
             if [ $((j % 8)) -eq 0 ]; then
                 frame+="\033[${row};${col}H${DIM}◦${RESET}"
             else
@@ -577,7 +577,7 @@ render_orbit() {
         local tidx=$(( (oi - ti + 64) % 64 ))
         local tr=$(( center_row - SIN64[tidx] * b / 1000 ))
         local tc=$(( center_col + COS64[tidx] * a / 1000 ))
-        if [ "$tr" -ge 4 ] && [ "$tr" -lt "$PANE_H" ] && [ "$tc" -ge 1 ] && [ "$tc" -le "$PANE_W" ]; then
+        if [ "$tr" -ge 5 ] && [ "$tr" -lt "$PANE_H" ] && [ "$tc" -ge 1 ] && [ "$tc" -le "$PANE_W" ]; then
             frame+="\033[${tr};${tc}H${t_co[$ti]}${t_ch[$ti]}${RESET}"
         fi
     done
@@ -593,7 +593,7 @@ render_orbit() {
             local tidx=$(( (ioi - ti + 64) % 64 ))
             local tr=$(( center_row - SIN64[tidx] * ib / 1000 ))
             local tc=$(( center_col + COS64[tidx] * ia / 1000 ))
-            if [ "$tr" -ge 4 ] && [ "$tr" -lt "$PANE_H" ] && [ "$tc" -ge 1 ] && [ "$tc" -le "$PANE_W" ]; then
+            if [ "$tr" -ge 5 ] && [ "$tr" -lt "$PANE_H" ] && [ "$tc" -ge 1 ] && [ "$tc" -le "$PANE_W" ]; then
                 frame+="\033[${tr};${tc}H${ic_co[$ti]}${ic_ch[$ti]}${RESET}"
             fi
         done
@@ -733,9 +733,10 @@ while true; do
 
     remaining_s=$(( (remaining_ticks + TICK_RATE - 1) / TICK_RATE ))
 
-    # Build frame buffer (clear animation area: row 4 to PANE_H-2)
+    # Build frame buffer (clear animation area: row 5 to PANE_H-2)
+    # Row 4 is blank spacer between greeting and animation for visual breathing room
     frame=""
-    for ((r=4; r<PANE_H; r++)); do
+    for ((r=5; r<PANE_H; r++)); do
         frame+="\033[${r};1H\033[2K"
     done
 
@@ -783,19 +784,25 @@ while true; do
     info_row=$((PANE_H - 1))
     info_text="${EX_NAME}  ·  Cycle ${cycle_num}"
     ic=$(( (PANE_W - ${#info_text}) / 2 + 1 ))
-    frame+="\033[${info_row};1H\033[2K\033[${info_row};${ic}H${fade_prefix}${COLOR_MDIM}${info_text}${RESET}"
+    frame+="\033[${info_row};1H\033[2K\033[${info_row};${ic}H${fade_prefix}${DIM}${info_text}${RESET}"
 
     # Status (bottom of content area)
     status="${phase}... ${remaining_s}s"
     sc_pos=$(( (PANE_W - ${#status}) / 2 + 1 ))
     frame+="\033[${PANE_H};1H\033[2K\033[${PANE_H};${sc_pos}H${fade_prefix}\033[1m${color}${status}${RESET}"
 
-    # ESC hint (pinned to actual terminal bottom, separated from content)
+    # ESC hint (pinned to actual terminal bottom, auto-fades after 5 seconds)
     if [ -t 0 ]; then
-        _esc_hint="ESC to close"
-        _esc_pos=$(( (PANE_W - ${#_esc_hint}) / 2 + 1 ))
         _term_bottom=$(tput lines 2>/dev/null || echo "$PANE_H")
-        frame+="\033[${_term_bottom};1H\033[2K\033[${_term_bottom};${_esc_pos}H${fade_prefix}${DIM}${_esc_hint}${RESET}"
+        if [ "$tick" -lt 50 ]; then
+            # Show for first 5 seconds (50 ticks at 10fps)
+            _esc_hint="esc to close"
+            _esc_pos=$(( (PANE_W - ${#_esc_hint}) / 2 + 1 ))
+            frame+="\033[${_term_bottom};1H\033[2K\033[${_term_bottom};${_esc_pos}H${DIM}${_esc_hint}${RESET}"
+        elif [ "$tick" -eq 50 ]; then
+            # Clear the hint line once
+            frame+="\033[${_term_bottom};1H\033[2K"
+        fi
     fi
 
     printf '%b' "$frame"
