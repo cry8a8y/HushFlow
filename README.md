@@ -142,39 +142,21 @@ hushflow doctor                # Check installation & environment
 
 ## 🧠 How It Works
 
-```mermaid
-flowchart TD
-    subgraph trigger ["🎯 Trigger"]
-        A["💬 Send a prompt to your AI tool"]
-    end
-
-    subgraph hook ["🔗 Hook Lifecycle"]
-        B["⚡ on-start.sh runs"]
-        C{"⚙️ enabled?"}
-        Z["🚫 Exit"]
-        D["📌 Create session marker"]
-        E["⏳ Wait for delay"]
-    end
-
-    subgraph breathe ["🧘 Breathing Session"]
-        F["🖥️ Open companion window"]
-        G["🌊 breathe-compact.sh renders animation"]
-    end
-
-    subgraph cleanup ["🧹 Cleanup"]
-        H["✅ AI finishes"]
-        I["🔴 on-stop.sh closes UI"]
-        J["🗑️ Session cleaned up"]
-    end
-
-    A --> B --> C
-    C -- No --> Z
-    C -- Yes --> D --> E --> F --> G --> H --> I --> J
-
-    style trigger fill:#1a1a2e,stroke:#0f3460,color:#e0e0e0
-    style hook fill:#16213e,stroke:#0f3460,color:#e0e0e0
-    style breathe fill:#0f3460,stroke:#533483,color:#e0e0e0
-    style cleanup fill:#1a1a2e,stroke:#0f3460,color:#e0e0e0
+```
+  You send a prompt
+        │
+        ▼
+  ┌─────────────┐    ┌──────────┐    ┌──────────────────┐    ┌──────────────┐
+  │ on-start.sh │───▶│  Delay   │───▶│  Open companion  │───▶│   Breathing  │
+  │ check config│    │ (5s def) │    │     window       │    │  animation   │
+  └─────────────┘    └──────────┘    └──────────────────┘    └──────┬───────┘
+        │                                                          │
+        │ disabled                                    AI finishes  │
+        ▼                                                          ▼
+     [exit]                                               ┌──────────────┐
+                                                          │ on-stop.sh   │
+                                                          │ close & clean│
+                                                          └──────────────┘
 ```
 
 ### ⚡ Under the Hood
