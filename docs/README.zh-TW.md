@@ -9,78 +9,32 @@
 <p align="center">
   <a href="https://github.com/cry8a8y/HushFlow/stargazers"><img src="https://img.shields.io/github/stars/cry8a8y/HushFlow?style=social" alt="GitHub Stars" /></a>
   &nbsp;
-  <img src="https://img.shields.io/github/v/release/cry8a8y/HushFlow?label=version&color=orange" alt="Version" />
-  <img src="https://img.shields.io/badge/platform-macOS%20|%20Linux%20|%20Windows-blue" alt="Platform Support" />
-  <img src="https://img.shields.io/github/license/cry8a8y/HushFlow?color=green" alt="License MIT" />
   <img src="https://img.shields.io/npm/v/hushflow?color=cb3837&label=npm" alt="npm" />
+  <img src="https://img.shields.io/badge/platform-macOS%20|%20Linux%20|%20Windows-blue" alt="Platform Support" />
 </p>
 
 ---
 
-每次你送出 prompt 給 AI 編程助手，都會有 10–60 秒以上的等待時間。**HushFlow** 把這段空白變成引導式呼吸練習 —— AI 開始工作時自動啟動，完成時自動關閉。
+AI 等待時間的正念呼吸引導。AI 開始工作時自動啟動，完成時自動關閉。
 
-**將 AI 的等待時間，轉化為片刻的正念寧靜。** 🧘‍♂️
+支援 **Claude Code** 和 **Gemini CLI**（完整的逐次 prompt hook）。**Codex CLI** 目前為 session 層級支援。
 
-支援 **Claude Code**、**Gemini CLI** 和 **Codex CLI**。可在 **macOS**、**Linux** 和 **Windows** 上運行。
-
-## ⚡ 一眼看懂
-
-<table>
-  <tr>
-    <td align="center" width="25%">
-      <strong>🫁 引導呼吸</strong><br />
-      4 種節奏：諧振、生理嘆息、箱式與 4-7-8。
-    </td>
-    <td align="center" width="25%">
-      <strong>🔌 自動 Hook</strong><br />
-      AI 一開始工作就啟動，結束就自動收掉。
-    </td>
-    <td align="center" width="25%">
-      <strong>🖥️ 彈性 UI</strong><br />
-      可用伴隨視窗、tmux pane、popup 或 inline。
-    </td>
-    <td align="center" width="25%">
-      <strong>🎨 專業視覺</strong><br />
-      6 種次像素動畫，搭配 5 級色彩漸層。
-    </td>
-  </tr>
-</table>
-
-## 📺 DEMO
-
-<p align="center">
-  <img src="../demo.gif" alt="HushFlow — constellation 動畫搭配諧振呼吸" width="720" />
-</p>
-
-## ✨ 功能特色
-
-- 🧘 **4 種呼吸練習** — 諧振呼吸、生理嘆息、箱式呼吸、4-7-8 呼吸
-- 🎭 **6 種動畫風格** — 星座、漣漪、波浪、軌道、螺旋、落雨
-- 🌈 **8+ 色彩主題** — 海洋青、暮光紫、琥珀暖 + 社群主題（Catppuccin、Dracula、Nord、Solarized、Gruvbox）
-- 📊 **使用統計** — 追蹤呼吸次數、正念時間、連續天數，執行 `hushflow stats` 查看
-- 🔄 **通用指令包裝** — `hushflow wrap -- <任何指令>` 讓任何等待都有呼吸陪伴
-- 🔔 **音效整合** — 可選的呼吸轉換提示音
-- 🚀 **不干擾工作** — 於獨立視窗運行；對 AI 工具的輸出零影響。
-- 📉 **專業渲染** — 高效能 Bash 引擎，使用 SIN64 查找表實現 10fps 無閃爍動畫。
-- 🔌 **外掛支援 (Plugin API)** — 支援透過 `~/.hushflow/plugins/` 自定義動畫。
-- 🤖 **自動啟動 / 自動關閉** — 可設定延遲啟動，AI 完成後自動消失。
-- 💻 **跨平台** — Ghostty、Terminal.app、iTerm2、GNOME Terminal、xterm、Windows Terminal。
-
-## 🚀 快速開始
-
-### 📦 推薦：一行安裝
+## 🚀 60 秒安裝
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/cry8a8y/HushFlow/main/install-remote.sh | sh
 ```
 
-### 🛠️ 使用 npx
+<details>
+<summary>其他安裝方式</summary>
+
+**npx：**
 
 ```bash
 npx hushflow install
 ```
 
-### 📖 手動安裝
+**手動安裝：**
 
 ```bash
 git clone https://github.com/cry8a8y/HushFlow.git
@@ -88,10 +42,7 @@ cd HushFlow
 ./install.sh
 ```
 
-> [!NOTE]
-> 需要安裝 `jq` 以管理 JSON 設定檔。
-
-### 🪟 Windows
+**Windows (PowerShell)：**
 
 ```powershell
 git clone https://github.com/cry8a8y/HushFlow.git
@@ -99,21 +50,103 @@ cd HushFlow
 .\install.ps1
 ```
 
-## 🧠 運作原理
+</details>
 
-```mermaid
-flowchart TD
-    A[你送出 prompt 給 AI 工具] --> B[工具 hook 呼叫 on-start.sh]
-    B --> C{enabled=true?}
-    C -- 否 --> Z[直接結束]
-    C -- 是 --> D[建立 session 標記檔]
-    D --> E[等待設定的 delay]
-    E --> F[啟動伴隨視窗或 tmux UI]
-    F --> G[breathe-compact.sh 渲染呼吸動畫]
-    G --> H[AI 完成工作]
-    H --> I[on-stop.sh 移除標記並關閉 UI]
-    I --> J[清理 session 目錄]
+**安裝程式會做什麼：**
+1. 將 HushFlow 複製到 `~/.hushflow/`
+2. 在 AI 工具的設定檔中註冊啟動/停止 hook
+3. 建立預設設定檔 `~/.<tool>/hushflow/config`
+
+**驗證安裝：**
+
+```bash
+hushflow doctor        # 檢查安裝狀態與環境
 ```
+
+然後送出任何 prompt 給 AI 工具，等待 5 秒 — 呼吸視窗就會出現。
+
+### 📋 依賴套件
+
+| 類型 | 套件 | 平台 | 用途 |
+|------|------|------|------|
+| **核心** | `bash` 4.0+ | 全部 | Shell 執行環境 |
+| **核心** | `jq` | 全部 | 設定檔與主題解析 |
+| **macOS** | `osascript` | macOS | 視窗定位（內建） |
+| **Linux** | `xdotool` | Linux (X11) | 視窗焦點與座標 |
+| **可選** | `tmux` | 任意 | tmux-pane / tmux-popup 模式 |
+| **可選** | `ffplay` / `mpv` / `afplay` | 任意 | 音效播放 |
+
+## 📺 使用體驗
+
+<br/>
+<p align="center">
+  <img src="../demo.gif" alt="HushFlow — constellation 動畫搭配諧振呼吸" width="720" />
+</p>
+<br/>
+
+HushFlow 提供 4 種 UI 模式，適應不同工作流程：
+
+| 模式 | 適合場景 | 啟用方式 |
+|------|---------|---------|
+| **Window** | 預設 — 開啟伴隨終端視窗 | `HUSHFLOW_UI_MODE=window` |
+| **tmux pane** | tmux 使用者 — 分割窗格 | `HUSHFLOW_UI_MODE=tmux-pane` |
+| **tmux popup** | tmux 3.2+ — 浮動覆蓋層 | `HUSHFLOW_UI_MODE=tmux-popup` |
+| **Inline** | 極簡 — 在當前終端渲染 | `HUSHFLOW_UI_MODE=inline` |
+
+## ✨ 功能特色
+
+<table>
+<tr>
+<td width="50%">
+
+### 🧘 呼吸
+- **4 種練習** — 諧振、生理嘆息、箱式、4-7-8
+- **自動啟動** — AI 思考時開始，完成時結束
+- **可設延遲** — 自訂啟動等待時間
+- **音效提示** — 可選的呼吸轉換提示音
+
+</td>
+<td width="50%">
+
+### 🎨 視覺
+- **6 種動畫** — 星座、漣漪、波浪、軌道、螺旋、落雨
+- **8+ 主題** — 海洋青、暮光紫、琥珀暖 + 社群主題
+- **10fps 引擎** — SIN64 查找表，零閃爍
+- **外掛 API** — 自訂動畫腳本
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 🔌 整合
+- **3 個 AI 工具** — Claude Code、Gemini CLI、Codex CLI
+- **4 種 UI 模式** — 視窗、tmux pane、popup、inline
+- **通用包裝** — `hushflow wrap -- <任何指令>`
+- **不干擾** — 對 AI 工具輸出零影響
+
+</td>
+<td width="50%">
+
+### 📊 追蹤與更多
+- **使用統計** — 呼吸次數、連續天數、正念時間
+- **跨平台** — macOS、Linux、Windows
+- **6 種終端** — Ghostty、Terminal.app、iTerm2、GNOME、xterm、Windows Terminal
+- **自我診斷** — `hushflow doctor`
+
+</td>
+</tr>
+</table>
+
+### ⚡ 效能
+
+| 指標 | 數值 | 說明 |
+|------|------|------|
+| **渲染** | 10 fps | 雙緩衝，每幀單次 `printf` |
+| **CPU** | < 2% | SIN64/COS32 查找表，迴圈內無 `bc`/`awk` |
+| **記憶體** | ~3 MB RSS | 純 Bash，無背景服務 |
+| **啟動** | < 50 ms | 無直譯器啟動（Python/Node），僅 `bash` |
+| **依賴** | 渲染路徑 0 個 | `jq` 僅在載入設定時使用 |
 
 ## 🛠️ 支援的 AI 工具
 
@@ -123,50 +156,27 @@ flowchart TD
 | **Gemini CLI** | `BeforeAgent` | `AfterAgent` | ✅ 完整支援 |
 | **Codex CLI** | `SessionStart` | `Stop` | ⏳ Session 層級 |
 
-指定安裝特定工具：
-
 ```bash
-hushflow install --target gemini
+hushflow install --target gemini   # 安裝特定工具
 ```
 
-## ⚙️ 設定
-
-設定檔位於各工具目錄下 `~/.<tool>/hushflow/config`：
-
-```ini
-enabled=true
-exercise=0
-delay=5
-theme=teal
-animation=constellation
-sound=false
-```
-
-### ⌨️ CLI 指令
+## ⌨️ 指令
 
 ```bash
-# 設定呼吸練習
+# 呼吸練習
 hushflow config hrv            # 諧振呼吸
 hushflow config sigh           # 生理嘆息
 hushflow config box            # 箱式呼吸
 hushflow config 478            # 4-7-8 呼吸
 
-# 設定主題
+# 主題與動畫
 hushflow theme twilight        # 暮光紫
-hushflow theme catppuccin-mocha # 社群主題
 hushflow theme list            # 列出所有可用主題
-
-# 設定動畫
 hushflow animation orbit       # 雙彗星軌道
 
-# 音效
+# 音效、統計與包裝
 hushflow sound on              # 啟用呼吸轉換提示音
-hushflow sound off             # 關閉音效
-
-# 統計
 hushflow stats                 # 查看使用統計與連續天數
-
-# 通用包裝
 hushflow wrap -- npm install   # 任何指令執行時都能呼吸
 
 # 診斷工具
@@ -176,46 +186,57 @@ hushflow doctor                # 檢查安裝狀態與環境
 > [!TIP]
 > 在 Claude Code 中，也可以使用 `/hushflow` 指令進行互動式設定。
 
-## 🛠️ 進階自定義
+## 🧠 運作原理
 
-### 🧩 外掛 API (實驗性)
+```mermaid
+flowchart TD
+    subgraph trigger ["🎯 觸發"]
+        A["💬 送出 prompt 給 AI 工具"]
+    end
 
-將自定義動畫腳本放置於 `~/.hushflow/plugins/`。每個外掛定義一個 `render_<name>()` 函數，將 ANSI 轉義碼附加至 `$frame` 變數中。
+    subgraph hook ["🔗 Hook 生命週期"]
+        B["⚡ on-start.sh 執行"]
+        C{"⚙️ enabled?"}
+        Z["🚫 結束"]
+        D["📌 建立 session 標記"]
+        E["⏳ 等待延遲"]
+    end
 
-```bash
-# 安裝範例外掛
-mkdir -p ~/.hushflow/plugins
-cp plugins/example-pulse.sh ~/.hushflow/plugins/pulse.sh
-hushflow animation pulse
+    subgraph breathe ["🧘 呼吸 Session"]
+        F["🖥️ 開啟伴隨視窗"]
+        G["🌊 breathe-compact.sh 渲染動畫"]
+    end
+
+    subgraph cleanup ["🧹 清理"]
+        H["✅ AI 完成"]
+        I["🔴 on-stop.sh 關閉 UI"]
+        J["🗑️ Session 清理完成"]
+    end
+
+    A --> B --> C
+    C -- 否 --> Z
+    C -- 是 --> D --> E --> F --> G --> H --> I --> J
+
+    style trigger fill:#1a1a2e,stroke:#0f3460,color:#e0e0e0
+    style hook fill:#16213e,stroke:#0f3460,color:#e0e0e0
+    style breathe fill:#0f3460,stroke:#533483,color:#e0e0e0
+    style cleanup fill:#1a1a2e,stroke:#0f3460,color:#e0e0e0
 ```
 
-詳見 [Plugin API 文件](PLUGIN-API.md)，包含可用變數、三角函數表、色彩設定與效能建議。
+## 📚 進階文件
 
-### 🌐 環境變數
+| 主題 | 連結 |
+|------|------|
+| **社群主題** | 5 個主題（Catppuccin、Dracula、Nord、Solarized、Gruvbox）+ [自製主題](../CONTRIBUTING.md) |
+| **外掛 API** | 自訂動畫 — [docs/PLUGIN-API.md](PLUGIN-API.md) |
+| **環境變數** | `HUSHFLOW_UI_MODE`、`HUSHFLOW_DEBUG` 等 — [完整清單](ENVIRONMENT.md) |
+| **疑難排解** | `hushflow doctor` 或 [docs/TROUBLESHOOTING.md](TROUBLESHOOTING.md) |
 
-| 變數 | 預設值 | 說明 |
-|------|--------|------|
-| `HUSHFLOW_UI_MODE` | `window` | `window`、`tmux-pane`、`tmux-popup`、`inline` 或 `off` |
-| `HUSHFLOW_DELAY_SECONDS` | 設定檔中的 `delay` | 覆寫啟動延遲時間 |
-| `HUSHFLOW_COLS` | 自動偵測 | 覆寫終端寬度（欄數） |
-| `HUSHFLOW_ROWS` | 自動偵測 | 覆寫終端高度（列數） |
-| `HUSHFLOW_TERMINAL` | 自動偵測 | 強制指定終端類型（如 `ghostty`、`iterm`、`xterm`） |
-| `HUSHFLOW_PLUGIN_DIR` | `~/.hushflow/plugins` | 自定義外掛目錄 |
-| `HUSHFLOW_DEBUG` | 關閉 | 設為 `1` 啟用除錯日誌，輸出至 `/tmp/hushflow-debug.log` |
+## 🤝 貢獻
 
-## 🔍 疑難排解
+歡迎貢獻！無論是新主題、動畫外掛、Bug 修復或翻譯 — 請參閱 [CONTRIBUTING.md](../CONTRIBUTING.md) 開始。
 
-如果動畫未如預期出現，請執行內建的診斷工具：
-
-```bash
-hushflow doctor
-```
-
-## 🗑️ 解除安裝
-
-```bash
-hushflow uninstall
-```
+如果 HushFlow 讓你在寫程式時更平靜，歡迎給個 ⭐ — 幫助更多人發現這個專案。
 
 ## 💖 致謝
 
