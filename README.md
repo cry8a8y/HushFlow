@@ -152,7 +152,7 @@ HushFlow monitors your AI terminal hooks in the background:
 
 HushFlow is designed to be completely non-intrusive:
 - **Hook Settings**: Appends execution triggers to `~/.claude/settings.json`, `~/.gemini/settings.json`, and `~/.codex/hooks.json`.
-- **Config Path**: Stores preferences, themes, and streak data in `~/.hushflow/`.
+- **Config Path**: Per-tool preferences in `~/.<tool>/hushflow/config`; custom themes, sounds, and stats in `~/.hushflow/`.
 - **Session State**: Uses a temporary `.session` file for state sync (auto-cleaned).
 - **Uninstall**: Run `hushflow uninstall` to clean up all the above immediately.
 - **Privacy**: Zero telemetry. 100% local execution.
