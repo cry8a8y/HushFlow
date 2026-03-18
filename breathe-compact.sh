@@ -791,18 +791,12 @@ while true; do
     sc_pos=$(( (PANE_W - ${#status}) / 2 + 1 ))
     frame+="\033[${PANE_H};1H\033[2K\033[${PANE_H};${sc_pos}H${fade_prefix}\033[1m${color}${status}${RESET}"
 
-    # ESC hint (pinned to actual terminal bottom, auto-fades after 5 seconds)
+    # ESC hint (pinned to actual terminal bottom, extra faint for subtlety)
     if [ -t 0 ]; then
+        _esc_hint="ESC to close"
+        _esc_pos=$(( (PANE_W - ${#_esc_hint}) / 2 + 1 ))
         _term_bottom=$(tput lines 2>/dev/null || echo "$PANE_H")
-        if [ "$tick" -lt 50 ]; then
-            # Show for first 5 seconds (50 ticks at 10fps)
-            _esc_hint="esc to close"
-            _esc_pos=$(( (PANE_W - ${#_esc_hint}) / 2 + 1 ))
-            frame+="\033[${_term_bottom};1H\033[2K\033[${_term_bottom};${_esc_pos}H${DIM}${_esc_hint}${RESET}"
-        elif [ "$tick" -eq 50 ]; then
-            # Clear the hint line once
-            frame+="\033[${_term_bottom};1H\033[2K"
-        fi
+        frame+="\033[${_term_bottom};1H\033[2K\033[${_term_bottom};${_esc_pos}H\033[2m${DIM}${_esc_hint}${RESET}"
     fi
 
     printf '%b' "$frame"
