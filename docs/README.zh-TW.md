@@ -60,7 +60,7 @@ cd HushFlow
 **驗證安裝：**
 
 ```bash
-hushflow doctor        # 檢查安裝狀態與環境
+~/.hushflow/doctor.sh  # 檢查安裝狀態與環境
 ```
 
 然後送出任何 prompt 給 AI 工具，等待 5 秒 — 呼吸視窗就會出現。

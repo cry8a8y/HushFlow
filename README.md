@@ -60,7 +60,7 @@ cd HushFlow
 **Verify it works:**
 
 ```bash
-hushflow doctor        # Check installation & environment
+~/.hushflow/doctor.sh  # Check installation & environment
 ```
 
 Then send any prompt to your AI tool and wait 5 seconds — a breathing window will appear.
