@@ -7,41 +7,30 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/license-MIT-green" alt="License MIT" />
+  <a href="https://github.com/cry8a8y/HushFlow/stargazers"><img src="https://img.shields.io/github/stars/cry8a8y/HushFlow?style=social" alt="GitHub Stars" /></a>
+  &nbsp;
+  <img src="https://img.shields.io/github/v/release/cry8a8y/HushFlow?label=version&color=orange" alt="Version" />
   <img src="https://img.shields.io/badge/platform-macOS%20|%20Linux%20|%20Windows-blue" alt="Platform Support" />
-  <img src="https://img.shields.io/badge/version-1.0.0-orange" alt="Version 1.0.0" />
+  <img src="https://img.shields.io/github/license/cry8a8y/HushFlow?color=green" alt="License MIT" />
+  <img src="https://img.shields.io/npm/v/hushflow?color=cb3837&label=npm" alt="npm" />
 </p>
 
 ---
 
-Every prompt you send to an AI coding assistant gives you 10–60+ seconds of idle time. **HushFlow** turns that wait into guided breathing exercises — auto-launches when the AI starts working, auto-dismisses when it's done.
+You send a prompt. Your AI thinks for 30 seconds. You stare at a blinking cursor, check your phone, lose focus.
 
-**Transform AI wait time into a moment of zen.** 🧘‍♂️
+**What if that dead time made you calmer instead?**
+
+**HushFlow** turns AI wait time into guided breathing exercises — auto-launches when the AI starts working, auto-dismisses when it's done. No setup per session, no manual timers. Just breathe.
 
 Works with **Claude Code**, **Gemini CLI**, and **Codex CLI**. Runs on **macOS**, **Linux**, and **Windows**.
 
 ## ⚡ Quick Snapshot
 
-<table>
-  <tr>
-    <td align="center" width="25%">
-      <strong>🫁 Guided Breathing</strong><br />
-      4 patterns: Coherent, Sigh, Box, and 4-7-8.
-    </td>
-    <td align="center" width="25%">
-      <strong>🔌 Hook-Based</strong><br />
-      Starts when your AI starts, stops when it finishes.
-    </td>
-    <td align="center" width="25%">
-      <strong>🖥️ Flexible UI</strong><br />
-      Companion window, tmux pane, popup, or inline mode.
-    </td>
-    <td align="center" width="25%">
-      <strong>🎨 Pro Graphics</strong><br />
-      6 sub-pixel animations with 5-level color gradients.
-    </td>
-  </tr>
-</table>
+- **🫁 Guided Breathing** — 4 patterns: Coherent, Physiological Sigh, Box, and 4-7-8
+- **🔌 Hook-Based** — Starts when your AI starts, stops when it finishes
+- **🖥️ Flexible UI** — Companion window, tmux pane, popup, or inline mode
+- **🎨 Pro Graphics** — 6 sub-pixel animations with 5-level color gradients
 
 ## 📺 Demo
 
@@ -240,6 +229,12 @@ hushflow doctor
 ```bash
 hushflow uninstall
 ```
+
+## 🤝 Contributing
+
+Contributions welcome! Whether it's a new theme, animation plugin, bug fix, or translation — check out [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
+
+If HushFlow helps you stay calm while coding, consider giving it a ⭐ — it helps others find the project.
 
 ## 💖 Acknowledgments
 
