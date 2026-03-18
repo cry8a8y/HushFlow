@@ -78,7 +78,7 @@ rm -f "$MARKER"
 # --- Script syntax ---
 section "Script syntax"
 
-for script in breathe-compact.sh hooks/on-start.sh hooks/on-stop.sh hooks/open-window.sh hooks/open-tmux-popup.sh set-exercise.sh install.sh lib/detect-terminal.sh cli.sh; do
+for script in breathe-compact.sh hooks/on-start.sh hooks/on-stop.sh hooks/open-window.sh hooks/open-tmux-popup.sh set-exercise.sh install.sh install-remote.sh lib/detect-terminal.sh cli.sh; do
     if [ -f "$SCRIPT_DIR/$script" ]; then
         if bash -n "$SCRIPT_DIR/$script" 2>/dev/null; then
             pass "syntax ok: $script"
@@ -476,6 +476,13 @@ if [ -f "$SCRIPT_DIR/lib/detect-background.sh" ]; then
     bash -n "$SCRIPT_DIR/lib/detect-background.sh" 2>/dev/null && pass "detect-background.sh syntax ok" || fail "detect-background.sh syntax error"
 else
     fail "detect-background.sh missing"
+fi
+
+# example plugin
+if [ -f "$SCRIPT_DIR/plugins/example-pulse.sh" ]; then
+    bash -n "$SCRIPT_DIR/plugins/example-pulse.sh" 2>/dev/null && pass "example-pulse.sh syntax ok" || fail "example-pulse.sh syntax error"
+else
+    fail "example-pulse.sh missing"
 fi
 
 # stats.sh

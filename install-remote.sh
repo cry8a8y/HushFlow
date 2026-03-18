@@ -4,7 +4,7 @@
 
 set -e
 
-REPO="https://github.com/cry8a8y/HushFlow.git"
+REPO="${REPO:-https://github.com/cry8a8y/HushFlow.git}"
 INSTALL_DIR="${HUSHFLOW_HOME:-$HOME/.hushflow}"
 
 echo ""

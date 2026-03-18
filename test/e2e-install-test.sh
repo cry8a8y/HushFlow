@@ -39,14 +39,77 @@ fi
 echo "HushFlow E2E Install Tests"
 echo "=========================="
 
+REMOTE_SRC="$TMPDIR_TEST/remote-src"
+REMOTE_REPO="$TMPDIR_TEST/remote.git"
+SNAPSHOT_ROOT="$TMPDIR_TEST/snapshots"
+mkdir -p "$SNAPSHOT_ROOT"
+mkdir -p "$REMOTE_SRC"
+git -C "$REMOTE_SRC" init --quiet
+while IFS= read -r -d '' tracked_file; do
+    mkdir -p "$REMOTE_SRC/$(dirname "$tracked_file")"
+    cp -p "$SCRIPT_DIR/$tracked_file" "$REMOTE_SRC/$tracked_file"
+done < <(git -C "$SCRIPT_DIR" ls-files -z)
+git -C "$REMOTE_SRC" add .
+git -C "$REMOTE_SRC" -c user.name="HushFlow Tests" -c user.email="tests@example.com" \
+    commit --quiet -m "test snapshot"
+git clone --quiet --bare "$REMOTE_SRC" "$REMOTE_REPO"
+
 # ============================================================
 # Helper: run install-remote.sh with local repo (no network)
 # ============================================================
 run_remote_install() {
     local test_home="$1"; shift
     # Override REPO to use local checkout instead of GitHub
-    HOME="$test_home" REPO="$SCRIPT_DIR" \
+    HOME="$test_home" REPO="$REMOTE_REPO" HUSHFLOW_INSTALL_SKIP_PRECHECKS=1 \
         bash "$SCRIPT_DIR/install-remote.sh" "$@" 2>/dev/null
+}
+
+snapshot_home() {
+    local source_home="$1"
+    local snapshot_name="$2"
+    local dest="$SNAPSHOT_ROOT/$snapshot_name"
+    rm -rf "$dest"
+    mkdir -p "$dest"
+    printf '%s\n' "$source_home" > "$dest/.source-home"
+    [ -d "$source_home/.hushflow" ] && cp -a "$source_home/.hushflow" "$dest/.hushflow"
+    [ -d "$source_home/.claude" ] && cp -a "$source_home/.claude" "$dest/.claude"
+}
+
+rewrite_snapshot_paths() {
+    local source_root="$1"
+    local target_root="$2"
+    local file="$3"
+    [ -f "$file" ] || return 0
+
+    local escaped_source escaped_target tmp_file
+    escaped_source=$(printf '%s\n' "$source_root" | sed 's/[\/&]/\\&/g')
+    escaped_target=$(printf '%s\n' "$target_root" | sed 's/[\/&]/\\&/g')
+    tmp_file="$file.tmp"
+    sed "s/${escaped_source}/${escaped_target}/g" "$file" > "$tmp_file"
+    mv "$tmp_file" "$file"
+}
+
+restore_home_snapshot() {
+    local snapshot_name="$1"
+    local target_home="$2"
+    local source_home=""
+    mkdir -p "$target_home"
+    source_home=$(cat "$SNAPSHOT_ROOT/$snapshot_name/.source-home" 2>/dev/null || echo "")
+    [ -d "$SNAPSHOT_ROOT/$snapshot_name/.hushflow" ] && cp -a "$SNAPSHOT_ROOT/$snapshot_name/.hushflow" "$target_home/.hushflow"
+    [ -d "$SNAPSHOT_ROOT/$snapshot_name/.claude" ] && cp -a "$SNAPSHOT_ROOT/$snapshot_name/.claude" "$target_home/.claude"
+    if [ -n "$source_home" ]; then
+        rewrite_snapshot_paths "$source_home" "$target_home" "$target_home/.claude/settings.json"
+        rewrite_snapshot_paths "$source_home" "$target_home" "$target_home/.gemini/settings.json"
+        rewrite_snapshot_paths "$source_home" "$target_home" "$target_home/.codex/hooks.json"
+    fi
+}
+
+prepare_installed_snapshot() {
+    local snapshot_name="$1"
+    local seed_home="$TMPDIR_TEST/seed-$snapshot_name"
+    mkdir -p "$seed_home"
+    run_remote_install "$seed_home"
+    snapshot_home "$seed_home" "$snapshot_name"
 }
 
 # ============================================================
@@ -164,13 +227,13 @@ section "Scenario 2: Existing non-git directory"
 # SCENARIO 3: Existing git install (update via git pull)
 # ############################################################
 
+prepare_installed_snapshot "installed-home"
+
 section "Scenario 3: Existing git install (update)"
 (
     H="$TMPDIR_TEST/existing-git"
     mkdir -p "$H"
-
-    # First install
-    run_remote_install "$H"
+    restore_home_snapshot "installed-home" "$H"
 
     INSTALL_DIR="$H/.hushflow"
 
@@ -212,9 +275,7 @@ section "Scenario 4: Uninstall then reinstall"
 (
     H="$TMPDIR_TEST/reinstall"
     mkdir -p "$H"
-
-    # Install
-    run_remote_install "$H"
+    restore_home_snapshot "installed-home" "$H"
 
     INSTALL_DIR="$H/.hushflow"
 

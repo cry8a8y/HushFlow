@@ -79,14 +79,20 @@ unset _theme_loaded _theme_dir _theme_file _hf_dir
 # TrueColor (24-bit): COLORTERM=truecolor or 24bit
 # 256-color: tput colors >= 256
 # Fallback: basic 16-color ANSI
-_hf_use_truecolor=1
-if [ "${COLORTERM:-}" != "truecolor" ] && [ "${COLORTERM:-}" != "24bit" ]; then
+_hf_detect_truecolor() {
+    if [ "${COLORTERM:-}" = "truecolor" ] || [ "${COLORTERM:-}" = "24bit" ]; then
+        echo 1
+    else
+        echo 0
+    fi
+}
+
+_hf_use_truecolor=$(_hf_detect_truecolor)
+if [ "$_hf_use_truecolor" -eq 0 ]; then
     _tc=$(tput colors 2>/dev/null || echo 8)
     if [ "$_tc" -ge 256 ] 2>/dev/null; then
-        _hf_use_truecolor=0  # 256-color mode
         hf_log "TrueColor not detected (COLORTERM=${COLORTERM:-unset}), using 256-color fallback"
     else
-        _hf_use_truecolor=0
         hf_log "Limited color support ($_tc colors), using 256-color fallback"
     fi
 fi

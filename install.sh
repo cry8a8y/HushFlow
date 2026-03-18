@@ -79,8 +79,10 @@ ensure_config() {
 
 # --- Main ---
 
-check_terminal_color
-check_dependencies
+if [ "${HUSHFLOW_INSTALL_SKIP_PRECHECKS:-0}" != "1" ]; then
+    check_terminal_color
+    check_dependencies
+fi
 
 validate_and_write() {
     local json="$1"
