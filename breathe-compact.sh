@@ -206,7 +206,7 @@ ease() {
     # Sine ease-in-out: smooth acceleration + deceleration (mimics natural breathing)
     local idx=$(( $1 * 16 / 1000 ))
     [ "$idx" -gt 16 ] && idx=16
-    echo $(( (1000 - COS32[idx]) / 2 ))
+    EASE_OUT=$(( (1000 - COS32[idx]) / 2 ))
 }
 
 # === Trig lookup (32 entries, sin/cos * 1000) ===
@@ -700,10 +700,11 @@ while true; do
         phase="Breathe in"; color="$COLOR_IN"
         remaining_ticks=$((IN_TICKS - t))
         linear=$(( t * 1000 / IN_TICKS ))
+        ease "$linear"
         if [ "$EX_TYPE" = "double_inhale" ]; then
-            progress=$(( $(ease "$linear") * 850 / 1000 ))
+            progress=$(( EASE_OUT * 850 / 1000 ))
         else
-            progress=$(ease "$linear")
+            progress=$EASE_OUT
         fi
     elif [ "$t" -lt "$((IN_TICKS + H1_TICKS))" ]; then
         remaining_ticks=$((IN_TICKS + H1_TICKS - t))
@@ -711,7 +712,8 @@ while true; do
             phase="Sip in"; color="$COLOR_IN"
             pt=$((t - IN_TICKS))
             linear=$(( pt * 1000 / H1_TICKS ))
-            progress=$(( 850 + $(ease "$linear") * 150 / 1000 ))
+            ease "$linear"
+            progress=$(( 850 + EASE_OUT * 150 / 1000 ))
         else
             phase="Hold"; color="$COLOR_IN"
             progress=1000
@@ -721,7 +723,8 @@ while true; do
         remaining_ticks=$((IN_TICKS + H1_TICKS + EX_TICKS - t))
         pt=$((t - IN_TICKS - H1_TICKS))
         linear=$(( pt * 1000 / EX_TICKS ))
-        progress=$((1000 - $(ease "$linear")))
+        ease "$linear"
+        progress=$((1000 - EASE_OUT))
     else
         phase="Hold"; color="$COLOR_OUT"
         remaining_ticks=$((CYCLE_TICKS - t))
