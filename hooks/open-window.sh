@@ -152,7 +152,7 @@ repeat 200 times
     delay 0.05
 end repeat
 
--- Phase 3: dismiss "Process exited" prompt immediately
+-- Phase 3: dismiss "Process exited" prompt immediately via Ctrl+D (EOT)
 delay 0.05
 repeat 5 times
     try
@@ -162,7 +162,11 @@ repeat 5 times
                 set w to first window whose name contains "HushFlow"
                 perform action "AXRaise" of w
                 delay 0.02
-                keystroke return
+                -- Ctrl+D is often more effective than Return for closing terminated shells
+                keystroke "d" using control down
+                delay 0.05
+                -- If it still exists, click the close button (Button 1)
+                if exists w then click button 1 of w
             end tell
         end tell
         exit repeat
