@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-hf_log() { [ "${HUSHFLOW_DEBUG:-}" = "1" ] && echo "$(date '+%H:%M:%S') [open-window] $*" >> /tmp/hushflow-debug.log; }
+hf_log() { [ "${HUSHFLOW_DEBUG:-}" = "1" ] && echo "$(date '+%H:%M:%S') [open-window] $*" >> /tmp/hushflow-debug.log || true; }
 
 SESSION_DIR="${HUSHFLOW_SESSION_DIR:-/tmp/hushflow-$$}"
 MARKER_FILE="$SESSION_DIR/working"
