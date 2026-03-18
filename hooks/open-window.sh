@@ -105,32 +105,15 @@ tell application "Ghostty"
     set newWindow to new window with configuration surfaceConfig
     set winId to id of newWindow
 end tell
--- Resize by matching window title, fallback to front window
-set targetTitle to "$WINDOW_MATCH_TITLE"
-set didResize to false
 
+-- Brief pause for window to register, then resize the new front window
+delay 0.2
 tell application "System Events"
     tell process "Ghostty"
-        repeat with attempt from 1 to 20
-            repeat with targetWindow in windows
-                try
-                    if name of targetWindow is targetTitle then
-                        set position of targetWindow to {posX, posY}
-                        set size of targetWindow to {winW, winH}
-                        set didResize to true
-                        return winId
-                    end if
-                end try
-            end repeat
-            delay 0.15
-        end repeat
-        -- Fallback: resize the front window (most recently created)
-        if not didResize then
-            try
-                set position of front window to {posX, posY}
-                set size of front window to {winW, winH}
-            end try
-        end if
+        try
+            set size of front window to {winW, winH}
+            set position of front window to {posX, posY}
+        end try
     end tell
 end tell
 
