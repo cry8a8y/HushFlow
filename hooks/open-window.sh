@@ -125,6 +125,28 @@ EOF
         )
         if [ -n "$window_id" ]; then
             echo "$window_id" > "$WINDOW_ID_FILE"
+            # Background monitor: auto-dismiss "Process exited" prompt.
+            # Runs in Claude Code's shell (outside HushFlow terminal),
+            # so it survives after the breathing process exits.
+            (
+                # Wait until HushFlow process exits (marker removed = close soon)
+                while [ -f "$MARKER_FILE" ]; do sleep 1; done
+                # Wait for fade-out + process exit + "Process exited" to render
+                sleep 3
+                # Send Return to dismiss prompt and close the window
+                osascript <<'DISMISSEOF' &>/dev/null
+tell application "System Events"
+    tell process "Ghostty"
+        try
+            set w to first window whose name contains "HushFlow"
+            perform action "AXRaise" of w
+            delay 0.1
+            keystroke return
+        end try
+    end tell
+end tell
+DISMISSEOF
+            ) &>/dev/null &
         fi
         ;;
 
