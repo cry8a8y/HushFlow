@@ -27,53 +27,46 @@ A breathing layer for AI-powered terminals. Turns every wait into a calm ritual 
 
 Fast. Clean. Zero-Config. Get up and running before your next breath:
 
-### Method 1: One-Line Install (Fastest)
-The absolute cleanest way. No Node.js or extra dependencies required.
+> [!IMPORTANT]
+> **Prerequisites:** `bash` (4.0+), `git`, and `jq` are required for installation.
+
+### Method 1: Unix / macOS (Fastest)
+The absolute cleanest way to install on Linux or macOS. No Node.js required.
 ```bash
-curl -fsSL https://raw.githubusercontent.com/cry8a8y/HushFlow/main/install-remote.sh | sh
+curl -fsSL https://raw.githubusercontent.com/cry8a8y/HushFlow/main/install-remote.sh | bash
 ```
 
-### Method 2: Node.js / npm
-If you prefer managing your tools via npm:
-```bash
-npm install -g hushflow
-hushflow install
-```
-
-<details>
-<summary><b>Other Installation Methods (Manual / Windows)</b></summary>
-
-**Manual (Git):**
-```bash
-git clone https://github.com/cry8a8y/HushFlow.git
-cd HushFlow
-chmod +x install.sh
-./install.sh
-```
-
-**Windows (PowerShell):**
+### Method 2: Windows (PowerShell)
+Full support for Windows Terminal with PowerShell Core or WinPS.
 ```powershell
 git clone https://github.com/cry8a8y/HushFlow.git
 cd HushFlow
 .\install.ps1
 ```
-</details>
+
+### Method 3: Node.js / npm
+If you prefer managing tools via npm or want to try without installing (`npx`):
+```bash
+npm install -g hushflow
+hushflow install
+# OR: npx hushflow install
+```
 
 **What happens during the 60s?**
 1. 🔌 **Instant Hooks**: Automatically wires into your AI tools (Claude, Gemini, etc.).
 2. ⚙️ **Auto-Config**: Creates your personal profile at `~/.<tool>/hushflow/config`.
 3. ✅ **Ready to Breathe**: Run `hushflow doctor` to confirm you're all set.
 
-### 📋 Dependencies
+---
 
-| Type | Package | Platform | Purpose |
-|------|---------|----------|---------|
-| **Core** | `bash` 4.0+ | All | Shell runtime |
-| **Core** | `jq` | All | Config & theme parsing |
-| **macOS** | `osascript` | macOS | Window positioning (built-in) |
-| **Linux** | `xdotool` | Linux (X11) | Window focus & geometry |
-| **Optional** | `tmux` | Any | tmux-pane / tmux-popup UI mode |
-| **Optional** | `ffplay` / `mpv` / `afplay` | Any | Sound playback |
+## ✅ Verify Installation
+
+After running the installer:
+1. **Restart** your AI terminal tool (e.g., Claude Code).
+2. Send any **Prompt** (e.g., "Hello").
+3. **Wait 5 seconds** — The breathing window will appear naturally beside your terminal.
+
+---
 
 ## 🛠️ Supported AI Tools
 
@@ -81,7 +74,7 @@ cd HushFlow
 |------|-----------|-----------|--------|
 | **Claude Code** | `UserPromptSubmit` | `Stop` | ✅ Full support |
 | **Gemini CLI** | `BeforeAgent` | `AfterAgent` | ✅ Full support |
-| **Codex CLI** | `SessionStart` | `Stop` | ⏳ Session-level |
+| **Codex CLI** | `SessionStart` | `Stop` | ⏳ **Session-level only** (Starts once per session) |
 
 ```bash
 hushflow install --target gemini   # Install for a specific tool
@@ -94,8 +87,30 @@ hushflow install --target gemini   # Install for a specific tool
 - 🛠️ **Universal Compatibility** — Native integration for **Claude Code**, **Gemini CLI**, and **Codex CLI**.
 - 💻 **Cross-Platform** — macOS, Linux, and Windows. Support for Ghostty, iTerm2, Windows Terminal, and more.
 - 🫁 **Breath Work** — 4 built-in patterns: *Coherent*, *Physiological Sigh*, *Box*, and *4-7-8*.
-- 🎨 **Deep Customization** — 6+ animations and 8+ themes (Catppuccin, Dracula, Nord, etc.).
-- ⚡ **Engineered for Speed** — Pure Bash logic. < 2% CPU, ~3MB RAM. Render path has zero external dependencies.
+- 🎨 **Custom Themes** — 8+ themes (**3 built-in + 5 community** like Catppuccin, Dracula).
+- ⚡ **Engineered for Speed** — Pure Bash logic. Render path has zero external dependencies.
+
+---
+
+## 🔒 Transparency
+
+### Modified Files
+HushFlow only modifies the hook settings of your AI tools to enable auto-start/stop:
+- **Claude Code**: `~/.claude/settings.json` (Adds `onPromptSubmit` and `onStop`)
+- **Gemini CLI**: `~/.gemini/settings.json` (Adds `beforeAgent` and `afterAgent`)
+- **Codex CLI**: `~/.codex/hooks.json`
+
+### Uninstall
+Want to remove HushFlow? It's as simple as it was to install:
+```bash
+# Using the CLI
+hushflow uninstall
+
+# OR: From the source directory
+./install.sh --uninstall
+```
+
+---
 
 ## 📺 UI Modes
 
@@ -178,6 +193,9 @@ HushFlow acts as a silent observer to your AI terminal sessions.
 ```
 
 ### ⚡ Under the Hood
+
+> [!NOTE]
+> Metrics tested on macOS (M1 Pro) and Linux (Ubuntu 22.04 x64).
 
 | Metric | Value | Notes |
 |--------|-------|-------|
