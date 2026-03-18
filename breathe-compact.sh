@@ -314,11 +314,12 @@ trap 'cleanup' EXIT
 trap read_size WINCH
 printf '\033]0;%s\a\033[?25l\033[2J' "$WINDOW_TITLE"
 
-# === Keyboard input: raw mode for ESC detection ===
+# === Keyboard input ===
+# Bash's `read -n1` handles raw mode internally; no stty needed.
+# We save/restore stty only as a safety net for abnormal exits.
 _hf_old_stty=""
 if [ -t 0 ]; then
     _hf_old_stty=$(stty -g 2>/dev/null) || true
-    stty -echo -icanon min 0 time 0 2>/dev/null || true
 fi
 hf_log "started animation=$animation exercise=$EX_NAME theme=${theme:-teal} PANE=${PANE_W}x${PANE_H}"
 
@@ -787,13 +788,11 @@ while true; do
     ic=$(( (PANE_W - ${#info_text}) / 2 + 1 ))
     frame+="\033[${info_row};1H\033[2K\033[${info_row};${ic}H${fade_prefix}${COLOR_MDIM}${info_text}${RESET}"
 
-    # ESC hint (right-aligned on bottom row, only if terminal has input)
-    if [ -t 0 ]; then
+    # ESC hint (right edge of bottom row, only if terminal has input)
+    if [ -t 0 ] && [ "$PANE_W" -ge 40 ]; then
         _esc_hint="ESC to close"
         _esc_col=$(( PANE_W - ${#_esc_hint} ))
-        if [ "$_esc_col" -gt $(( sc_pos + ${#status} + 2 )) ]; then
-            frame+="\033[${PANE_H};${_esc_col}H${fade_prefix}${DIM}${_esc_hint}${RESET}"
-        fi
+        frame+="\033[${PANE_H};${_esc_col}H${fade_prefix}${DIM}${_esc_hint}${RESET}"
     fi
 
     printf '%b' "$frame"
