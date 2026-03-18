@@ -23,57 +23,46 @@
 </p>
 <br/>
 
-## 🚀 安裝
+## 🚀 60 秒內極速上手
 
+快速、乾淨、零配置。在你下一次呼吸前就安裝完成：
+
+### 方法 1：一行指令安裝（最快推薦）
+最乾淨的方式。不需要 Node.js 或任何額外依賴。
+```bash
+curl -fsSL https://raw.githubusercontent.com/cry8a8y/HushFlow/main/install-remote.sh | sh
+```
+
+### 方法 2：Node.js / npm
+如果你習慣用 npm 管理工具：
 ```bash
 npm install -g hushflow
 hushflow install
 ```
 
 <details>
-<summary>其他安裝方式</summary>
+<summary><b>其他安裝方式（手動 / Windows）</b></summary>
 
-**一行安裝（無需 npm）：**
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/cry8a8y/HushFlow/main/install-remote.sh | sh
-```
-
-**npx（無需全域安裝）：**
-
-```bash
-npx hushflow install
-```
-
-**手動安裝：**
-
+**手動安裝 (Git)：**
 ```bash
 git clone https://github.com/cry8a8y/HushFlow.git
 cd HushFlow
+chmod +x install.sh
 ./install.sh
 ```
 
 **Windows (PowerShell)：**
-
 ```powershell
 git clone https://github.com/cry8a8y/HushFlow.git
 cd HushFlow
 .\install.ps1
 ```
-
 </details>
 
-**安裝程式會做什麼：**
-1. 在 AI 工具的設定檔中註冊啟動/停止 hook
-2. 建立預設設定檔 `~/.<tool>/hushflow/config`
-
-**驗證安裝：**
-
-```bash
-hushflow doctor        # 檢查安裝狀態與環境
-```
-
-然後送出任何 prompt 給 AI 工具，等待 5 秒 — 呼吸視窗就會出現。
+**這 60 秒內發生了什麼？**
+1. 🔌 **即時鉤子**：自動與你的 AI 工具（Claude, Gemini 等）連動。
+2. ⚙️ **自動配置**：在 `~/.<tool>/hushflow/config` 建立你的專屬設定。
+3. ✅ **準備呼吸**：執行 `hushflow doctor` 確認一切就緒。
 
 ### 📋 依賴套件
 
@@ -100,13 +89,13 @@ hushflow install --target gemini   # 安裝特定工具
 
 ## ✨ 功能特色
 
-- **自動出現** — 設定延遲後自動啟動，AI 完成後自動消失。不需要手動觸發。
-- **不搶焦點** — 在獨立視窗或 tmux 窗格中運行。你的終端機完全不受影響。
-- **支援你的工具** — Claude Code、Gemini CLI、Codex CLI。一次安裝全部涵蓋。
-- **跨平台** — macOS、Linux、Windows。Ghostty、iTerm2、Terminal.app、GNOME Terminal、xterm、Windows Terminal。
-- **4 種呼吸節奏** — 諧振、生理嘆息、箱式、4-7-8。選好節奏，HushFlow 會記住。
-- **6 種動畫、8+ 主題** — 從星座到落雨，從海洋青到 Dracula。想調就調，不調也行。
-- **輕量高效** — < 2% CPU、~3 MB 記憶體、< 50 ms 啟動。純 Bash，渲染路徑零依賴。
+- 🧘 **自動正念** — 設定延遲後自動啟動，AI 完成後自動消失。完全自動化。
+- 🎯 **專注優先** — 在獨立視窗或 tmux 窗格中運行。你的主終端焦點始終如一。
+- 🛠️ **原生整合** — 完美支援 **Claude Code**、**Gemini CLI** 與 **Codex CLI**。
+- 💻 **跨平台支援** — macOS、Linux 與 Windows。相容 Ghostty、iTerm2、Windows Terminal 等。
+- 🫁 **專業呼吸法** — 內建 4 種模式：*諧振*、*生理性嘆息*、*箱式*、與 *4-7-8*。
+- 🎨 **深度自定義** — 6+ 種動畫與 8+ 種主題（Catppuccin, Dracula, Nord 等）。
+- ⚡ **極致效能** — 純 Bash 邏輯。 < 2% CPU, ~3MB RAM。渲染路徑零依賴。
 
 ## 📺 UI 模式
 
@@ -124,7 +113,7 @@ HushFlow 提供 4 種 UI 模式，適應不同工作流程：
 ```bash
 # 呼吸練習
 hushflow config hrv            # 諧振呼吸
-hushflow config sigh           # 生理嘆息
+hushflow config sigh           # 生理性嘆息
 hushflow config box            # 箱式呼吸
 hushflow config 478            # 4-7-8 呼吸
 
@@ -147,38 +136,45 @@ hushflow doctor                # 檢查安裝狀態與環境
 
 ## 🧠 運作原理
 
-```
-       送出 prompt 給 AI
-               │
-               ▼
-      ┌─────────────────┐
-      │   on-start.sh   │
-      │    檢查設定      │
-      └────────┬────────┘
-               │
-          ┌────┴────┐
-          │ 已啟用？ │
-          └────┬────┘
-         否/   \是
-          ▼     ▼
-       [結束]  延遲等待 (5s)
-                │
-                ▼
-       ┌─────────────────┐
-       │  開啟伴隨視窗    │
-       └────────┬────────┘
-                │
-                ▼
-       ┌─────────────────┐
-       │    呼吸動畫      │◀── 循環
-       └────────┬────────┘
-                │
-                │ AI 完成回應
-                ▼
-       ┌─────────────────┐
-       │   on-stop.sh    │
-       │   關閉並清理     │
-       └─────────────────┘
+HushFlow 就像是你 AI 終端會話中的沈默觀察者。
+
+```text
+       ┌──────────────┐
+       │  你發送一個  │
+       │   Prompt     │
+       └──────┬───────┘
+              │
+              ▼ (觸發 Hook)
+       ┌──────────────┐           ┌──────────────────┐
+       │  AI 工具     │──────────▶│  HushFlow Agent  │
+       │  開始工作    │           │     (背景運行)    │
+       └──────────────┘           └────────┬─────────┘
+              │                            │
+              │ 等待中...                   ▼
+              │                     [ 是否啟用？ ] ──▶ [否: 退出]
+              │                            │
+              │                            ▼ [是]
+              │                       等待延遲 (5s)
+              │                            │
+              │                            ▼
+              │                   ┌──────────────────┐
+              │                   │    開啟伴隨      │
+              │                   │      視窗        │
+              │                   └────────┬─────────┘
+              │                            │
+              │                            ▼
+              │                   ┌──────────────────┐
+              │                   │    呼吸動畫      │◀──┐
+              │                   │    循環播放      │───┘
+              │                   └────────┬─────────┘
+              ▼ (完成 Hook)                │
+       ┌──────────────┐                    │ (停止信號)
+       │  AI 工具     │────────────────────┘
+       │  完成回應    │
+       └──────────────┘           ┌──────────────────┐
+              │                   │  HushFlow Agent  │
+              ▼                   │   關閉與清理     │
+       (交還給使用者)              └──────────────────┘
 ```
 
 ### ⚡ 技術底層
