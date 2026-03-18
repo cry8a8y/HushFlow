@@ -12,7 +12,7 @@ lc() { echo "$1" | tr '[:upper:]' '[:lower:]'; }
 # Ensure config exists
 mkdir -p "$CONFIG_DIR"
 if [ ! -f "$CONFIG_FILE" ]; then
-    printf 'enabled=true\nexercise=0\ndelay=5\ntheme=teal\nanimation=constellation\n' > "$CONFIG_FILE"
+    printf 'enabled=true\nexercise=0\ndelay=5\ntheme=teal\nanimation=random\n' > "$CONFIG_FILE"
 fi
 
 set_value() {
@@ -81,9 +81,14 @@ if [ "$ARG1" = "animation" ] || [ "$ARG1" = "anim" ]; then
             set_value animation rain
             echo "Animation set to Rain (gentle rainfall)"
             ;;
+        random|shuffle)
+            set_value animation random
+            echo "Animation set to Random (shuffled each session)"
+            ;;
         *)
             echo "Available animations:"
-            echo "  constellation - Twinkling star field (default)"
+            echo "  random        - Shuffled each session (default)"
+            echo "  constellation - Twinkling star field"
             echo "  ripple        - Concentric ripples"
             echo "  wave          - Flowing sine wave"
             echo "  orbit         - Dual orbiting comets"
@@ -91,7 +96,7 @@ if [ "$ARG1" = "animation" ] || [ "$ARG1" = "anim" ]; then
             echo "  rain          - Gentle rainfall"
             current_anim=$(grep "^animation=" "$CONFIG_FILE" 2>/dev/null | cut -d= -f2)
             echo ""
-            echo "Current: ${current_anim:-constellation}"
+            echo "Current: ${current_anim:-random}"
             ;;
     esac
     exit 0
@@ -200,14 +205,15 @@ case "$ARG1" in
         echo "Current theme: ${current_theme:-teal}"
         echo ""
         echo "Animations:"
-        echo "  constellation - Twinkling star field (default)"
+        echo "  random        - Shuffled each session (default)"
+        echo "  constellation - Twinkling star field"
         echo "  ripple        - Concentric ripples"
         echo "  wave          - Flowing sine wave"
         echo "  orbit         - Dual orbiting comets"
         echo "  helix         - DNA double helix"
         echo "  rain          - Gentle rainfall"
         current_anim=$(grep "^animation=" "$CONFIG_FILE" 2>/dev/null | cut -d= -f2)
-        echo "Current animation: ${current_anim:-constellation}"
+        echo "Current animation: ${current_anim:-random}"
         echo ""
         echo "Usage: $(basename "$0") [exercise|theme <name>|animation <name>]"
         ;;

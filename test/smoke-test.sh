@@ -544,6 +544,98 @@ for lang in "" ".zh-TW" ".zh-CN" ".ja"; do
     grep -qi "license\|授權\|许可\|ライセンス" "$f" && pass "README.$label has license" || fail "README.$label missing license"
 done
 
+# --- Random animation mode ---
+section "Random animation mode"
+
+# Test: breathe-compact.sh handles random animation selection
+if grep -q 'animation.*=.*"random"' "$SCRIPT_DIR/breathe-compact.sh" || \
+   grep -q 'animation.*random' "$SCRIPT_DIR/breathe-compact.sh"; then
+    pass "breathe-compact.sh handles random animation"
+else
+    fail "breathe-compact.sh missing random animation handling"
+fi
+
+# Test: set-exercise.sh supports random as an animation option
+if grep -q 'random|shuffle' "$SCRIPT_DIR/set-exercise.sh"; then
+    pass "set-exercise knows random animation"
+else
+    fail "set-exercise missing random animation"
+fi
+
+# Test: set animation to random via set-exercise.sh
+SE_RAND="$TMPDIR_TEST/rand-config"
+mkdir -p "$SE_RAND"
+output=$(HUSHFLOW_CONFIG_DIR="$SE_RAND" bash "$SCRIPT_DIR/set-exercise.sh" animation random 2>&1)
+val=$(grep "^animation=" "$SE_RAND/config" | cut -d= -f2)
+[ "$val" = "random" ] && pass "set animation to random" || fail "set animation to random (got '$val')"
+
+# Test: default config uses random animation
+SE_DEF="$TMPDIR_TEST/def-config"
+mkdir -p "$SE_DEF"
+output=$(HUSHFLOW_CONFIG_DIR="$SE_DEF" bash "$SCRIPT_DIR/set-exercise.sh" list 2>&1)
+val=$(grep "^animation=" "$SE_DEF/config" | cut -d= -f2)
+[ "$val" = "random" ] && pass "default config animation is random" || fail "default config animation (got '$val')"
+
+# Test: random resolves to a valid animation name
+_VALID="constellation ripple wave orbit helix rain"
+_arr=($_VALID)
+_picked="${_arr[$((RANDOM % ${#_arr[@]}))]}"
+_found=0
+for _a in $_VALID; do [ "$_picked" = "$_a" ] && _found=1; done
+[ "$_found" -eq 1 ] && pass "random picked valid animation: $_picked" || fail "random picked invalid: $_picked"
+
+# --- ESC key close ---
+section "ESC key close"
+
+# Test: breathe-compact.sh sets raw terminal mode
+if grep -q 'stty.*-echo.*-icanon\|stty.*-icanon.*-echo' "$SCRIPT_DIR/breathe-compact.sh"; then
+    pass "breathe-compact.sh sets raw terminal mode"
+else
+    fail "breathe-compact.sh missing raw terminal mode"
+fi
+
+# Test: breathe-compact.sh saves/restores stty settings
+if grep -q '_hf_old_stty' "$SCRIPT_DIR/breathe-compact.sh"; then
+    pass "breathe-compact.sh saves/restores stty settings"
+else
+    fail "breathe-compact.sh missing stty save/restore"
+fi
+
+# Test: breathe-compact.sh detects ESC key
+if grep -q '\\x1b' "$SCRIPT_DIR/breathe-compact.sh"; then
+    pass "breathe-compact.sh has ESC detection"
+else
+    fail "breathe-compact.sh missing ESC detection"
+fi
+
+# Test: ESC handler removes marker file before exit
+if grep -A2 'Bare ESC' "$SCRIPT_DIR/breathe-compact.sh" | grep -q 'rm.*MARKER_FILE'; then
+    pass "ESC handler removes marker before graceful exit"
+else
+    fail "ESC handler missing marker removal"
+fi
+
+# Test: ESC hint text exists
+if grep -q 'ESC to close' "$SCRIPT_DIR/breathe-compact.sh"; then
+    pass "ESC hint text in breathe-compact.sh"
+else
+    fail "ESC hint text missing"
+fi
+
+# Test: ESC hint gated on terminal check
+if grep -B2 '_esc_hint' "$SCRIPT_DIR/breathe-compact.sh" | grep -q '\-t 0'; then
+    pass "ESC hint gated on terminal check"
+else
+    fail "ESC hint missing terminal check"
+fi
+
+# Test: graceful_exit restores stty
+if sed -n '/^graceful_exit()/,/^}/p' "$SCRIPT_DIR/breathe-compact.sh" | grep -q '_hf_old_stty'; then
+    pass "graceful_exit restores stty"
+else
+    fail "graceful_exit missing stty restore"
+fi
+
 # --- Summary ---
 echo ""
 echo "================================"
