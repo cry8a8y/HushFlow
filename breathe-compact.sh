@@ -123,7 +123,12 @@ unset _is_builtin_anim _a
 PLUGIN_DIR="${HUSHFLOW_PLUGIN_DIR:-$HOME/.hushflow/plugins}"
 if [ -d "$PLUGIN_DIR" ]; then
     for plugin_file in "$PLUGIN_DIR"/*.sh; do
-        [ -f "$plugin_file" ] && source "$plugin_file"
+        [ -f "$plugin_file" ] || continue
+        if bash -n "$plugin_file" 2>/dev/null; then
+            source "$plugin_file"
+        else
+            hf_log "WARNING: plugin has syntax errors, skipped: $plugin_file"
+        fi
     done
     hf_log "loaded plugins from $PLUGIN_DIR"
 fi

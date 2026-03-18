@@ -30,6 +30,9 @@ fi
 
 HUSHFLOW_DELAY_SECONDS="${HUSHFLOW_DELAY_SECONDS:-${config_delay:-5}}"
 
+# Validate delay is numeric
+[[ "$HUSHFLOW_DELAY_SECONDS" =~ ^[0-9]+$ ]] || HUSHFLOW_DELAY_SECONDS=5
+
 sleep "$HUSHFLOW_DELAY_SECONDS"
 
 if [ ! -f "$MARKER_FILE" ]; then

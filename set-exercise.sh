@@ -143,9 +143,20 @@ if [ "$ARG1" = "theme" ]; then
             echo "Current: ${current_theme:-teal}"
             ;;
         *)
-            # Accept any name — could be a JSON community theme
-            set_value theme "$ARG2"
-            echo "Theme set to $ARG2"
+            # Check if JSON community theme exists before accepting
+            _script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+            _found=0
+            for _tdir in "$HOME/.hushflow/themes" "$_script_dir/themes"; do
+                [ -f "$_tdir/${ARG2}.json" ] && _found=1 && break
+            done
+            if [ "$_found" -eq 1 ]; then
+                set_value theme "$ARG2"
+                echo "Theme set to $ARG2"
+            else
+                echo "Unknown theme: $ARG2" >&2
+                echo "Run 'hushflow theme list' to see available themes." >&2
+                exit 1
+            fi
             ;;
     esac
     exit 0

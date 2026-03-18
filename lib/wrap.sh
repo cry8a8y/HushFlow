@@ -28,7 +28,7 @@ echo "$(date +%s)" > "$MARKER_FILE"
 delay=3
 if [ -f "$CONFIG_FILE" ]; then
     saved_delay=$(grep "^delay=" "$CONFIG_FILE" 2>/dev/null | cut -d= -f2)
-    [ -n "$saved_delay" ] && delay="$saved_delay"
+    [[ "$saved_delay" =~ ^[0-9]+$ ]] && delay="$saved_delay"
 fi
 
 BREATHE_PID=""
@@ -40,6 +40,11 @@ cleanup() {
         kill "$BREATHE_PID" 2>/dev/null || true
     fi
     rm -rf "$SESSION_DIR"
+}
+
+handle_signal() {
+    cleanup
+    exit 130
 }
 
 trap cleanup EXIT

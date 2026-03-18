@@ -382,7 +382,14 @@ else
 fi
 
 echo ""
-echo "Installed for $installed tool(s). Restart your AI tool for hooks to take effect."
+echo "Installed for $installed tool(s)."
+echo ""
+echo "  How it works:"
+echo "    Next time you send a prompt to your AI tool, HushFlow will"
+echo "    automatically open a breathing animation after a short delay."
+echo "    When the AI finishes, the animation closes on its own."
+echo ""
+echo "  Restart your AI tool for hooks to take effect."
 echo ""
 
 # Quick demo: show a 3-second breathing preview

@@ -31,6 +31,8 @@ function Install-ForTool($tool) {
             Ensure-Config $configDir
             # Write hooks to settings.json
             $settings = if (Test-Path $settingsFile) { Get-Content $settingsFile -Raw | ConvertFrom-Json } else { @{} }
+            # Backup settings before modifying
+            if (Test-Path $settingsFile) { Copy-Item $settingsFile "$settingsFile.bak" -Force }
             if (-not $settings.hooks) { $settings | Add-Member -NotePropertyName "hooks" -NotePropertyValue @{} }
             $startHook = @(@{ hooks = @(@{ type = "command"; command = "powershell -ExecutionPolicy Bypass -File `"$OnStart`""; async = $true }) })
             $stopHook = @(@{ hooks = @(@{ type = "command"; command = "powershell -ExecutionPolicy Bypass -File `"$OnStop`""; async = $true }) })

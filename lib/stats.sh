@@ -141,7 +141,7 @@ print_period() {
         echo "    No sessions"
     else
         echo "    Sessions: $sessions  |  Cycles: ${cycles:-0}  |  Time: $(format_duration "${duration:-0}")"
-        [ -n "$fav_exercise" ] && echo "    Favorite: $fav_exercise ($fav_animation)"
+        [ -n "$fav_exercise" ] && [ -n "$fav_animation" ] && echo "    Favorite: $fav_exercise ($fav_animation)"
     fi
 }
 

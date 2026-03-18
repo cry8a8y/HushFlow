@@ -33,7 +33,7 @@ case "${1:-help}" in
     doctor)
         exec bash "$SCRIPT_DIR/doctor.sh"
         ;;
-    help|--help|-h|*)
+    help|--help|-h)
         echo "HushFlow — Turn AI thinking time into mindful breathing."
         echo ""
         echo "Usage:"
@@ -48,5 +48,10 @@ case "${1:-help}" in
         echo "  hushflow stats                  View session statistics and streak"
         echo "  hushflow doctor"
         echo "  hushflow help"
+        ;;
+    *)
+        echo "Unknown command: $1" >&2
+        echo "Run 'hushflow help' for usage." >&2
+        exit 1
         ;;
 esac
