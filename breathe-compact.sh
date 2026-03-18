@@ -675,6 +675,18 @@ graceful_exit() {
     # Final clear
     printf '\033[2J\033[H'
 
+    # Ghostty bug: "Process exited" flashes before monitor can dismiss it.
+    # Hide window off-screen BEFORE exiting so the message is invisible.
+    if [ -d "/Applications/Ghostty.app" ] && [ -n "${HUSHFLOW_WINDOW_TITLE:-}" ]; then
+        osascript -e "
+            tell application \"System Events\" to tell process \"Ghostty\"
+                try
+                    set w to first window whose name contains \"HushFlow\"
+                    set position of w to {-9999, -9999}
+                end try
+            end tell" &>/dev/null
+    fi
+
     exit 0
 }
 

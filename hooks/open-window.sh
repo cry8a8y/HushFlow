@@ -100,7 +100,7 @@ tell application "Ghostty"
     set breathePath to quoted form of POSIX path of "$BREATHE_SCRIPT"
     set command of surfaceConfig to "/bin/bash -lc " & quoted form of ("exec " & breathePath)
     set font size of surfaceConfig to fontSize
-    set wait after command of surfaceConfig to "none"
+    set wait after command of surfaceConfig to false
     set environment variables of surfaceConfig to {"HUSHFLOW_SESSION_DIR=$SESSION_DIR", "HUSHFLOW_CONFIG_DIR=${HUSHFLOW_CONFIG_DIR:-$HOME/.claude/hushflow}", "HUSHFLOW_WINDOW_TITLE=$WINDOW_MATCH_TITLE", "HUSHFLOW_COLS=" & termCols, "HUSHFLOW_ROWS=" & termRows}
     set newWindow to new window with configuration surfaceConfig
     set winId to id of newWindow
@@ -125,28 +125,51 @@ EOF
         )
         if [ -n "$window_id" ]; then
             echo "$window_id" > "$WINDOW_ID_FILE"
-            # Background monitor: auto-dismiss "Process exited" prompt.
-            # Runs in Claude Code's shell (outside HushFlow terminal),
-            # so it survives after the breathing process exits.
-            (
-                # Wait until HushFlow process exits (marker removed = close soon)
-                while [ -f "$MARKER_FILE" ]; do sleep 1; done
-                # Wait for fade-out + process exit + "Process exited" to render
-                sleep 3
-                # Send Return to dismiss prompt and close the window
-                osascript <<'DISMISSEOF' &>/dev/null
-tell application "System Events"
-    tell process "Ghostty"
-        try
-            set w to first window whose name contains "HushFlow"
-            perform action "AXRaise" of w
-            delay 0.1
-            keystroke return
-        end try
-    end tell
-end tell
+            # Background monitor: auto-dismiss Ghostty's "Process exited" prompt.
+            # Single long-running osascript to eliminate startup latency (~300ms).
+            # Polls from within AppleScript so keystroke fires within ~70ms of exit.
+            osascript <<DISMISSEOF &>/dev/null &
+set markerFile to "$MARKER_FILE"
+set sessionName to "$SESSION_NAME"
+
+-- Phase 1: wait for marker file removal (graceful_exit started)
+repeat
+    try
+        do shell script "test -f " & quoted form of markerFile
+    on error
+        exit repeat
+    end try
+    delay 0.5
+end repeat
+
+-- Phase 2: tight-poll until breathe-compact actually exits
+repeat 200 times
+    try
+        do shell script "pgrep -qf 'breathe-compact.*" & sessionName & "'"
+    on error
+        exit repeat
+    end try
+    delay 0.05
+end repeat
+
+-- Phase 3: dismiss "Process exited" prompt immediately
+delay 0.05
+repeat 5 times
+    try
+        tell application "System Events"
+            tell process "Ghostty"
+                if not (exists (first window whose name contains "HushFlow")) then exit repeat
+                set w to first window whose name contains "HushFlow"
+                perform action "AXRaise" of w
+                delay 0.02
+                keystroke return
+            end tell
+        end tell
+        exit repeat
+    end try
+    delay 0.2
+end repeat
 DISMISSEOF
-            ) &>/dev/null &
         fi
         ;;
 
