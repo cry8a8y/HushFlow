@@ -23,6 +23,9 @@ jobs:
       - name: Run smoke tests
         run: bash test/smoke-test.sh
 
+      - name: Run unit tests
+        run: bash test/unit-test.sh
+
       - name: Run installer contract tests
         run: bash test/install-contract-test.sh
 
