@@ -52,7 +52,8 @@ npx hushflow install
 - 🧘 **Auto-Mindfulness** — Appears after a delay, disappears when AI finishes. Zero-click calm.
 - 🎯 **Focus-First** — Runs in a separate window or tmux pane. Your terminal stays focused.
 - 🛠️ **Universal Integration** — Native for **Claude Code**, **Gemini CLI**, and **Codex CLI**.
-- 💻 **Cross-Platform** — macOS, Linux, and Windows. Ghostty, iTerm2, Windows Terminal, etc.
+- 📊 **Mindful Stats** — Track your breathing sessions and keep your daily streak alive with `hushflow stats`.
+- 💻 **Cross-Platform** — macOS, Linux, and Windows. optimized for **Ghostty 1.3.1**, iTerm2, Windows Terminal.
 - 🫁 **Breath Work** — 4 built-in patterns: *Coherent*, *Sigh*, *Box*, and *4-7-8*.
 - 🎨 **Custom Themes** — 8+ themes (**3 built-in + 5 community** like Catppuccin, Dracula).
 - 🎵 **Immersive Audio** — Zen-crafted soundscape with phase-specific breath cues.
@@ -67,7 +68,13 @@ HushFlow features a built-in soundscape designed for deep immersion and function
 - **Exhale**: **Parabolic Recede** — Silky 65Hz airflow that settles naturally like a tide.
 - **Complete**: **The Master Bell** — A heavy 82Hz bronze bell struck by a mellow mallet.
 
-*Designed with acoustic physics to induce parasympathetic relaxation.*
+*Let the hum of a Tibetan bell dissolve your coding anxiety as the AI finishes its task.*
+
+## 📊 Usage Statistics
+
+Track your progress and build a habit. Use `hushflow stats` to view your daily cycles, total mindful hours, and current streak.
+
+---
 
 ## 📺 UI Modes
 

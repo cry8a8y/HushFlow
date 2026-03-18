@@ -52,7 +52,8 @@ npx hushflow install
 - 🧘 **自動正念** — 設定延遲後自動啟動，AI 完成後自動消失。完全自動化。
 - 🎯 **專注優先** — 在獨立視窗或 tmux 窗格中運行。主終端焦點不被干擾。
 - 🛠️ **原生整合** — 完美支援 **Claude Code**、**Gemini CLI** 與 **Codex CLI**。
-- 💻 **跨平台支援** — macOS、Linux 與 Windows。相容 Ghostty、iTerm2、Windows Terminal 等。
+- 📊 **使用統計** — 透過 `hushflow stats` 追蹤呼吸次數與連續天數 (streak)，建立你的正念習慣。
+- 💻 **跨平台支援** — macOS, Linux 與 Windows。特別優化 **Ghostty 1.3.1**, iTerm2, Windows Terminal。
 - 🫁 **專業呼吸法** — 內建 4 種模式：*諧振*、*生理性嘆息*、*箱式*、與 *4-7-8*。
 - 🎨 **自訂主題** — 8+ 種主題（**3 種內建 + 5 種社群主題**，如 Catppuccin, Dracula）。
 - 🎵 **沈浸式音效** — 禪意打造的 10 秒深層循環：*火爐*、*深層禪定* 與 *大師古鐘*。
@@ -67,7 +68,13 @@ HushFlow 內建一套專為深層沈浸與生理引導設計的聲景。使用 `
 - **吐氣 (Exhale)**：**拋物線沈降 (Parabolic Recede)** — 絲滑的 65Hz 氣流感，像潮汐般自然退去。
 - **完成 (Complete)**：**大師古鐘 (The Master Bell)** — 重型 82Hz 青銅古鐘，由溫潤木槌敲擊，餘韻悠長。
 
-*基於聲學物理設計，旨在誘發副交感神經放鬆。*
+*讓大師古鐘的餘韻，隨著 AI 任務完成的一刻，一同消散寫程式時的焦慮。*
+
+## 📊 使用統計
+
+追蹤進度，建立習慣。執行 `hushflow stats` 即可查看每日循環次數、總正念時數以及目前的連續天數。
+
+---
 
 ## 📺 UI 模式
 
@@ -105,9 +112,10 @@ HushFlow 在背景監控你的 AI 終端會話：
 
 ## 📚 進階文件
 
-- [社群主題](README.zh-TW.md) (Catppuccin, Dracula, Nord, Solarized, Gruvbox)
+- [社群主題](../themes/) (Catppuccin, Dracula, Nord, Solarized, Gruvbox)
 - [Plugin API](PLUGIN-API.md) — 自訂動畫外掛
 - [環境變數](ENVIRONMENT.md) — 進階設定選項
+- [疑難排解](TROUBLESHOOTING.md) — 常見問題與解決方案
 
 ---
 
