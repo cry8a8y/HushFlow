@@ -309,7 +309,15 @@ cleanup() {
         wid=$(cat "$SESSION_DIR/window-id" 2>/dev/null || true)
         if [ -n "$wid" ]; then
             osascript -e "tell application \"Ghostty\" to close (window id \"$wid\")" &>/dev/null
-            sleep 0.3  # Give Ghostty time to close before process exits
+            # Wait until Ghostty actually closes the window (up to 2s)
+            local _w=0
+            while [ "$_w" -lt 20 ]; do
+                if ! osascript -e "tell application \"Ghostty\" to window id \"$wid\"" &>/dev/null 2>&1; then
+                    break
+                fi
+                sleep 0.1
+                _w=$((_w + 1))
+            done
         fi
     fi
 }
