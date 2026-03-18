@@ -7,9 +7,12 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/license-MIT-green" alt="License MIT" />
+  <a href="https://github.com/cry8a8y/HushFlow/stargazers"><img src="https://img.shields.io/github/stars/cry8a8y/HushFlow?style=social" alt="GitHub Stars" /></a>
+  &nbsp;
+  <img src="https://img.shields.io/github/v/release/cry8a8y/HushFlow?label=version&color=orange" alt="Version" />
   <img src="https://img.shields.io/badge/platform-macOS%20|%20Linux%20|%20Windows-blue" alt="Platform Support" />
-  <img src="https://img.shields.io/badge/version-1.0.0-orange" alt="Version 1.0.0" />
+  <img src="https://img.shields.io/github/license/cry8a8y/HushFlow?color=green" alt="License MIT" />
+  <img src="https://img.shields.io/npm/v/hushflow?color=cb3837&label=npm" alt="npm" />
 </p>
 
 ---
