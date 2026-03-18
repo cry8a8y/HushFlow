@@ -1,6 +1,6 @@
 # HushFlow — Project Status
 
-## Completed (v1.0 + v1.0.1)
+## Completed (v1.0 → v2.0)
 
 - **Multiple Breathing Patterns**: Coherent, Physiological Sigh, Box, and 4-7-8 rhythms.
 - **6 Animation Styles**: Constellation, Ripple, Wave, Orbit, Helix, Rain — all with SIN64 trig lookups.
@@ -19,6 +19,7 @@
 - **npm Published (2026-03-18)**: `hushflow@1.0.1` on npm, `npx hushflow install` works.
 - **GitHub Release v1.0.0**: First public release with release notes.
 - **README CEO Review (2026-03-18)**: Dynamic badges, emotional hook, mobile-friendly layout, Contributing section, Stars badge.
+- **v2.0 (2026-03-18)**: Session notifications, permission-aware breathing, random animation default, sound system, 290+ tests, Ghostty optimizations, 5 community themes.
 
 ---
 
