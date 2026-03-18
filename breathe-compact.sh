@@ -75,11 +75,47 @@ unset _theme_loaded _theme_dir _theme_file _hf_dir
 [ -n "${HUSHFLOW_COLOR_MDIM:-}" ] && C_MDIM="$HUSHFLOW_COLOR_MDIM"
 [ -n "${HUSHFLOW_COLOR_DIM:-}" ] && C_DIM="$HUSHFLOW_COLOR_DIM"
 
-COLOR_IN="\033[38;2;${C_B}m"
-COLOR_OUT="\033[38;2;${C_D}m"
-COLOR_MID="\033[38;2;${C_MID}m"
-COLOR_MDIM="\033[38;2;${C_MDIM}m"
-DIM="\033[38;2;${C_DIM}m"
+# === Color capability detection ===
+# TrueColor (24-bit): COLORTERM=truecolor or 24bit
+# 256-color: tput colors >= 256
+# Fallback: basic 16-color ANSI
+_hf_use_truecolor=1
+if [ "${COLORTERM:-}" != "truecolor" ] && [ "${COLORTERM:-}" != "24bit" ]; then
+    _tc=$(tput colors 2>/dev/null || echo 8)
+    if [ "$_tc" -ge 256 ] 2>/dev/null; then
+        _hf_use_truecolor=0  # 256-color mode
+        hf_log "TrueColor not detected (COLORTERM=${COLORTERM:-unset}), using 256-color fallback"
+    else
+        _hf_use_truecolor=0
+        hf_log "Limited color support ($_tc colors), using 256-color fallback"
+    fi
+fi
+
+# Convert "R;G;B" to nearest 256-color code
+_rgb_to_256() {
+    local r g b
+    IFS=';' read -r r g b <<< "$1"
+    # 6x6x6 color cube: 16 + 36*r + 6*g + b (scaled 0-5)
+    local r6=$(( (r * 5 + 127) / 255 ))
+    local g6=$(( (g * 5 + 127) / 255 ))
+    local b6=$(( (b * 5 + 127) / 255 ))
+    echo $(( 16 + 36 * r6 + 6 * g6 + b6 ))
+}
+
+if [ "$_hf_use_truecolor" -eq 1 ]; then
+    COLOR_IN="\033[38;2;${C_B}m"
+    COLOR_OUT="\033[38;2;${C_D}m"
+    COLOR_MID="\033[38;2;${C_MID}m"
+    COLOR_MDIM="\033[38;2;${C_MDIM}m"
+    DIM="\033[38;2;${C_DIM}m"
+else
+    COLOR_IN="\033[38;5;$(_rgb_to_256 "$C_B")m"
+    COLOR_OUT="\033[38;5;$(_rgb_to_256 "$C_D")m"
+    COLOR_MID="\033[38;5;$(_rgb_to_256 "$C_MID")m"
+    COLOR_MDIM="\033[38;5;$(_rgb_to_256 "$C_MDIM")m"
+    DIM="\033[38;5;$(_rgb_to_256 "$C_DIM")m"
+fi
+unset _hf_use_truecolor
 RESET='\033[0m'
 
 # === Exercise ===

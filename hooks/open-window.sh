@@ -194,23 +194,34 @@ end try
 EOF
         ;;
 
-    gnome-terminal)
-        gnome-terminal --title="$WINDOW_TITLE" --geometry=40x20+1260+80 -- bash -c "$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"" &
-        echo $! > "$WINDOW_PID_FILE"
-        ;;
+    gnome-terminal|konsole|xfce4-terminal|xterm)
+        # Dynamic position: center relative to active window, fallback to +100+100
+        _linux_geom="40x20+100+100"
+        if command -v xdotool &>/dev/null; then
+            _aw=$(xdotool getactivewindow 2>/dev/null) && \
+            _ag=$(xdotool getwindowgeometry --shell "$_aw" 2>/dev/null) && \
+            eval "$_ag" && \
+            _px=$(( X + WIDTH / 2 - 200 )) && \
+            _py=$(( Y + HEIGHT / 2 - 150 )) && \
+            [ "$_px" -gt 0 ] 2>/dev/null && [ "$_py" -gt 0 ] 2>/dev/null && \
+            _linux_geom="40x20+${_px}+${_py}"
+            hf_log "linux geometry: $_linux_geom (from xdotool)"
+        fi
 
-    konsole)
-        konsole --geometry 40x20+1260+80 -e bash -c "$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"" &
-        echo $! > "$WINDOW_PID_FILE"
-        ;;
-
-    xfce4-terminal)
-        xfce4-terminal --title="$WINDOW_TITLE" --geometry=40x20+1260+80 -e "bash -c '$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"'" &
-        echo $! > "$WINDOW_PID_FILE"
-        ;;
-
-    xterm)
-        xterm -title "$WINDOW_TITLE" -geometry 40x20+1260+80 -e bash -c "$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"" &
+        case "$TERMINAL" in
+            gnome-terminal)
+                gnome-terminal --title="$WINDOW_TITLE" --geometry="$_linux_geom" -- bash -c "$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"" &
+                ;;
+            konsole)
+                konsole --geometry "$_linux_geom" -e bash -c "$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"" &
+                ;;
+            xfce4-terminal)
+                xfce4-terminal --title="$WINDOW_TITLE" --geometry="$_linux_geom" -e "bash -c '$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"'" &
+                ;;
+            xterm)
+                xterm -title "$WINDOW_TITLE" -geometry "$_linux_geom" -e bash -c "$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"" &
+                ;;
+        esac
         echo $! > "$WINDOW_PID_FILE"
         ;;
 
