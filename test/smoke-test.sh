@@ -596,16 +596,16 @@ for _a in $_VALID; do [ "$_picked" = "$_a" ] && _found=1; done
 # --- Sound config default ---
 section "Sound config default"
 
-# Test: sound defaults to enabled when config lacks sound= line
+# Test: sound defaults to disabled when config lacks sound= line
 SOUND_CFG="$TMPDIR_TEST/sound-cfg"
 mkdir -p "$SOUND_CFG"
 printf 'enabled=true\nexercise=0\n' > "$SOUND_CFG/config"
 if ! grep -q "^sound=" "$SOUND_CFG/config"; then
-    # Simulate the check: sound.sh now only disables on sound=false
-    if ! grep -q "^sound=false" "$SOUND_CFG/config"; then
-        pass "missing sound= line defaults to enabled"
+    # Simulate the check: sound.sh now only enables on sound=true
+    if ! grep -q "^sound=true" "$SOUND_CFG/config"; then
+        pass "missing sound= line defaults to disabled"
     else
-        fail "missing sound= treated as disabled"
+        fail "missing sound= treated as enabled"
     fi
 else
     fail "test config unexpectedly has sound= line"
