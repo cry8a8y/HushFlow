@@ -785,14 +785,17 @@ while true; do
     ic=$(( (PANE_W - ${#info_text}) / 2 + 1 ))
     frame+="\033[${info_row};1H\033[2K\033[${info_row};${ic}H${fade_prefix}${COLOR_MDIM}${info_text}${RESET}"
 
-    # Status + ESC hint (bottom row PANE_H)
+    # Status (bottom of content area)
     status="${phase}... ${remaining_s}s"
     sc_pos=$(( (PANE_W - ${#status}) / 2 + 1 ))
     frame+="\033[${PANE_H};1H\033[2K\033[${PANE_H};${sc_pos}H${fade_prefix}\033[1m${color}${status}${RESET}"
+
+    # ESC hint (pinned to actual terminal bottom, separated from content)
     if [ -t 0 ]; then
         _esc_hint="ESC to close"
-        _esc_col=$(( PANE_W - ${#_esc_hint} ))
-        frame+="\033[${PANE_H};${_esc_col}H${fade_prefix}${DIM}${_esc_hint}${RESET}"
+        _esc_pos=$(( (PANE_W - ${#_esc_hint}) / 2 + 1 ))
+        _term_bottom=$(tput lines 2>/dev/null || echo "$PANE_H")
+        frame+="\033[${_term_bottom};1H\033[2K\033[${_term_bottom};${_esc_pos}H${fade_prefix}${DIM}${_esc_hint}${RESET}"
     fi
 
     printf '%b' "$frame"
