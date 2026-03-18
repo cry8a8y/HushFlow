@@ -15,9 +15,9 @@
 
 ---
 
-AI 等待時間的正念呼吸引導。AI 開始工作時自動啟動，完成時自動關閉。
+為 AI 終端機打造的呼吸層。把每一次等待，變成自動化的平靜片刻 — 跨工具、跨平台。
 
-支援 **Claude Code** 和 **Gemini CLI**（完整的逐次 prompt hook）。**Codex CLI** 目前為 session 層級支援。
+**Claude Code** 和 **Gemini CLI** 完整支援逐次 prompt hook。**Codex CLI** 為 session 層級支援。
 
 ## 🚀 60 秒安裝
 
@@ -80,7 +80,7 @@ hushflow doctor        # 檢查安裝狀態與環境
 
 <br/>
 <p align="center">
-  <img src="../demo.gif" alt="HushFlow — constellation 動畫搭配諧振呼吸" width="720" />
+  <img src="../demo.gif" alt="HushFlow — AI 工作時，呼吸動畫自然出現在你的終端旁邊" width="720" />
 </p>
 <br/>
 
@@ -93,60 +93,14 @@ HushFlow 提供 4 種 UI 模式，適應不同工作流程：
 | **tmux popup** | tmux 3.2+ — 浮動覆蓋層 | `HUSHFLOW_UI_MODE=tmux-popup` |
 | **Inline** | 極簡 — 在當前終端渲染 | `HUSHFLOW_UI_MODE=inline` |
 
-## ✨ 功能特色
+## ✨ 為什麼好用
 
-<table>
-<tr>
-<td width="50%">
-
-### 🧘 呼吸
-- **4 種練習** — 諧振、生理嘆息、箱式、4-7-8
-- **自動啟動** — AI 思考時開始，完成時結束
-- **可設延遲** — 自訂啟動等待時間
-- **音效提示** — 可選的呼吸轉換提示音
-
-</td>
-<td width="50%">
-
-### 🎨 視覺
-- **6 種動畫** — 星座、漣漪、波浪、軌道、螺旋、落雨
-- **8+ 主題** — 海洋青、暮光紫、琥珀暖 + 社群主題
-- **10fps 引擎** — SIN64 查找表，零閃爍
-- **外掛 API** — 自訂動畫腳本
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-### 🔌 整合
-- **3 個 AI 工具** — Claude Code、Gemini CLI、Codex CLI
-- **4 種 UI 模式** — 視窗、tmux pane、popup、inline
-- **通用包裝** — `hushflow wrap -- <任何指令>`
-- **不干擾** — 對 AI 工具輸出零影響
-
-</td>
-<td width="50%">
-
-### 📊 追蹤與更多
-- **使用統計** — 呼吸次數、連續天數、正念時間
-- **跨平台** — macOS、Linux、Windows
-- **6 種終端** — Ghostty、Terminal.app、iTerm2、GNOME、xterm、Windows Terminal
-- **自我診斷** — `hushflow doctor`
-
-</td>
-</tr>
-</table>
-
-### ⚡ 效能
-
-| 指標 | 數值 | 說明 |
-|------|------|------|
-| **渲染** | 10 fps | 雙緩衝，每幀單次 `printf` |
-| **CPU** | < 2% | SIN64/COS32 查找表，迴圈內無 `bc`/`awk` |
-| **記憶體** | ~3 MB RSS | 純 Bash，無背景服務 |
-| **啟動** | < 50 ms | 無直譯器啟動（Python/Node），僅 `bash` |
-| **依賴** | 渲染路徑 0 個 | `jq` 僅在載入設定時使用 |
+- **自動出現** — 設定延遲後自動啟動，AI 完成後自動消失。不需要手動觸發。
+- **不搶焦點** — 在獨立視窗或 tmux 窗格中運行。你的終端機完全不受影響。
+- **支援你的工具** — Claude Code、Gemini CLI、Codex CLI。一次安裝全部涵蓋。
+- **跨平台** — macOS、Linux、Windows。Ghostty、iTerm2、Terminal.app、GNOME Terminal、xterm、Windows Terminal。
+- **4 種呼吸節奏** — 諧振、生理嘆息、箱式、4-7-8。選好節奏，HushFlow 會記住。
+- **6 種動畫、8+ 主題** — 從星座到落雨，從海洋青到 Dracula。想調就調，不調也行。
 
 ## 🛠️ 支援的 AI 工具
 
@@ -222,6 +176,16 @@ flowchart TD
     style breathe fill:#0f3460,stroke:#533483,color:#e0e0e0
     style cleanup fill:#1a1a2e,stroke:#0f3460,color:#e0e0e0
 ```
+
+### ⚡ 技術底層
+
+| 指標 | 數值 | 說明 |
+|------|------|------|
+| **渲染** | 10 fps | 雙緩衝，每幀單次 `printf` |
+| **CPU** | < 2% | 三角函數查找表，迴圈內無 `bc`/`awk` |
+| **記憶體** | ~3 MB RSS | 純 Bash，無背景服務 |
+| **啟動** | < 50 ms | 無直譯器啟動，僅 `bash` |
+| **依賴** | 渲染路徑 0 個 | `jq` 僅在載入設定時使用 |
 
 ## 📚 進階文件
 
