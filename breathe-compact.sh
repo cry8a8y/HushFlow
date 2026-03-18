@@ -315,12 +315,13 @@ trap read_size WINCH
 printf '\033]0;%s\a\033[?25l\033[2J' "$WINDOW_TITLE"
 
 # === Keyboard input: stty raw mode for ESC detection ===
-# Use stty min 0 time 1 (0.1s timeout) instead of read -t 0.1
-# because macOS /bin/bash 3.2 does not support fractional read timeouts.
+# Use stty -icanon min 0 time 0 for instant non-blocking reads via dd.
+# Bash 3.2's read -n1 overrides stty (sets min 1 time 0), so we use
+# dd bs=1 count=1 which respects stty settings directly.
 _hf_old_stty=""
 if [ -t 0 ]; then
     _hf_old_stty=$(stty -g 2>/dev/null) || true
-    stty -echo -icanon min 0 time 1 2>/dev/null || true
+    stty -echo -icanon min 0 time 0 2>/dev/null || true
 fi
 hf_log "started animation=$animation exercise=$EX_NAME theme=${theme:-teal} PANE=${PANE_W}x${PANE_H}"
 
@@ -799,24 +800,19 @@ while true; do
 
     printf '%b' "$frame"
 
-    # Frame delay + non-blocking keyboard input
-    # stty min 0 time 1 provides the 0.1s timeout (works on bash 3.2)
+    # Frame delay (sleep) + non-blocking key check (dd)
+    # dd respects stty min 0 time 0 (instant return), unlike bash read -n1
+    # which overrides stty settings on bash 3.2.
+    sleep 0.1
     _hf_key=""
     if [ -t 0 ]; then
-        IFS= read -r -n1 _hf_key 2>/dev/null || true
-    else
-        sleep 0.1
+        _hf_key=$(dd bs=1 count=1 2>/dev/null) || true
     fi
 
     # ESC key detection
     if [ "$_hf_key" = $'\x1b' ]; then
         # Distinguish bare ESC from escape sequences (arrow keys, etc.)
-        # Read next char with short stty timeout
-        _old_time=$(stty -g 2>/dev/null)
-        stty min 0 time 0 2>/dev/null || true
-        _hf_seq=""
-        IFS= read -r -n1 _hf_seq 2>/dev/null || true
-        stty "$_old_time" 2>/dev/null || true
+        _hf_seq=$(dd bs=1 count=1 2>/dev/null) || true
         if [ -z "$_hf_seq" ]; then
             # Bare ESC pressed — close window
             hf_log "ESC pressed, closing"
