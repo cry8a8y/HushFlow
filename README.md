@@ -36,7 +36,7 @@ git clone https://github.com/cry8a8y/HushFlow.git; cd HushFlow; .\install.ps1
 npx hushflow install
 ```
 
-### ✅ Verify in 5s
+### ✅ Verify Installation in 5 Seconds
 1. **Restart** your AI tool (e.g., Claude Code).
 2. Send any **Prompt**.
 3. **Wait 5s** — The breathing window will appear naturally.
@@ -55,7 +55,7 @@ npx hushflow install
 - 💻 **Cross-Platform** — macOS, Linux, and Windows. Ghostty, iTerm2, Windows Terminal, etc.
 - 🫁 **Breath Work** — 4 built-in patterns: *Coherent*, *Sigh*, *Box*, and *4-7-8*.
 - 🎨 **Custom Themes** — 8+ themes (**3 built-in + 5 community** like Catppuccin, Dracula).
-- 🎵 **Immersive Audio** — Zen-crafted 10s deep loops: *Hearth*, *Deep Zen*, and *Master Bell*.
+- 🎵 **Immersive Audio** — Zen-crafted soundscape: *Harmonic Bloom*, *Tri-Harmonic Stillness*, *Parabolic Recede*, and *The Master Bell*.
 - ⚡ **Engineered for Speed** — Pure Bash logic. Render path has zero external dependencies.
 
 ## 🎵 Immersive Audio
@@ -67,7 +67,7 @@ HushFlow features a built-in soundscape designed for deep immersion and function
 - **Exhale**: **Parabolic Recede** — Silky 65Hz airflow that settles naturally like a tide.
 - **Complete**: **The Master Bell** — A heavy 82Hz bronze bell struck by a mellow mallet.
 
-*Crafted using acoustic physics to induces parasympathetic relaxation.*
+*Designed with acoustic physics to induce parasympathetic relaxation.*
 
 ## 📺 UI Modes
 
@@ -81,7 +81,9 @@ HushFlow features a built-in soundscape designed for deep immersion and function
 ```bash
 hushflow config hrv    # Set Coherent Breathing
 hushflow theme nord    # Apply Nord theme
-hushflow sound on      # Enable breath chimes
+hushflow animation     # Set animation style
+hushflow sound on      # Enable breath audio
+hushflow wrap -- cmd   # Run breathing while a command executes
 hushflow stats         # View session statistics
 hushflow doctor        # Run health check
 ```
@@ -91,21 +93,21 @@ hushflow doctor        # Run health check
 HushFlow monitors your AI terminal hooks in the background:
 1. 🔌 **Hook Trigger**: AI tool signals the start of agentic work.
 2. ⏳ **Smart Delay**: Waits 5s to ensure you're actually waiting, not reading.
-3. 🧘 **Ritual**: Opens a window/pane with double-buffered Bash animations.
-4. 🔴 **Cleanup**: Automatically closes when the AI tool signals "Stop".
+3. 🧘 **Ritual**: Opens a window/pane with smooth Bash animations.
+4. 🔴 **Cleanup**: Automatically closes when the AI tool finishes.
 
 > [!TIP]
 > View the [Full Architecture & Flowchart](docs/ARCHITECTURE.md) for more technical details.
 
 ## 🔒 Transparency & Trust
 
-- **Modified Files**: HushFlow only touches your AI tool's hook settings (e.g., `~/.claude/settings.json`, `~/.gemini/settings.json`).
+- **Modified Files**: HushFlow only touches your AI tool's hook settings (e.g., `~/.claude/settings.json`, `~/.gemini/settings.json`, `~/.codex/hooks.json`).
 - **Uninstall**: Run `hushflow uninstall` to revert all changes immediately.
 - **Privacy**: Zero telemetry. All logic runs locally in your shell.
 
 ## 📚 Advanced Docs
 
-- [Community Themes](docs/README.zh-TW.md) (Catppuccin, Dracula, Nord, Solarized, Gruvbox)
+- [Community Themes](themes/) (Catppuccin, Dracula, Nord, Solarized, Gruvbox)
 - [Plugin API](docs/PLUGIN-API.md) — Create custom animations
 - [Environment Variables](docs/ENVIRONMENT.md) — Advanced configuration
 
