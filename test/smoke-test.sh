@@ -78,7 +78,7 @@ rm -f "$MARKER"
 # --- Script syntax ---
 section "Script syntax"
 
-for script in breathe-compact.sh hooks/on-start.sh hooks/on-stop.sh hooks/on-permission.sh hooks/on-resume.sh hooks/open-window.sh hooks/open-tmux-popup.sh set-exercise.sh install.sh install-remote.sh lib/detect-terminal.sh cli.sh; do
+for script in breathe-compact.sh hooks/on-start.sh hooks/on-stop.sh hooks/on-permission.sh hooks/on-resume.sh hooks/open-window.sh hooks/open-tmux-popup.sh set-exercise.sh install.sh install-remote.sh lib/detect-terminal.sh lib/hook-common.sh cli.sh; do
     if [ -f "$SCRIPT_DIR/$script" ]; then
         if bash -n "$SCRIPT_DIR/$script" 2>/dev/null; then
             pass "syntax ok: $script"
@@ -649,11 +649,69 @@ else
     fail "on-stop.sh missing permission-ts cleanup"
 fi
 
+# Test: on-stop.sh cleans up .permission-pending
+if grep -q "permission-pending" "$SCRIPT_DIR/hooks/on-stop.sh"; then
+    pass "on-stop.sh cleans .permission-pending"
+else
+    fail "on-stop.sh missing .permission-pending cleanup"
+fi
+
+# Test: hook-common.sh exists and has valid syntax
+if [ -f "$SCRIPT_DIR/lib/hook-common.sh" ]; then
+    bash -n "$SCRIPT_DIR/lib/hook-common.sh" 2>/dev/null && pass "hook-common.sh syntax ok" || fail "hook-common.sh syntax error"
+else
+    fail "hook-common.sh missing"
+fi
+
+# Test: all hooks source hook-common.sh
+for hook in on-start on-stop on-permission on-resume; do
+    if grep -q "hook-common.sh" "$SCRIPT_DIR/hooks/${hook}.sh"; then
+        pass "${hook}.sh sources hook-common.sh"
+    else
+        fail "${hook}.sh missing hook-common.sh source"
+    fi
+done
+
+# Test: on-permission.sh creates .permission-pending flag
+if grep -q "permission-pending" "$SCRIPT_DIR/hooks/on-permission.sh"; then
+    pass "on-permission.sh creates .permission-pending flag"
+else
+    fail "on-permission.sh missing .permission-pending flag"
+fi
+
+# Test: on-resume.sh checks .permission-pending for fast-path
+if grep -q "permission-pending" "$SCRIPT_DIR/hooks/on-resume.sh"; then
+    pass "on-resume.sh checks .permission-pending fast-path"
+else
+    fail "on-resume.sh missing .permission-pending fast-path"
+fi
+
+# Test: on-resume.sh validates timestamp
+if grep -q '0-9.*exit 0' "$SCRIPT_DIR/hooks/on-resume.sh"; then
+    pass "on-resume.sh validates timestamp format"
+else
+    fail "on-resume.sh missing timestamp validation"
+fi
+
+# Test: on-resume.sh uses English notification text
+if grep -q "breathe anytime" "$SCRIPT_DIR/hooks/on-resume.sh"; then
+    pass "on-resume.sh uses English notification"
+else
+    fail "on-resume.sh missing English notification"
+fi
+
 # Test: breathe-compact.sh supports HUSHFLOW_FADE_TICKS env override
 if grep -q "HUSHFLOW_FADE_TICKS" "$SCRIPT_DIR/breathe-compact.sh"; then
     pass "breathe-compact.sh supports HUSHFLOW_FADE_TICKS"
 else
     fail "breathe-compact.sh missing HUSHFLOW_FADE_TICKS"
+fi
+
+# Test: open-window.sh propagates HUSHFLOW_FADE_TICKS in BREATHE_ENV
+if grep -q "HUSHFLOW_FADE_TICKS" "$SCRIPT_DIR/hooks/open-window.sh"; then
+    pass "open-window.sh propagates HUSHFLOW_FADE_TICKS"
+else
+    fail "open-window.sh missing HUSHFLOW_FADE_TICKS propagation"
 fi
 
 # --- Security: config validation ---

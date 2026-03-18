@@ -2,14 +2,15 @@
 # Hook: Called when PermissionRequest is triggered
 # Lightweight close: remove marker + record timestamp (don't clean session dir)
 
-hf_log() { [ "${HUSHFLOW_DEBUG:-}" = "1" ] && echo "$(date '+%H:%M:%S') [on-permission] $*" >> /tmp/hushflow-debug.log; }
+_HF_HOOK_NAME="on-permission"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/lib/hook-common.sh"
 
-CONFIG_DIR="${HUSHFLOW_CONFIG_DIR:-$HOME/.claude/hushflow}"
-SESSION_DIR=""
-[ -f "$CONFIG_DIR/.session" ] && SESSION_DIR=$(cat "$CONFIG_DIR/.session" 2>/dev/null)
-[ -z "$SESSION_DIR" ] || [ ! -d "$SESSION_DIR" ] && exit 0
+_hf_load_session || exit 0
 
 hf_log "permission request detected, pausing breathing window"
+
+# Create fast-path flag so on-resume.sh can skip work when not needed
+touch "$CONFIG_DIR/.permission-pending"
 
 # Record timestamp for expiry logic in on-resume.sh
 date +%s > "$SESSION_DIR/permission-ts"

@@ -149,8 +149,12 @@ section "Claude: Fresh install from empty settings"
     assert_valid_json "$SF" "claude-fresh: valid JSON"
     assert_hook_event "$SF" "UserPromptSubmit" "on-start.sh" "claude-fresh: start hook registered"
     assert_hook_event "$SF" "Stop" "on-stop.sh" "claude-fresh: stop hook registered"
+    assert_hook_event "$SF" "PermissionRequest" "on-permission.sh" "claude-fresh: permission hook registered"
+    assert_hook_event "$SF" "PostToolUse" "on-resume.sh" "claude-fresh: resume hook registered"
     assert_hook_attr "$SF" "UserPromptSubmit" "on-start.sh" "async" "true" "claude-fresh: start hook async=true"
     assert_hook_attr "$SF" "Stop" "on-stop.sh" "async" "true" "claude-fresh: stop hook async=true"
+    assert_hook_attr "$SF" "PermissionRequest" "on-permission.sh" "async" "true" "claude-fresh: permission hook async=true"
+    assert_hook_attr "$SF" "PostToolUse" "on-resume.sh" "async" "true" "claude-fresh: resume hook async=true"
 
     # Config file
     CF="$H/.claude/hushflow/config"
@@ -187,6 +191,8 @@ section "Claude: Idempotent — double install no duplicates"
     assert_valid_json "$SF" "claude-idempotent: valid JSON"
     assert_hook_count "$SF" "UserPromptSubmit" "on-start.sh" 1 "claude-idempotent: exactly 1 start hook"
     assert_hook_count "$SF" "Stop" "on-stop.sh" 1 "claude-idempotent: exactly 1 stop hook"
+    assert_hook_count "$SF" "PermissionRequest" "on-permission.sh" 1 "claude-idempotent: exactly 1 permission hook"
+    assert_hook_count "$SF" "PostToolUse" "on-resume.sh" 1 "claude-idempotent: exactly 1 resume hook"
 )
 
 section "Claude: Half-broken repair (has start, missing stop)"
@@ -214,6 +220,8 @@ section "Claude: Uninstall removes only HushFlow hooks"
     assert_valid_json "$SF" "claude-uninstall: valid JSON"
     assert_no_hook_event "$SF" "UserPromptSubmit" "on-start.sh" "claude-uninstall: HushFlow start removed"
     assert_no_hook_event "$SF" "Stop" "on-stop.sh" "claude-uninstall: HushFlow stop removed"
+    assert_no_hook_event "$SF" "PermissionRequest" "on-permission.sh" "claude-uninstall: HushFlow permission removed"
+    assert_no_hook_event "$SF" "PostToolUse" "on-resume.sh" "claude-uninstall: HushFlow resume removed"
     assert_hook_event "$SF" "UserPromptSubmit" "other tool hook" "claude-uninstall: other start hook preserved"
     assert_hook_event "$SF" "Stop" "other stop hook" "claude-uninstall: other stop hook preserved"
 
@@ -412,6 +420,8 @@ section "Cross-target: Install all 3 tools in sequence"
     run_install "$H" --target codex
 
     assert_hook_event "$H/.claude/settings.json" "UserPromptSubmit" "on-start.sh" "cross-all: claude start"
+    assert_hook_event "$H/.claude/settings.json" "PermissionRequest" "on-permission.sh" "cross-all: claude permission"
+    assert_hook_event "$H/.claude/settings.json" "PostToolUse" "on-resume.sh" "cross-all: claude resume"
     assert_hook_event "$H/.gemini/settings.json" "BeforeAgent" "on-start.sh" "cross-all: gemini start"
     assert_hook_event "$H/.codex/hooks.json" "SessionStart" "on-start.sh" "cross-all: codex start"
 
@@ -419,6 +429,8 @@ section "Cross-target: Install all 3 tools in sequence"
     run_uninstall "$H"
 
     assert_no_hook_event "$H/.claude/settings.json" "UserPromptSubmit" "on-start.sh" "cross-all: claude uninstalled"
+    assert_no_hook_event "$H/.claude/settings.json" "PermissionRequest" "on-permission.sh" "cross-all: claude permission uninstalled"
+    assert_no_hook_event "$H/.claude/settings.json" "PostToolUse" "on-resume.sh" "cross-all: claude resume uninstalled"
     assert_no_hook_event "$H/.gemini/settings.json" "BeforeAgent" "on-start.sh" "cross-all: gemini uninstalled"
     assert_no_hook_event "$H/.codex/hooks.json" "SessionStart" "on-start.sh" "cross-all: codex uninstalled"
 )
