@@ -64,10 +64,14 @@ if [ -f "$SESSION_DIR/window-pid" ]; then
     fi
 fi
 
-# Close window by ID (Ghostty AppleScript)
+# Close Ghostty window by ID
+# The breathing script detects marker removal (~0.1s) and runs a 1.5s fade-out,
+# then exits. Ghostty's wait_after_command=false auto-closes the window when the
+# process exits. We wait 2s for that graceful path, then force-close as safety net.
 if [ -f "$SESSION_DIR/window-id" ]; then
     window_id=$(cat "$SESSION_DIR/window-id")
     if [ -d "/Applications/Ghostty.app" ]; then
+        sleep 2
         osascript >/dev/null 2>&1 <<EOF
 tell application "Ghostty"
     try
@@ -75,6 +79,7 @@ tell application "Ghostty"
     end try
 end tell
 EOF
+        hf_log "sent close to Ghostty window $window_id (safety net)"
     fi
 fi
 

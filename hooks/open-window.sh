@@ -106,13 +106,16 @@ tell application "Ghostty"
     set winId to id of newWindow
 end tell
 
--- Brief pause for window to register, then resize the new front window
+-- Brief pause for window to register, then resize and raise the new window
 delay 0.2
 tell application "System Events"
     tell process "Ghostty"
         try
             set size of front window to {winW, winH}
             set position of front window to {posX, posY}
+            -- Bring to front so it's visible above other Ghostty windows.
+            -- The AI is working so the user isn't typing — no disruption.
+            perform action "AXRaise" of front window
         end try
     end tell
 end tell
