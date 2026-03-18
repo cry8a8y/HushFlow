@@ -3,7 +3,33 @@
 # Usage: hushflow wrap -- npm install
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-CONFIG_DIR="${HUSHFLOW_CONFIG_DIR:-$HOME/.claude/hushflow}"
+
+# Parse flags before --
+TARGET="claude"
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --target)
+            TARGET="$2"
+            shift 2
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
+case "$TARGET" in
+    claude)  CONFIG_DIR="${HUSHFLOW_CONFIG_DIR:-$HOME/.claude/hushflow}" ;;
+    gemini)  CONFIG_DIR="${HUSHFLOW_CONFIG_DIR:-$HOME/.gemini/hushflow}" ;;
+    codex)   CONFIG_DIR="${HUSHFLOW_CONFIG_DIR:-$HOME/.codex/hushflow}" ;;
+    *)       CONFIG_DIR="${HUSHFLOW_CONFIG_DIR:-$HOME/.claude/hushflow}" ;;
+esac
+
+export HUSHFLOW_CONFIG_DIR="$CONFIG_DIR"
 CONFIG_FILE="$CONFIG_DIR/config"
 
 # Exit if disabled — just run the command directly

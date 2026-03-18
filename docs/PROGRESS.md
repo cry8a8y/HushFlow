@@ -28,10 +28,15 @@
 - BREATHE_ENV propagates session, config, title, and fade ticks to new terminals
 
 ### CLI (`cli.sh`)
-- `hushflow set-theme <name>` / `hushflow set-exercise <name>` / `hushflow set-animation <name>`
-- `hushflow list` — show current config
-- `hushflow animation` — list available animations
+- `hushflow config [hrv|sigh|box|478]` — set breathing exercise (or show all config)
+- `hushflow theme [teal|twilight|amber|auto|<community>]` — set color theme
+- `hushflow theme list` — list all available themes
+- `hushflow animation [random|constellation|ripple|wave|orbit|helix|rain]` — set animation style
+- `hushflow sound [on|off]` — toggle breath transition sounds
+- `hushflow wrap -- <command>` — run breathing while any command executes
+- `hushflow stats` — view session statistics and streak
 - `hushflow doctor` — diagnostic checks (deps, scripts, hooks, config, sessions, terminal)
+- `hushflow install` / `hushflow uninstall` — manage hook installation
 
 ### Installer (`install.sh`)
 - Multi-tool: Claude Code, Gemini CLI, Codex CLI
@@ -43,6 +48,7 @@
 
 ### Testing
 - 138+ smoke tests (`test/smoke-test.sh`)
+- 29 unit tests (`test/unit-test.sh`)
 - 19 terminal detection tests (`test/terminal-detect-test.sh`)
 - 27 sound system tests (`test/sound-test.sh`)
 - 76+ installer contract tests (`test/install-contract-test.sh`)
@@ -86,14 +92,20 @@ font size (14) × grid dimensions (36×14), but the cell-size approximation
 ```
 HushFlow/
 ├── breathe-compact.sh      # Main animation engine
+├── breathe-compact.ps1     # PowerShell animation engine (Windows)
 ├── cli.sh                  # CLI interface
 ├── doctor.sh               # Diagnostic tool
-├── install.sh              # Multi-tool installer
+├── install.sh              # Multi-tool installer (Bash)
+├── install.ps1             # Multi-tool installer (PowerShell/Windows)
 ├── install-remote.sh       # Remote install helper
-├── set-exercise.sh         # Config setter (legacy, wrapped by cli.sh)
+├── set-exercise.sh         # Config setter (wrapped by cli.sh)
+├── commands/
+│   └── hushflow.md         # Claude Code slash command definition
 ├── hooks/
 │   ├── on-start.sh         # Session start hook
+│   ├── on-start.ps1        # Session start hook (PowerShell)
 │   ├── on-stop.sh          # Session stop hook
+│   ├── on-stop.ps1         # Session stop hook (PowerShell)
 │   ├── on-permission.sh    # PermissionRequest pause hook
 │   ├── on-resume.sh        # PostToolUse smart resume hook
 │   ├── open-window.sh      # Cross-platform window launcher
@@ -105,20 +117,36 @@ HushFlow/
 │   ├── sound.sh            # Async audio playback + crossfade
 │   ├── stats.sh            # Session statistics (TSV)
 │   └── wrap.sh             # Universal CLI wrapper
-├── sounds/                 # Audio files (Opus codec in .ogg containers)
+├── plugins/
+│   └── example-pulse.sh    # Example custom animation plugin
+├── sounds/                 # Audio files (.ogg format)
 ├── themes/                 # Community JSON themes
+│   ├── catppuccin-mocha.json
+│   ├── dracula.json
+│   ├── gruvbox.json
+│   ├── nord.json
+│   └── solarized-dark.json
 ├── test/
 │   ├── smoke-test.sh       # 138+ tests
+│   ├── unit-test.sh        # 29 tests
 │   ├── terminal-detect-test.sh  # 19 tests
 │   ├── sound-test.sh       # 27 tests
 │   ├── install-contract-test.sh # 76+ tests
 │   └── e2e-install-test.sh # 31 tests
+├── scripts/
+│   └── test-ui-layout.sh   # UI layout tests (requires tmux)
 ├── .github/workflows/
 │   └── ci.yml              # GitHub Actions CI
 ├── TODOS.md                # Deferred items
 └── docs/
-    ├── PROGRESS.md         # This file
     ├── ARCHITECTURE.md     # Architecture overview
+    ├── PROGRESS.md         # This file
+    ├── PLUGIN-API.md       # Plugin development guide
+    ├── ENVIRONMENT.md      # Environment variables reference
+    ├── TROUBLESHOOTING.md  # Common issues & fixes
     ├── README.zh-TW.md     # 繁體中文文件
-    └── README.zh-CN.md     # 简体中文文件
+    ├── README.zh-CN.md     # 简体中文文件
+    ├── README.ja.md        # 日本語文件
+    ├── testing/             # Test documentation
+    └── designs/             # Design documents
 ```
