@@ -15,9 +15,9 @@
 
 ---
 
-Mindful breathing during AI wait time. Auto-launches when the AI starts, auto-dismisses when it's done.
+A breathing layer for AI-powered terminals. Turns every wait into a calm ritual — across tools, across platforms, automatically.
 
-Works with **Claude Code** and **Gemini CLI** (full per-prompt hooks). **Codex CLI** is supported at session level.
+**Claude Code** and **Gemini CLI** are fully supported with per-prompt hooks. **Codex CLI** works at session level.
 
 ## 🚀 Install in 60 Seconds
 
@@ -80,7 +80,7 @@ Then send any prompt to your AI tool and wait 5 seconds — a breathing window w
 
 <br/>
 <p align="center">
-  <img src="demo.gif" alt="HushFlow — constellation animation with coherent breathing" width="720" />
+  <img src="demo.gif" alt="HushFlow — breathing animation appears beside your terminal while AI works" width="720" />
 </p>
 <br/>
 
@@ -93,60 +93,14 @@ HushFlow adapts to your workflow with 4 UI modes:
 | **tmux popup** | tmux 3.2+ — floating overlay | `HUSHFLOW_UI_MODE=tmux-popup` |
 | **Inline** | Minimal — renders in current terminal | `HUSHFLOW_UI_MODE=inline` |
 
-## ✨ Features
+## ✨ What Makes It Work
 
-<table>
-<tr>
-<td width="50%">
-
-### 🧘 Breathing
-- **4 exercises** — Coherent, Physiological Sigh, Box, 4-7-8
-- **Auto-launch** — Starts when AI thinks, stops when done
-- **Configurable delay** — Set when breathing begins
-- **Sound cues** — Optional chimes at breath transitions
-
-</td>
-<td width="50%">
-
-### 🎨 Visuals
-- **6 animations** — Constellation, Ripple, Wave, Orbit, Helix, Rain
-- **8+ themes** — Teal, Twilight, Amber + community themes
-- **10fps engine** — SIN64 trig lookups, zero flicker
-- **Plugin API** — Custom animations via scripts
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-### 🔌 Integration
-- **3 AI tools** — Claude Code, Gemini CLI, Codex CLI
-- **4 UI modes** — Window, tmux pane, popup, inline
-- **Universal wrapper** — `hushflow wrap -- <any-command>`
-- **Non-blocking** — Zero impact on AI tool output
-
-</td>
-<td width="50%">
-
-### 📊 Tracking & More
-- **Session stats** — Cycles, streaks, mindful time
-- **Cross-platform** — macOS, Linux, Windows
-- **6 terminals** — Ghostty, Terminal.app, iTerm2, GNOME, xterm, Windows Terminal
-- **Self-diagnostics** — `hushflow doctor`
-
-</td>
-</tr>
-</table>
-
-### ⚡ Performance
-
-| Metric | Value | Notes |
-|--------|-------|-------|
-| **Render** | 10 fps | Double-buffered, single `printf` per frame |
-| **CPU** | < 2% | SIN64/COS32 lookup tables, no `bc`/`awk` in loop |
-| **Memory** | ~3 MB RSS | Pure Bash, no background daemons |
-| **Startup** | < 50 ms | No interpreter boot (Python/Node), just `bash` |
-| **Dependencies** | 0 in render path | `jq` only at config load |
+- **Shows up on its own** — Appears after a configurable delay, disappears when AI finishes. No manual triggers.
+- **Never steals focus** — Runs in a separate window or tmux pane. Your terminal stays yours.
+- **Works with your tools** — Claude Code, Gemini CLI, Codex CLI. One install covers all.
+- **Runs everywhere** — macOS, Linux, Windows. Ghostty, iTerm2, Terminal.app, GNOME Terminal, xterm, Windows Terminal.
+- **4 breathing patterns** — Coherent, Physiological Sigh, Box, 4-7-8. Pick your rhythm, HushFlow remembers it.
+- **6 animations, 8+ themes** — From Constellation to Rain, from Teal to Dracula. Customize later, or never.
 
 ## 🛠️ Supported AI Tools
 
@@ -222,6 +176,16 @@ flowchart TD
     style breathe fill:#0f3460,stroke:#533483,color:#e0e0e0
     style cleanup fill:#1a1a2e,stroke:#0f3460,color:#e0e0e0
 ```
+
+### ⚡ Under the Hood
+
+| Metric | Value | Notes |
+|--------|-------|-------|
+| **Render** | 10 fps | Double-buffered, single `printf` per frame |
+| **CPU** | < 2% | Trig lookup tables, no `bc`/`awk` in render loop |
+| **Memory** | ~3 MB RSS | Pure Bash, no background daemons |
+| **Startup** | < 50 ms | No interpreter boot, just `bash` |
+| **Dependencies** | 0 in render path | `jq` only at config load |
 
 ## 📚 Advanced Docs
 
