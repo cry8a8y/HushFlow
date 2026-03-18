@@ -23,57 +23,46 @@ A breathing layer for AI-powered terminals. Turns every wait into a calm ritual 
 </p>
 <br/>
 
-## 🚀 Install
+## 🚀 Quick Start
 
+Get up and running in 30 seconds. Choose your preferred method:
+
+### Method 1: One-Line (Recommended)
+The cleanest way to install. No Node.js required.
+```bash
+curl -fsSL https://raw.githubusercontent.com/cry8a8y/HushFlow/main/install-remote.sh | sh
+```
+
+### Method 2: Node.js / npm
+If you prefer managing CLI tools via npm:
 ```bash
 npm install -g hushflow
 hushflow install
 ```
 
 <details>
-<summary>Other install methods</summary>
+<summary><b>Other Installation Methods (Manual / Windows)</b></summary>
 
-**One-line (no npm):**
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/cry8a8y/HushFlow/main/install-remote.sh | sh
-```
-
-**npx (no global install):**
-
-```bash
-npx hushflow install
-```
-
-**Manual:**
-
+**Manual (Git):**
 ```bash
 git clone https://github.com/cry8a8y/HushFlow.git
 cd HushFlow
+chmod +x install.sh
 ./install.sh
 ```
 
 **Windows (PowerShell):**
-
 ```powershell
 git clone https://github.com/cry8a8y/HushFlow.git
 cd HushFlow
 .\install.ps1
 ```
-
 </details>
 
-**What the installer does:**
-1. Registers start/stop hooks in your AI tool's config
-2. Creates a default config at `~/.<tool>/hushflow/config`
-
-**Verify it works:**
-
-```bash
-hushflow doctor        # Check installation & environment
-```
-
-Then send any prompt to your AI tool and wait 5 seconds — a breathing window will appear.
+**What happens during installation?**
+1. 🔌 **Hooks**: Automatically registers with your AI tools (Claude, Gemini, etc.).
+2. ⚙️ **Config**: Creates a default profile at `~/.<tool>/hushflow/config`.
+3. ✅ **Verify**: Run `hushflow doctor` to ensure everything is set up correctly.
 
 ### 📋 Dependencies
 
@@ -100,13 +89,13 @@ hushflow install --target gemini   # Install for a specific tool
 
 ## ✨ Features
 
-- **Shows up on its own** — Appears after a configurable delay, disappears when AI finishes. No manual triggers.
-- **Never steals focus** — Runs in a separate window or tmux pane. Your terminal stays yours.
-- **Works with your tools** — Claude Code, Gemini CLI, Codex CLI. One install covers all.
-- **Runs everywhere** — macOS, Linux, Windows. Ghostty, iTerm2, Terminal.app, GNOME Terminal, xterm, Windows Terminal.
-- **4 breathing patterns** — Coherent, Physiological Sigh, Box, 4-7-8. Pick your rhythm, HushFlow remembers it.
-- **6 animations, 8+ themes** — From Constellation to Rain, from Teal to Dracula. Customize later, or never.
-- **Lightweight** — < 2% CPU, ~3 MB RAM, < 50 ms startup. Pure Bash, zero dependencies in the render path.
+- 🧘 **Auto-Mindfulness** — Appears after a delay, disappears when AI finishes. Zero-click calm.
+- 🎯 **Focus-First** — Runs in a separate window or tmux pane. Your terminal focus stays exactly where it belongs.
+- 🛠️ **Universal Compatibility** — Native integration for **Claude Code**, **Gemini CLI**, and **Codex CLI**.
+- 💻 **Cross-Platform** — macOS, Linux, and Windows. Support for Ghostty, iTerm2, Windows Terminal, and more.
+- 🫁 **Breath Work** — 4 built-in patterns: *Coherent*, *Physiological Sigh*, *Box*, and *4-7-8*.
+- 🎨 **Deep Customization** — 6+ animations and 8+ themes (Catppuccin, Dracula, Nord, etc.).
+- ⚡ **Engineered for Speed** — Pure Bash logic. < 2% CPU, ~3MB RAM. Render path has zero external dependencies.
 
 ## 📺 UI Modes
 
@@ -147,40 +136,45 @@ hushflow doctor                # Check installation & environment
 
 ## 🧠 How It Works
 
-```
-        You send a prompt
-               │
-               ▼
-      ┌─────────────────┐
-      │   on-start.sh   │
-      │   check config  │
-      └────────┬────────┘
-               │
-          ┌────┴────┐
-          │ enabled? │
-          └────┬────┘
-         no/   \yes
-          ▼     ▼
-       [exit]  Delay (5s)
-                │
-                ▼
-       ┌─────────────────┐
-       │ Open companion  │
-       │     window      │
-       └────────┬────────┘
-                │
-                ▼
-       ┌─────────────────┐
-       │    Breathing     │
-       │    animation     │◀── loop
-       └────────┬────────┘
-                │
-                │ AI finishes
-                ▼
-       ┌─────────────────┐
-       │   on-stop.sh    │
-       │  close & clean  │
-       └─────────────────┘
+HushFlow acts as a silent observer to your AI terminal sessions.
+
+```text
+       ┌──────────────┐
+       │  You send a  │
+       │    Prompt    │
+       └──────┬───────┘
+              │
+              ▼ (Trigger Hook)
+       ┌──────────────┐           ┌──────────────────┐
+       │  AI Tool     │──────────▶│  HushFlow Agent  │
+       │  starts work │           │  (Background)    │
+       └──────────────┘           └────────┬─────────┘
+              │                            │
+              │ Waiting...                 ▼
+              │                     [ Enabled? ] ───▶ [No: Exit]
+              │                            │
+              │                            ▼ [Yes]
+              │                     Wait Delay (5s)
+              │                            │
+              │                            ▼
+              │                   ┌──────────────────┐
+              │                   │  Open Companion  │
+              │                   │      Window      │
+              │                   └────────┬─────────┘
+              │                            │
+              │                            ▼
+              │                   ┌──────────────────┐
+              │                   │    Breathing     │◀──┐
+              │                   │    Animation     │───┘
+              │                   └────────┬─────────┘
+              ▼ (Finish Hook)              │
+       ┌──────────────┐                    │ (Signal: Stop)
+       │  AI Tool     │────────────────────┘
+       │  responds    │
+       └──────────────┘           ┌──────────────────┐
+              │                   │  HushFlow Agent  │
+              ▼                   │  Close & Cleanup │
+       (Back to you)              └──────────────────┘
 ```
 
 ### ⚡ Under the Hood
