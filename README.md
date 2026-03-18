@@ -20,6 +20,7 @@ A breathing layer for AI-powered terminals. Turns every wait into a calm ritual 
 
 > [!IMPORTANT]
 > **Prerequisites:** `bash` (4.0+), `git`, and `jq` are required.
+> **Optional:** `tmux` (for tmux pane/popup mode), audio player (`ffplay`, `mpv`, `afplay`, or `paplay`) for immersive sound.
 
 ### Method 1: Unix / macOS (Fastest)
 ```bash
@@ -37,9 +38,10 @@ npx hushflow install
 ```
 
 ### ✅ Verify Installation in 5 Seconds
-1. **Restart** your AI tool (e.g., Claude Code).
-2. Send any **Prompt**.
-3. **Wait 5s** — The breathing window will appear naturally.
+1. Run `hushflow doctor` to verify your setup.
+2. **Restart** your AI tool (e.g., Claude Code).
+3. Send any **Prompt**.
+4. **Wait 5s** — The breathing window will appear naturally.
 
 <p align="center">
   <img src="demo.gif" alt="HushFlow Demo" width="720" />
@@ -59,9 +61,20 @@ npx hushflow install
 - 🎵 **Immersive Audio** — Zen-crafted soundscape with phase-specific breath cues.
 - ⚡ **Engineered for Speed** — Pure Bash logic. Render path has zero external dependencies.
 
+## 🖥️ Supported Terminals
+
+| Platform | Terminals | Notes |
+|----------|-----------|-------|
+| macOS | **Ghostty** (optimized), iTerm2, Terminal.app | TrueColor recommended |
+| Linux | gnome-terminal, Konsole, xfce4-terminal, xterm, Ghostty | `xdotool` for window positioning |
+| Windows | Windows Terminal, PowerShell | Via Git Bash |
+| Fallback | Any terminal | Inline mode (no separate window) |
+
 ## 🎵 Immersive Audio
 
-HushFlow features a built-in soundscape designed for deep immersion and functional guidance. Enable it with `hushflow sound on`.
+HushFlow features an optional built-in soundscape designed for deep immersion and functional guidance. Enable it with `hushflow sound on`.
+
+> **Supported players:** `ffplay` (FFmpeg), `mpv`, `afplay` (macOS built-in), `paplay` (PulseAudio/PipeWire).
 
 - **Inhale**: **Harmonic Bloom** — A deep 60Hz swell with warming fireplace crackles.
 - **Hold**: **Tri-Harmonic Stillness** — Interweaving resonances that eliminate flat tones.

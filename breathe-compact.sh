@@ -15,6 +15,8 @@ theme=""
 if [ -f "$CONFIG_FILE" ]; then
     theme=$(grep "^theme=" "$CONFIG_FILE" 2>/dev/null | cut -d= -f2)
 fi
+# Validate theme: only allow [a-z0-9-] or "auto"
+[[ "${theme:-}" =~ ^[a-z0-9-]+$ ]] || theme="teal"
 
 # Auto-theme: detect terminal background
 if [ "${theme:-}" = "auto" ]; then
@@ -46,12 +48,19 @@ if [ "$_theme_loaded" -eq 0 ] && [ -n "${theme:-}" ] && command -v jq &>/dev/nul
     for _theme_dir in "$HOME/.hushflow/themes" "$_hf_dir/themes"; do
         _theme_file="$_theme_dir/${theme}.json"
         if [ -f "$_theme_file" ]; then
-            eval "$(jq -r '
+            _jq_output=$(jq -r '
               .colors | to_entries | map(
                 {primary:"C_B",secondary:"C_D",mid:"C_MID",mid_dim:"C_MDIM",dim:"C_DIM"}[.key] as $var |
                 select($var) | "\($var)=\u0027\(.value)\u0027"
               ) | join("\n")
-            ' "$_theme_file" 2>/dev/null)"
+            ' "$_theme_file" 2>/dev/null)
+            # Validate: each line must be C_X='R;G;B' format (prevent injection)
+            if echo "$_jq_output" | grep -qvE "^C_(B|D|MID|MDIM|DIM)='[0-9]{1,3};[0-9]{1,3};[0-9]{1,3}'$"; then
+                hf_log "WARNING: theme '$theme' has invalid color values, skipping"
+            else
+                eval "$_jq_output"
+            fi
+            unset _jq_output
             if [ -n "$C_B" ] && [ -n "$C_D" ]; then
                 _theme_loaded=1
                 hf_log "loaded JSON theme: $theme from $_theme_file"
@@ -146,6 +155,8 @@ animation=""
 if [ -f "$CONFIG_FILE" ]; then
     animation=$(grep "^animation=" "$CONFIG_FILE" 2>/dev/null | cut -d= -f2)
 fi
+# Validate animation: only allow [a-z] characters
+[[ "${animation:-}" =~ ^[a-z]+$ ]] || animation="random"
 VALID_ANIMATIONS="constellation ripple wave orbit helix rain"
 
 # Random mode: pick one animation for this session
@@ -174,11 +185,18 @@ if [ -d "$PLUGIN_DIR" ]; then
     for plugin_file in "$PLUGIN_DIR"/*.sh; do
         [ -f "$plugin_file" ] || continue
         if bash -n "$plugin_file" 2>/dev/null; then
+            _pre_funcs=$(declare -F | awk '{print $3}')
             source "$plugin_file"
+            _post_funcs=$(declare -F | awk '{print $3}')
+            _new_funcs=$(comm -13 <(echo "$_pre_funcs" | sort) <(echo "$_post_funcs" | sort) | grep -v '^render_')
+            if [ -n "$_new_funcs" ]; then
+                hf_log "WARNING: plugin '$plugin_file' defines non-render functions: $_new_funcs"
+            fi
         else
             hf_log "WARNING: plugin has syntax errors, skipped: $plugin_file"
         fi
     done
+    unset _pre_funcs _post_funcs _new_funcs
     hf_log "loaded plugins from $PLUGIN_DIR"
 fi
 
@@ -613,7 +631,7 @@ GREETINGS=(
     "Pause. Breathe. Ship."
 )
 GREETING="${GREETINGS[$((RANDOM % ${#GREETINGS[@]}))]}"
-FADE_TICKS=10      # 10-frame fade-in
+FADE_TICKS=${HUSHFLOW_FADE_TICKS:-10}      # 10-frame fade-in (overridable for smooth resume)
 FADEOUT_TICKS=2     # ~0.2 second fade-out for instant feel
 
 # === Stats: log session on exit ===

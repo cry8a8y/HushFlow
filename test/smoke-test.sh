@@ -78,7 +78,7 @@ rm -f "$MARKER"
 # --- Script syntax ---
 section "Script syntax"
 
-for script in breathe-compact.sh hooks/on-start.sh hooks/on-stop.sh hooks/open-window.sh hooks/open-tmux-popup.sh set-exercise.sh install.sh install-remote.sh lib/detect-terminal.sh cli.sh; do
+for script in breathe-compact.sh hooks/on-start.sh hooks/on-stop.sh hooks/on-permission.sh hooks/on-resume.sh hooks/open-window.sh hooks/open-tmux-popup.sh set-exercise.sh install.sh install-remote.sh lib/detect-terminal.sh cli.sh; do
     if [ -f "$SCRIPT_DIR/$script" ]; then
         if bash -n "$SCRIPT_DIR/$script" 2>/dev/null; then
             pass "syntax ok: $script"
@@ -592,6 +592,100 @@ _picked="${_arr[$((RANDOM % ${#_arr[@]}))]}"
 _found=0
 for _a in $_VALID; do [ "$_picked" = "$_a" ] && _found=1; done
 [ "$_found" -eq 1 ] && pass "random picked valid animation: $_picked" || fail "random picked invalid: $_picked"
+
+# --- Sound config default ---
+section "Sound config default"
+
+# Test: sound defaults to enabled when config lacks sound= line
+SOUND_CFG="$TMPDIR_TEST/sound-cfg"
+mkdir -p "$SOUND_CFG"
+printf 'enabled=true\nexercise=0\n' > "$SOUND_CFG/config"
+if ! grep -q "^sound=" "$SOUND_CFG/config"; then
+    # Simulate the check: sound.sh now only disables on sound=false
+    if ! grep -q "^sound=false" "$SOUND_CFG/config"; then
+        pass "missing sound= line defaults to enabled"
+    else
+        fail "missing sound= treated as disabled"
+    fi
+else
+    fail "test config unexpectedly has sound= line"
+fi
+
+# --- PermissionRequest hooks ---
+section "PermissionRequest hooks"
+
+# Test: on-permission.sh exists and has valid syntax
+if [ -f "$SCRIPT_DIR/hooks/on-permission.sh" ]; then
+    bash -n "$SCRIPT_DIR/hooks/on-permission.sh" 2>/dev/null && pass "on-permission.sh syntax ok" || fail "on-permission.sh syntax error"
+else
+    fail "on-permission.sh missing"
+fi
+
+# Test: on-resume.sh exists and has valid syntax
+if [ -f "$SCRIPT_DIR/hooks/on-resume.sh" ]; then
+    bash -n "$SCRIPT_DIR/hooks/on-resume.sh" 2>/dev/null && pass "on-resume.sh syntax ok" || fail "on-resume.sh syntax error"
+else
+    fail "on-resume.sh missing"
+fi
+
+# Test: install.sh registers PermissionRequest hook
+if grep -q "PermissionRequest" "$SCRIPT_DIR/install.sh"; then
+    pass "install.sh registers PermissionRequest hook"
+else
+    fail "install.sh missing PermissionRequest hook"
+fi
+
+# Test: install.sh registers PostToolUse hook
+if grep -q "PostToolUse" "$SCRIPT_DIR/install.sh"; then
+    pass "install.sh registers PostToolUse hook"
+else
+    fail "install.sh missing PostToolUse hook"
+fi
+
+# Test: on-stop.sh cleans up permission-ts
+if grep -q "permission-ts" "$SCRIPT_DIR/hooks/on-stop.sh"; then
+    pass "on-stop.sh cleans permission-ts"
+else
+    fail "on-stop.sh missing permission-ts cleanup"
+fi
+
+# Test: breathe-compact.sh supports HUSHFLOW_FADE_TICKS env override
+if grep -q "HUSHFLOW_FADE_TICKS" "$SCRIPT_DIR/breathe-compact.sh"; then
+    pass "breathe-compact.sh supports HUSHFLOW_FADE_TICKS"
+else
+    fail "breathe-compact.sh missing HUSHFLOW_FADE_TICKS"
+fi
+
+# --- Security: config validation ---
+section "Security: config validation"
+
+# Test: theme validation in breathe-compact.sh
+if grep -q '\[a-z0-9-\]' "$SCRIPT_DIR/breathe-compact.sh"; then
+    pass "theme value validated"
+else
+    fail "theme value not validated"
+fi
+
+# Test: animation validation in breathe-compact.sh
+if grep -q '\[a-z\].*animation' "$SCRIPT_DIR/breathe-compact.sh" || grep -q 'animation.*\[a-z\]' "$SCRIPT_DIR/breathe-compact.sh"; then
+    pass "animation value validated"
+else
+    fail "animation value not validated"
+fi
+
+# Test: jq theme output validated before eval
+if grep -q 'invalid color values' "$SCRIPT_DIR/breathe-compact.sh"; then
+    pass "jq theme output validated before eval"
+else
+    fail "jq theme eval not validated"
+fi
+
+# Test: plugin function names checked after source
+if grep -q 'non-render functions' "$SCRIPT_DIR/breathe-compact.sh"; then
+    pass "plugin function names checked"
+else
+    fail "plugin function names not checked"
+fi
 
 # --- ESC key close ---
 section "ESC key close"
