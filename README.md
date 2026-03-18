@@ -21,6 +21,27 @@
 
 A breathing layer for AI-powered terminals. Turns every wait into a calm ritual — across tools, across platforms, automatically.
 
+<p align="center">
+  <img src="demo.gif" alt="HushFlow Demo" width="720" />
+</p>
+
+---
+
+## Table of Contents
+
+- [🚀 Get Started](#-get-started-in--60-seconds)
+- [🧘 Why HushFlow?](#-why-hushflow)
+- [✨ Features](#-features)
+- [🖥️ Supported Terminals](#️-supported-terminals)
+- [🎵 Immersive Audio](#-immersive-audio)
+- [📊 Usage Statistics](#-usage-statistics)
+- [📺 UI Modes](#-ui-modes)
+- [⌨️ Common Commands](#️-common-commands)
+- [🧠 How It Works](#-how-it-works)
+- [🔒 Transparency & Trust](#-transparency--trust)
+- [📚 Advanced Docs](#-advanced-docs)
+- [🤝 Contributing & Support](#-contributing--support)
+
 ---
 
 ## 🚀 Get Started in < 60 Seconds
@@ -50,21 +71,18 @@ npx hushflow install
 3. Send any **Prompt**.
 4. **Wait 5s** — The breathing window will appear naturally.
 
-<p align="center">
-  <img src="demo.gif" alt="HushFlow Demo" width="720" />
-</p>
-
----
-
 ## 🧘 Why HushFlow?
 
-Typical developers face dozens of "dead moments" every day waiting for AI models to plan, edit, or test. Most fill these gaps with micro-distractions (scrolling, checking Slack) that break the flow state. 
+Typical developers face dozens of "dead moments" every day waiting for AI models to plan, edit, or test. Most fill these gaps with micro-distractions (scrolling, checking Slack) that break the flow state.
 
-**HushFlow turns them into recovery.** Leveraging the physiological sigh, it naturally lowers heart rate and maintains your focus, all without leaving your terminal.
+**HushFlow turns them into recovery.** Leveraging evidence-based breathing techniques, it naturally lowers heart rate and maintains your focus, all without leaving your terminal.
 
-- ⚡ **Ultra-lightweight**: < 2% CPU during animation.
-- 🧠 **Tiny footprint**: ~3MB RAM (Shell-native).
-- 🔒 **Zero Telemetry**: All logic stays local. Forever.
+| Feature | **HushFlow** | Mindful-Claude |
+| :--- | :--- | :--- |
+| **Integration** | Native (Claude/Gemini/Codex) | Wrapper-only |
+| **Experience** | Separate Window / Tmux Pane | Main terminal only |
+| **Performance** | Shell Native (~3MB RAM) | Node.js Heavy |
+| **Customization** | 8+ Themes / Immersive Sound | Basic |
 
 ---
 
@@ -75,7 +93,8 @@ Typical developers face dozens of "dead moments" every day waiting for AI models
 - 🛠️ **Universal Integration** — Native for **Claude Code**, **Gemini CLI**, and **Codex CLI**.
 - 📊 **Mindful Stats** — Track your breathing sessions and keep your daily streak alive with `hushflow stats`.
 - 🔔 **Session Notifications** — macOS notification after each session with exercise name, cycles completed, and duration.
-- 💻 **Cross-Platform** — macOS, Linux, and Windows. optimized for **Ghostty 1.3.1**, iTerm2, Windows Terminal.
+- ⏸️ **Permission-Aware** — Automatically pauses when your AI asks for approval, resumes when you respond.
+- 💻 **Cross-Platform** — macOS, Linux, and Windows. Optimized for **Ghostty 1.3.1**, iTerm2, Windows Terminal.
 - 🫁 **Breath Work** — 4 built-in patterns: *Coherent*, *Sigh*, *Box*, and *4-7-8*.
 - 🎨 **Custom Themes** — 8+ themes (**3 built-in + 5 community** like Catppuccin, Dracula).
 - 🎵 **Immersive Audio** — Zen-crafted soundscape with phase-specific breath cues.
@@ -89,15 +108,6 @@ Typical developers face dozens of "dead moments" every day waiting for AI models
 | Linux | gnome-terminal, Konsole, xfce4-terminal, xterm, Ghostty | `xdotool` for window positioning |
 | Windows | Windows Terminal, PowerShell | Via Git Bash |
 | Fallback | Any terminal | Inline mode (no separate window) |
-
-## ⚔️ Why HushFlow vs. Others
-
-| Feature | **HushFlow** | Mindful-Claude |
-| :--- | :--- | :--- |
-| **Integration** | Native (Claude/Gemini/Codex) | Wrapper-only |
-| **Experience** | Separate Window / Tmux Pane | Main terminal only |
-| **Performance** | Shell Native (~3MB RAM) | Node.js Heavy |
-| **Customization** | 8+ Themes / Immersive Sound | Basic |
 
 ## 🎵 Immersive Audio
 
@@ -130,7 +140,7 @@ Track your progress and build a habit. Use `hushflow stats` to view your daily c
 ```bash
 hushflow config hrv    # Set Coherent Breathing
 hushflow theme nord    # Apply Nord theme
-hushflow animation     # Set animation style
+hushflow animation orbit  # Set animation style
 hushflow sound on      # Enable breath audio
 hushflow wrap -- cmd   # Run breathing while a command executes
 hushflow stats         # View session statistics
