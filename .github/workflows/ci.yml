@@ -29,6 +29,9 @@ jobs:
       - name: Run installer contract tests
         run: bash test/install-contract-test.sh
 
+      - name: Run E2E install tests
+        run: bash test/e2e-install-test.sh
+
       - name: Syntax check all scripts
         run: |
           for f in breathe-compact.sh hooks/*.sh set-exercise.sh install.sh cli.sh doctor.sh lib/*.sh plugins/*.sh; do
