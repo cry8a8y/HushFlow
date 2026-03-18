@@ -779,23 +779,20 @@ while true; do
     [ "$gc" -lt 1 ] && gc=1
     frame+="\033[3;1H\033[2K\033[3;${gc}H${fade_prefix}${DIM}${GREETING}${RESET}"
 
-    # Exercise name + cycle (row PANE_H-2) — subdued, secondary info
-    info_row=$((PANE_H - 2))
+    # Exercise name + cycle (row PANE_H-1) — subdued, secondary info
+    info_row=$((PANE_H - 1))
     info_text="${EX_NAME}  ·  Cycle ${cycle_num}"
     ic=$(( (PANE_W - ${#info_text}) / 2 + 1 ))
     frame+="\033[${info_row};1H\033[2K\033[${info_row};${ic}H${fade_prefix}${COLOR_MDIM}${info_text}${RESET}"
 
-    # Status (row PANE_H-1) — bold, primary instruction the eye follows
+    # Status + ESC hint (bottom row PANE_H)
     status="${phase}... ${remaining_s}s"
     sc_pos=$(( (PANE_W - ${#status}) / 2 + 1 ))
-    status_row=$((PANE_H - 1))
-    frame+="\033[${status_row};1H\033[2K\033[${status_row};${sc_pos}H${fade_prefix}\033[1m${color}${status}${RESET}"
-
-    # ESC hint (bottom row, centered, dim)
+    frame+="\033[${PANE_H};1H\033[2K\033[${PANE_H};${sc_pos}H${fade_prefix}\033[1m${color}${status}${RESET}"
     if [ -t 0 ]; then
         _esc_hint="ESC to close"
-        _esc_pos=$(( (PANE_W - ${#_esc_hint}) / 2 + 1 ))
-        frame+="\033[${PANE_H};1H\033[2K\033[${PANE_H};${_esc_pos}H${fade_prefix}${DIM}${_esc_hint}${RESET}"
+        _esc_col=$(( PANE_W - ${#_esc_hint} ))
+        frame+="\033[${PANE_H};${_esc_col}H${fade_prefix}${DIM}${_esc_hint}${RESET}"
     fi
 
     printf '%b' "$frame"
