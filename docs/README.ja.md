@@ -106,7 +106,19 @@ hushflow install --target gemini   # 特定のツールにインストール
 - **どこでも動作** — macOS、Linux、Windows。Ghostty、iTerm2、Terminal.app、GNOME Terminal、xterm、Windows Terminal。
 - **4つの呼吸パターン** — コヒーレント、ため息、ボックス、4-7-8。選んだリズムをHushFlowが記憶。
 - **6つのアニメーション、8+テーマ** — 星座から雨まで、ティールからDraculaまで。カスタマイズは自由。
+- **没入型オーディオ** — 禅の精神で作り込まれた10秒の深層ループ：*暖炉*、*深層禅定*、*マスターベル*。
 - **軽量高効率** — < 2% CPU、~3 MB RAM、< 50 ms 起動。純粋なBash、描画パスで依存ゼロ。
+
+## 🎵 没入型オーディオ
+
+HushFlowには、深い没入感と生理的なガイダンスのために設計されたサウンドスケープが内蔵されています。`hushflow sound on` で有効化できます。
+
+- **吸気 (Inhale)**：**Harmonic Bloom** — 吸気に合わせて膨らむ深みのある60Hzの低音と、温かみのある暖炉のはぜる音。
+- **呼吸停止 (Hold)**：**Tri-Harmonic Stillness** — 織り重なる物理共鳴が、単調な平坦音を排除し、静寂な空間を演出します。
+- **呼気 (Exhale)**：**Parabolic Recede** — 潮が引くように自然に落ち着く、シルキーな65Hzの空気の流れ。
+- **完了 (Complete)**：**The Master Bell** — 柔らかいマレットで叩かれた、重厚な82Hzのブロンズ製の鐘（大師古鐘）。
+
+*音響物理学に基づいて設計されており、副交感神経の活性化を促します。*
 
 ## 📺 UIモード
 

@@ -106,7 +106,19 @@ hushflow install --target gemini   # 安装特定工具
 - **跨平台** — macOS、Linux、Windows。Ghostty、iTerm2、Terminal.app、GNOME Terminal、xterm、Windows Terminal。
 - **4 种呼吸节奏** — 谐振、生理叹息、箱式、4-7-8。选好节奏，HushFlow 会记住。
 - **6 种动画、8+ 主题** — 从星座到落雨，从海洋青到 Dracula。想调就调，不调也行。
+- **沉浸式音效** — 禅意打造的 10 秒深层循环：*火炉*、*深层禅定* 与 *大师古钟*。
 - **轻量高效** — < 2% CPU、~3 MB 内存、< 50 ms 启动。纯 Bash，渲染路径零依赖。
+
+## 🎵 沉浸式音效
+
+HushFlow 内置一套专为深层沉浸与生理引导设计的声景。使用 `hushflow sound on` 即可启用。
+
+- **吸气 (Inhale)**：**谐波绽放 (Harmonic Bloom)** — 深沉的 60Hz 低音随吸气涨落，伴随温暖的火炉碎裂声。
+- **憋气 (Hold)**：**三维干涉律动 (Tri-Harmonic Stillness)** — 交织的物理共鸣，彻底消除死板平音，营造静谧空间感。
+- **吐气 (Exhale)**：**抛物线沉降 (Parabolic Recede)** — 丝滑的 65Hz 气流感，像潮汐般自然退去。
+- **完成 (Complete)**：**大师古钟 (The Master Bell)** — 重型 82Hz 青铜古钟，由温润木槌敲击，余韵悠长。
+
+*基于声学物理设计，旨在诱发副交感神经放松。*
 
 ## 📺 UI 模式
 

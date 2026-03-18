@@ -3,10 +3,10 @@
 Place sound files here for breath transition audio cues.
 
 ## Sound names
-- `inhale.wav` — played at start of inhale
-- `exhale.wav` — played at start of exhale
-- `hold.wav` — played at start of hold
-- `complete.wav` — played when session ends
+- `inhale.ogg` — played at start of inhale
+- `exhale.ogg` — played at start of exhale
+- `hold.ogg` — played at start of hold
+- `complete.ogg` — played when session ends
 
 ## Supported formats
 WAV, MP3, OGG

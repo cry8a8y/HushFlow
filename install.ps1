@@ -15,7 +15,7 @@ function Ensure-Config($configDir) {
     if (-not (Test-Path $configDir)) { New-Item -ItemType Directory -Path $configDir -Force | Out-Null }
     $configFile = Join-Path $configDir "config"
     if (-not (Test-Path $configFile)) {
-        "enabled=true`nexercise=0`ndelay=5`ntheme=teal`nanimation=constellation" | Out-File -FilePath $configFile -Encoding utf8 -NoNewline
+        "enabled=true`nexercise=0`ndelay=5`ntheme=teal`nanimation=constellation`nsound=true" | Out-File -FilePath $configFile -Encoding utf8 -NoNewline
         Write-Host "  Created config at $configFile"
     }
 }

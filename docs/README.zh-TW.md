@@ -55,7 +55,19 @@ npx hushflow install
 - 💻 **跨平台支援** — macOS、Linux 與 Windows。相容 Ghostty、iTerm2、Windows Terminal 等。
 - 🫁 **專業呼吸法** — 內建 4 種模式：*諧振*、*生理性嘆息*、*箱式*、與 *4-7-8*。
 - 🎨 **自訂主題** — 8+ 種主題（**3 種內建 + 5 種社群主題**，如 Catppuccin, Dracula）。
+- 🎵 **沈浸式音效** — 禪意打造的 10 秒深層循環：*火爐*、*深層禪定* 與 *大師古鐘*。
 - ⚡ **極致效能** — 純 Bash 邏輯。渲染路徑零依賴。
+
+## 🎵 沈浸式音效
+
+HushFlow 內建一套專為深層沈浸與生理引導設計的聲景。使用 `hushflow sound on` 即可啟用。
+
+- **吸氣 (Inhale)**：**諧波綻放 (Harmonic Bloom)** — 深沈的 60Hz 低音隨吸氣漲落，伴隨溫暖的火爐碎裂聲。
+- **憋氣 (Hold)**：**三維干涉律動 (Tri-Harmonic Stillness)** — 交織的物理共鳴，徹底消除死板平音，營造靜謐空間感。
+- **吐氣 (Exhale)**：**拋物線沈降 (Parabolic Recede)** — 絲滑的 65Hz 氣流感，像潮汐般自然退去。
+- **完成 (Complete)**：**大師古鐘 (The Master Bell)** — 重型 82Hz 青銅古鐘，由溫潤木槌敲擊，餘韻悠長。
+
+*基於聲學物理設計，旨在誘發副交感神經放鬆。*
 
 ## 📺 UI 模式
 
