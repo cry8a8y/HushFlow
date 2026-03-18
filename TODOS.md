@@ -22,23 +22,14 @@
 
 ---
 
-## Next Up (v1.1)
+## Future Items (Deferred)
 
 ### Homebrew Formula
 - **What**: `brew install hushflow` via a Homebrew tap (`cry8a8y/homebrew-hushflow`).
-- **Why**: One-line install for macOS/Linux users. 需要建獨立 repo。
-- **Priority**: P2
+- **Why**: One-line install for macOS/Linux users. 需要建獨立 repo，每次 release 要同步 SHA256。
+- **When**: 等版本穩定且有使用者需求再做。目前 `npx` + `curl` 已足夠。
+- **Priority**: P3
 - **Effort**: S
-
-### npm bin warning fix
-- **What**: `npm publish` 時 `bin[hushflow]` 被 auto-corrected。目前可運作但有警告。
-- **Fix**: 確認 `bin/hushflow.js` 的 shebang 和 package.json bin entry 格式正確。
-- **Priority**: P2
-- **Effort**: S
-
----
-
-## Future Items (Deferred)
 
 ### Guided Onboarding / First-Run Experience
 - **What**: Interactive first-run wizard that walks users through choosing exercise, theme, and animation.

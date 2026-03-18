@@ -12,7 +12,7 @@ lc() { echo "$1" | tr '[:upper:]' '[:lower:]'; }
 # Ensure config exists
 mkdir -p "$CONFIG_DIR"
 if [ ! -f "$CONFIG_FILE" ]; then
-    printf 'enabled=true\nexercise=0\ndelay=5\ntheme=teal\nanimation=random\nsound=true\n' > "$CONFIG_FILE"
+    printf 'enabled=true\nexercise=0\ndelay=5\ntheme=teal\nanimation=random\nsound=false\n' > "$CONFIG_FILE"
 fi
 
 set_value() {
@@ -43,7 +43,7 @@ if [ "$ARG1" = "sound" ]; then
             ;;
         *)
             current_sound=$(grep "^sound=" "$CONFIG_FILE" 2>/dev/null | cut -d= -f2)
-            echo "Sound: ${current_sound:-true} (on by default)"
+            echo "Sound: ${current_sound:-false} (off by default, enable with 'hushflow sound on')"
             echo "  hushflow sound on    Enable breath transition sounds"
             echo "  hushflow sound off   Disable sounds"
             echo ""

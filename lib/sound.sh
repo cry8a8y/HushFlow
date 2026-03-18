@@ -24,10 +24,10 @@ _hf_detect_sound_player() {
 _hf_check_sound_enabled() {
     [ -n "$_HF_SOUND_ENABLED" ] && return
     local config="${HUSHFLOW_CONFIG_DIR:-$HOME/.claude/hushflow}/config"
-    if [ -f "$config" ] && grep -q "^sound=false" "$config"; then
-        _HF_SOUND_ENABLED="false"
-    else
+    if [ -f "$config" ] && grep -q "^sound=true" "$config"; then
         _HF_SOUND_ENABLED="true"
+    else
+        _HF_SOUND_ENABLED="false"
     fi
 }
 

@@ -19,32 +19,26 @@ section "Sound system basics"
 
 bash -n "$SCRIPT_DIR/lib/sound.sh" 2>/dev/null && pass "sound.sh syntax ok" || fail "sound.sh syntax error"
 
-# --- Sound config default (sound enabled by default) ---
+# --- Sound config default (sound disabled by default, opt-in) ---
 section "Config default behavior"
 
 TMPDIR_TEST=$(mktemp -d)
 trap 'rm -rf "$TMPDIR_TEST"' EXIT
 
-# Test: missing config = sound enabled
+# Test: missing config = sound disabled
 CFG_MISSING="$TMPDIR_TEST/no-config"
 mkdir -p "$CFG_MISSING"
-(
-    source "$SCRIPT_DIR/lib/sound.sh"
-    _HF_SOUND_ENABLED=""
-    HUSHFLOW_CONFIG_DIR="$CFG_MISSING" _hf_check_sound_enabled
-    [ "$_HF_SOUND_ENABLED" = "true" ] && echo "PASS" || echo "FAIL"
-)
 result=$( source "$SCRIPT_DIR/lib/sound.sh"; _HF_SOUND_ENABLED=""; HUSHFLOW_CONFIG_DIR="$CFG_MISSING" _hf_check_sound_enabled; echo "$_HF_SOUND_ENABLED" )
-[ "$result" = "true" ] && pass "missing config defaults to sound=true" || fail "missing config defaults to sound=true (got '$result')"
+[ "$result" = "false" ] && pass "missing config defaults to sound=false" || fail "missing config defaults to sound=false (got '$result')"
 
-# Test: config without sound= line = sound enabled
+# Test: config without sound= line = sound disabled
 CFG_NO_SOUND="$TMPDIR_TEST/no-sound-line"
 mkdir -p "$CFG_NO_SOUND"
 printf 'enabled=true\nexercise=0\n' > "$CFG_NO_SOUND/config"
 result=$( source "$SCRIPT_DIR/lib/sound.sh"; _HF_SOUND_ENABLED=""; HUSHFLOW_CONFIG_DIR="$CFG_NO_SOUND" _hf_check_sound_enabled; echo "$_HF_SOUND_ENABLED" )
-[ "$result" = "true" ] && pass "config without sound= defaults to true" || fail "config without sound= (got '$result')"
+[ "$result" = "false" ] && pass "config without sound= defaults to false" || fail "config without sound= (got '$result')"
 
-# Test: sound=true = sound enabled
+# Test: sound=true = sound enabled (opt-in)
 CFG_TRUE="$TMPDIR_TEST/sound-true"
 mkdir -p "$CFG_TRUE"
 printf 'sound=true\n' > "$CFG_TRUE/config"
