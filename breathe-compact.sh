@@ -787,12 +787,12 @@ while true; do
     ic=$(( (PANE_W - ${#info_text}) / 2 + 1 ))
     frame+="\033[${info_row};1H\033[2K\033[${info_row};${ic}H${fade_prefix}${COLOR_MDIM}${info_text}${RESET}"
 
-    # ESC hint (right-aligned on info row, only if terminal has input)
+    # ESC hint (right-aligned on bottom row, only if terminal has input)
     if [ -t 0 ]; then
         _esc_hint="ESC to close"
         _esc_col=$(( PANE_W - ${#_esc_hint} ))
-        if [ "$_esc_col" -gt $(( ic + ${#info_text} + 2 )) ]; then
-            frame+="\033[${info_row};${_esc_col}H${fade_prefix}${DIM}${_esc_hint}${RESET}"
+        if [ "$_esc_col" -gt $(( sc_pos + ${#status} + 2 )) ]; then
+            frame+="\033[${PANE_H};${_esc_col}H${fade_prefix}${DIM}${_esc_hint}${RESET}"
         fi
     fi
 
