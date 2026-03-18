@@ -587,11 +587,11 @@ for _a in $_VALID; do [ "$_picked" = "$_a" ] && _found=1; done
 # --- ESC key close ---
 section "ESC key close"
 
-# Test: breathe-compact.sh sets raw terminal mode
-if grep -q 'stty.*-echo.*-icanon\|stty.*-icanon.*-echo' "$SCRIPT_DIR/breathe-compact.sh"; then
-    pass "breathe-compact.sh sets raw terminal mode"
+# Test: breathe-compact.sh uses non-blocking read for keyboard input
+if grep -q 'read.*-n1.*-t' "$SCRIPT_DIR/breathe-compact.sh"; then
+    pass "breathe-compact.sh uses non-blocking read for input"
 else
-    fail "breathe-compact.sh missing raw terminal mode"
+    fail "breathe-compact.sh missing non-blocking read"
 fi
 
 # Test: breathe-compact.sh saves/restores stty settings
