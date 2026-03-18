@@ -55,12 +55,14 @@ _hf_session_init() {
     echo "$(date +%s)" > "$MARKER_FILE"
     hf_log "marker created at $SESSION_DIR, UI_MODE=$UI_MODE"
 
-    # Launch UI in background (open-window.sh handles all modes including tmux).
+    # Launch UI synchronously — the hook itself is async, so this won't block
+    # the AI tool. Running in foreground keeps the process alive until the
+    # window is fully opened (osascript needs 1-2s on macOS).
     case "$UI_MODE" in
         off)
             ;;
         *)
-            HUSHFLOW_UI_MODE="$UI_MODE" "$SCRIPT_DIR/open-window.sh" &
+            HUSHFLOW_UI_MODE="$UI_MODE" "$SCRIPT_DIR/open-window.sh"
             ;;
     esac
 }
