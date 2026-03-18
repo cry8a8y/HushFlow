@@ -307,7 +307,10 @@ cleanup() {
     if [ -f "$SESSION_DIR/window-id" ] && [ -d "/Applications/Ghostty.app" ]; then
         local wid
         wid=$(cat "$SESSION_DIR/window-id" 2>/dev/null || true)
-        [ -n "$wid" ] && osascript -e "tell application \"Ghostty\" to close (window id \"$wid\")" &>/dev/null
+        if [ -n "$wid" ]; then
+            osascript -e "tell application \"Ghostty\" to close (window id \"$wid\")" &>/dev/null
+            sleep 0.3  # Give Ghostty time to close before process exits
+        fi
     fi
 }
 trap 'cleanup' EXIT
