@@ -140,8 +140,15 @@ animation=""
 if [ -f "$CONFIG_FILE" ]; then
     animation=$(grep "^animation=" "$CONFIG_FILE" 2>/dev/null | cut -d= -f2)
 fi
-animation="${animation:-constellation}"
 VALID_ANIMATIONS="constellation ripple wave orbit helix rain"
+
+# Random mode: pick one animation for this session
+if [ -z "$animation" ] || [ "$animation" = "random" ]; then
+    _anim_arr=($VALID_ANIMATIONS)
+    animation="${_anim_arr[$((RANDOM % ${#_anim_arr[@]}))]}"
+    hf_log "random animation selected: $animation"
+    unset _anim_arr
+fi
 
 # Validate built-in animation name (plugins are validated at render time)
 _is_builtin_anim=0
@@ -294,6 +301,7 @@ read_size() {
 read_size
 
 cleanup() {
+    [ -n "${_hf_old_stty:-}" ] && stty "$_hf_old_stty" 2>/dev/null
     printf '\033[?25h\033[0m\033[2J'
     # Auto-close Ghostty window (avoids "Press any key to close" message)
     if [ -f "$SESSION_DIR/window-id" ] && [ -d "/Applications/Ghostty.app" ]; then
@@ -305,6 +313,13 @@ cleanup() {
 trap 'cleanup' EXIT
 trap read_size WINCH
 printf '\033]0;%s\a\033[?25l\033[2J' "$WINDOW_TITLE"
+
+# === Keyboard input: raw mode for ESC detection ===
+_hf_old_stty=""
+if [ -t 0 ]; then
+    _hf_old_stty=$(stty -g 2>/dev/null) || true
+    stty -echo -icanon min 0 time 0 2>/dev/null || true
+fi
 hf_log "started animation=$animation exercise=$EX_NAME theme=${theme:-teal} PANE=${PANE_W}x${PANE_H}"
 
 # ========== RENDER FUNCTIONS ==========
@@ -617,6 +632,8 @@ log_session_stats() {
 
 # Graceful exit: show summary, "Done" message, fade out, then exit
 graceful_exit() {
+    # Restore terminal to normal mode before fade-out
+    [ -n "${_hf_old_stty:-}" ] && stty "$_hf_old_stty" 2>/dev/null
     type hf_play_sound &>/dev/null && hf_play_sound complete
     # Log stats
     log_session_stats
@@ -770,7 +787,37 @@ while true; do
     ic=$(( (PANE_W - ${#info_text}) / 2 + 1 ))
     frame+="\033[${info_row};1H\033[2K\033[${info_row};${ic}H${fade_prefix}${COLOR_MDIM}${info_text}${RESET}"
 
+    # ESC hint (right-aligned on info row, only if terminal has input)
+    if [ -t 0 ]; then
+        _esc_hint="ESC to close"
+        _esc_col=$(( PANE_W - ${#_esc_hint} ))
+        if [ "$_esc_col" -gt $(( ic + ${#info_text} + 2 )) ]; then
+            frame+="\033[${info_row};${_esc_col}H${fade_prefix}${DIM}${_esc_hint}${RESET}"
+        fi
+    fi
+
     printf '%b' "$frame"
-    sleep 0.1
+
+    # Frame delay + non-blocking keyboard input
+    _hf_key=""
+    if [ -t 0 ]; then
+        IFS= read -r -n1 -t 0.1 _hf_key 2>/dev/null || true
+    else
+        sleep 0.1
+    fi
+
+    # ESC key detection
+    if [ "$_hf_key" = $'\x1b' ]; then
+        # Distinguish bare ESC from escape sequences (arrow keys, etc.)
+        _hf_seq=""
+        IFS= read -r -n1 -t 0.05 _hf_seq 2>/dev/null || true
+        if [ -z "$_hf_seq" ]; then
+            # Bare ESC pressed — close window
+            hf_log "ESC pressed, closing"
+            rm -f "$MARKER_FILE"
+            graceful_exit
+        fi
+    fi
+
     tick=$((tick + 1))
 done

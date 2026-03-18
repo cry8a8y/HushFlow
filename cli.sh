@@ -42,7 +42,7 @@ case "${1:-help}" in
         echo "  hushflow config [hrv|sigh|box|478]"
         echo "  hushflow theme [teal|twilight|amber|<community-theme>]"
         echo "  hushflow theme list"
-        echo "  hushflow animation [constellation|ripple|wave|orbit|helix|rain]"
+        echo "  hushflow animation [random|constellation|ripple|wave|orbit|helix|rain]"
         echo "  hushflow wrap -- <command>      Run breathing while a command executes"
         echo "  hushflow sound [on|off]"
         echo "  hushflow stats                  View session statistics and streak"
