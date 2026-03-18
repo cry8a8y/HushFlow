@@ -1,0 +1,49 @@
+{
+  "date": "2026-03-18",
+  "window": "7d",
+  "metrics": {
+    "commits": 142,
+    "non_merge_commits": 82,
+    "contributors": 1,
+    "prs_merged": 60,
+    "insertions": 11928,
+    "deletions": 3967,
+    "net_loc": 7961,
+    "test_loc": 2777,
+    "test_ratio": 0.23,
+    "active_days": 2,
+    "sessions": 5,
+    "deep_sessions": 3,
+    "medium_sessions": 1,
+    "micro_sessions": 1,
+    "avg_session_minutes": 142,
+    "loc_per_session_hour": 1000,
+    "feat_pct": 0.11,
+    "fix_pct": 0.43,
+    "docs_pct": 0.32,
+    "test_pct": 0.06,
+    "chore_pct": 0.06,
+    "peak_hour": 18,
+    "ai_assisted_commits": 68
+  },
+  "authors": {
+    "cry8a8y": {
+      "commits": 82,
+      "insertions": 11928,
+      "deletions": 3967,
+      "test_ratio": 0.23,
+      "top_area": "breathe-compact.sh"
+    }
+  },
+  "version_range": ["1.0.0", "1.0.3"],
+  "streak_days": 2,
+  "tweetable": "Week of Mar 17: 142 commits, 60 PRs merged, 11.9k LOC, 23% tests, v1.0→v1.0.3 shipped, 83% AI-assisted | Streak: 2d",
+  "backlog": {
+    "total_open": 7,
+    "p0_p1": 0,
+    "p2": 2,
+    "p2_items": ["Homebrew Formula", "npm bin warning fix"],
+    "p3": 5,
+    "completed_this_period": 15
+  }
+}
