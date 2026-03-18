@@ -302,7 +302,7 @@ read_size
 
 cleanup() {
     [ -n "${_hf_old_stty:-}" ] && stty "$_hf_old_stty" 2>/dev/null
-    printf '\033[?25h\033[0m\033[2J'
+    printf '\033[?25h\033[0m\033[2J\033[?1049l'
     # Auto-close Ghostty window (avoids "Press any key to close" message)
     if [ -f "$SESSION_DIR/window-id" ] && [ -d "/Applications/Ghostty.app" ]; then
         local wid
@@ -312,7 +312,7 @@ cleanup() {
 }
 trap 'cleanup' EXIT
 trap read_size WINCH
-printf '\033]0;%s\a\033[?25l\033[2J' "$WINDOW_TITLE"
+printf '\033]0;%s\a\033[?1049h\033[?25l\033[2J' "$WINDOW_TITLE"
 
 # === Keyboard input: stty raw mode for ESC detection ===
 # Use stty -icanon min 0 time 0 for instant non-blocking reads via dd.
@@ -796,7 +796,7 @@ while true; do
         _esc_hint="ESC to close"
         _esc_pos=$(( (PANE_W - ${#_esc_hint}) / 2 + 1 ))
         _term_bottom=$(tput lines 2>/dev/null || echo "$PANE_H")
-        frame+="\033[${_term_bottom};1H\033[2K\033[${_term_bottom};${_esc_pos}H\033[2;38;2;90;95;100m${_esc_hint}${RESET}"
+        frame+="\033[${_term_bottom};1H\033[2K\033[${_term_bottom};${_esc_pos}H\033[2;38;2;110;115;120m${_esc_hint}${RESET}"
     fi
 
     printf '%b' "$frame"
