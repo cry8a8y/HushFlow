@@ -1,6 +1,6 @@
 #!/bin/bash
 # Remote installer for HushFlow
-# Usage: curl -fsSL https://raw.githubusercontent.com/cry8a8y/HushFlow/main/install-remote.sh | sh
+# Usage: curl -fsSL https://raw.githubusercontent.com/cry8a8y/HushFlow/main/install-remote.sh | bash
 
 set -e
 
