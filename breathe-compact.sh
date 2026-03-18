@@ -303,23 +303,7 @@ read_size
 cleanup() {
     [ -n "${_hf_old_stty:-}" ] && stty "$_hf_old_stty" 2>/dev/null
     printf '\033[?25h\033[0m\033[2J\033[?1049l'
-    # Auto-close Ghostty window (avoids "Press any key to close" message)
-    if [ -f "$SESSION_DIR/window-id" ] && [ -d "/Applications/Ghostty.app" ]; then
-        local wid
-        wid=$(cat "$SESSION_DIR/window-id" 2>/dev/null || true)
-        if [ -n "$wid" ]; then
-            osascript -e "tell application \"Ghostty\" to close (window id \"$wid\")" &>/dev/null
-            # Wait until Ghostty actually closes the window (up to 2s)
-            local _w=0
-            while [ "$_w" -lt 20 ]; do
-                if ! osascript -e "tell application \"Ghostty\" to window id \"$wid\"" &>/dev/null 2>&1; then
-                    break
-                fi
-                sleep 0.1
-                _w=$((_w + 1))
-            done
-        fi
-    fi
+    # For non-graceful exits, on-stop.sh handles Ghostty window close
 }
 trap 'cleanup' EXIT
 trap read_size WINCH
@@ -688,6 +672,18 @@ graceful_exit() {
     done
     # Final clear
     printf '\033[2J\033[H'
+
+    # Close Ghostty window, then keep process alive so Ghostty doesn't show
+    # "Process exited" prompt. exec replaces shell with sleep; Ghostty closing
+    # the window sends SIGHUP which kills sleep cleanly.
+    if [ -f "$SESSION_DIR/window-id" ] && [ -d "/Applications/Ghostty.app" ]; then
+        local wid
+        wid=$(cat "$SESSION_DIR/window-id" 2>/dev/null || true)
+        if [ -n "$wid" ]; then
+            osascript -e "tell application \"Ghostty\" to close (window id \"$wid\")" &>/dev/null
+            exec sleep 86400
+        fi
+    fi
     exit 0
 }
 
