@@ -145,6 +145,26 @@ done
 
 echo ""
 
+# --- UI fallback detection ---
+echo "Window launch:"
+fallback_count=0
+for d in /tmp/hushflow-*/; do
+    [ -d "$d" ] 2>/dev/null || continue
+    if [ -f "$d/ui-fallback" ]; then
+        fallback_count=$((fallback_count+1))
+    fi
+done
+if [ "$fallback_count" -gt 0 ]; then
+    warn "Inline fallback used in $fallback_count session(s) — breathing ran hidden in background"
+    echo "      This means HushFlow couldn't open a terminal window."
+    echo "      Try: set HUSHFLOW_UI_MODE=tmux-pane (if using tmux)"
+    echo "      Or use a supported terminal: Ghostty, iTerm2, Terminal.app, GNOME Terminal, Windows Terminal"
+else
+    ok "No fallback issues detected"
+fi
+
+echo ""
+
 # --- Terminal detection ---
 echo "Terminal detection:"
 if [ -f "$SCRIPT_DIR/lib/detect-terminal.sh" ]; then

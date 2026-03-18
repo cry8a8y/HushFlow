@@ -231,6 +231,8 @@ EOF
 
     inline|*)
         # Fallback: no window, just run in background (output to /dev/null)
+        hf_log "WARNING: no supported terminal detected (terminal=$terminal), running inline fallback"
+        echo "inline" > "$SESSION_DIR/ui-fallback"
         "$BREATHE_SCRIPT" > /dev/null 2>&1 &
         echo $! > "$WINDOW_PID_FILE"
         ;;

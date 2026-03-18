@@ -30,8 +30,7 @@
 - ~~P2: install.ps1 缺少 backup~~ → 寫入前備份
 - ~~P2: Plugin source 無錯誤處理~~ → bash -n 語法檢查後才 source
 
-### 尚未修復 (P2)
-- Hook 開視窗失敗靜默 — Fallback 時無提示，需加 debug log + doctor 偵測（Effort: M）
+- ~~P2: Hook 開視窗失敗靜默~~ → inline fallback 寫入 debug log + ui-fallback 標記，doctor 可偵測
 
 ---
 
