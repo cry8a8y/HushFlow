@@ -9,46 +9,89 @@
 <p align="center">
   <a href="https://github.com/cry8a8y/HushFlow/stargazers"><img src="https://img.shields.io/github/stars/cry8a8y/HushFlow?style=social" alt="GitHub Stars" /></a>
   &nbsp;
-  <img src="https://img.shields.io/github/v/release/cry8a8y/HushFlow?label=version&color=orange" alt="Version" />
-  <img src="https://img.shields.io/badge/platform-macOS%20|%20Linux%20|%20Windows-blue" alt="Platform Support" />
-  <img src="https://img.shields.io/github/license/cry8a8y/HushFlow?color=green" alt="License MIT" />
   <img src="https://img.shields.io/npm/v/hushflow?color=cb3837&label=npm" alt="npm" />
+  <img src="https://img.shields.io/badge/platform-macOS%20|%20Linux%20|%20Windows-blue" alt="Platform Support" />
 </p>
 
 ---
 
-You send a prompt. Your AI thinks for 30 seconds. You stare at a blinking cursor, check your phone, lose focus.
+Mindful breathing during AI wait time. Auto-launches when the AI starts, auto-dismisses when it's done.
 
-**What if that dead time made you calmer instead?**
+Works with **Claude Code** and **Gemini CLI** (full per-prompt hooks). **Codex CLI** is supported at session level.
 
-**HushFlow** turns AI wait time into guided breathing exercises — auto-launches when the AI starts working, auto-dismisses when it's done. No setup per session, no manual timers. Just breathe.
+## 🚀 Install in 60 Seconds
 
-Works with **Claude Code**, **Gemini CLI**, and **Codex CLI**. Runs on **macOS**, **Linux**, and **Windows**.
+```bash
+curl -fsSL https://raw.githubusercontent.com/cry8a8y/HushFlow/main/install-remote.sh | sh
+```
 
-## ⚡ Quick Snapshot
+<details>
+<summary>Other install methods</summary>
 
-- **🫁 Guided Breathing** — 4 patterns: Coherent, Physiological Sigh, Box, and 4-7-8
-- **🔌 Hook-Based** — Starts when your AI starts, stops when it finishes
-- **🖥️ Flexible UI** — Companion window, tmux pane, popup, or inline mode
-- **🎨 Pro Graphics** — 6 sub-pixel animations with 5-level color gradients
+**npx:**
 
-### ⚡ Performance
+```bash
+npx hushflow install
+```
 
-| Metric | Value | Notes |
-|--------|-------|-------|
-| **Render** | 10 fps | Double-buffered, single `printf` per frame |
-| **CPU** | < 2% | SIN64/COS32 lookup tables, no `bc`/`awk` in loop |
-| **Memory** | ~3 MB RSS | Pure Bash, no background daemons |
-| **Startup** | < 50 ms | No interpreter boot (Python/Node), just `bash` |
-| **Dependencies** | 0 in render path | `jq` only at config load |
+**Manual:**
 
-## 📺 Demo
+```bash
+git clone https://github.com/cry8a8y/HushFlow.git
+cd HushFlow
+./install.sh
+```
+
+**Windows (PowerShell):**
+
+```powershell
+git clone https://github.com/cry8a8y/HushFlow.git
+cd HushFlow
+.\install.ps1
+```
+
+</details>
+
+**What the installer does:**
+1. Copies HushFlow to `~/.hushflow/`
+2. Registers start/stop hooks in your AI tool's config
+3. Creates a default config at `~/.<tool>/hushflow/config`
+
+**Verify it works:**
+
+```bash
+hushflow doctor        # Check installation & environment
+```
+
+Then send any prompt to your AI tool and wait 5 seconds — a breathing window will appear.
+
+### 📋 Dependencies
+
+| Type | Package | Platform | Purpose |
+|------|---------|----------|---------|
+| **Core** | `bash` 4.0+ | All | Shell runtime |
+| **Core** | `jq` | All | Config & theme parsing |
+| **macOS** | `osascript` | macOS | Window positioning (built-in) |
+| **Linux** | `xdotool` | Linux (X11) | Window focus & geometry |
+| **Optional** | `tmux` | Any | tmux-pane / tmux-popup UI mode |
+| **Optional** | `ffplay` / `mpv` / `afplay` | Any | Sound playback |
+
+## 📺 What You See
 
 <br/>
 <p align="center">
   <img src="demo.gif" alt="HushFlow — constellation animation with coherent breathing" width="720" />
 </p>
 <br/>
+
+HushFlow adapts to your workflow with 4 UI modes:
+
+| Mode | Best for | How to enable |
+|------|----------|---------------|
+| **Window** | Default — opens a companion terminal | `HUSHFLOW_UI_MODE=window` |
+| **tmux pane** | tmux users — splits a pane | `HUSHFLOW_UI_MODE=tmux-pane` |
+| **tmux popup** | tmux 3.2+ — floating overlay | `HUSHFLOW_UI_MODE=tmux-popup` |
+| **Inline** | Minimal — renders in current terminal | `HUSHFLOW_UI_MODE=inline` |
 
 ## ✨ Features
 
@@ -69,7 +112,7 @@ Works with **Claude Code**, **Gemini CLI**, and **Codex CLI**. Runs on **macOS**
 - **6 animations** — Constellation, Ripple, Wave, Orbit, Helix, Rain
 - **8+ themes** — Teal, Twilight, Amber + community themes
 - **10fps engine** — SIN64 trig lookups, zero flicker
-- **Plugin API** — Custom animations via `~/.hushflow/plugins/`
+- **Plugin API** — Custom animations via scripts
 
 </td>
 </tr>
@@ -95,46 +138,53 @@ Works with **Claude Code**, **Gemini CLI**, and **Codex CLI**. Runs on **macOS**
 </tr>
 </table>
 
-## 🚀 Quick Start
+### ⚡ Performance
 
-### 📦 Recommended: One-line install
+| Metric | Value | Notes |
+|--------|-------|-------|
+| **Render** | 10 fps | Double-buffered, single `printf` per frame |
+| **CPU** | < 2% | SIN64/COS32 lookup tables, no `bc`/`awk` in loop |
+| **Memory** | ~3 MB RSS | Pure Bash, no background daemons |
+| **Startup** | < 50 ms | No interpreter boot (Python/Node), just `bash` |
+| **Dependencies** | 0 in render path | `jq` only at config load |
+
+## 🛠️ Supported AI Tools
+
+| Tool | 🟢 Start Hook | 🔴 Stop Hook | Status |
+|------|-----------|-----------|--------|
+| **Claude Code** | `UserPromptSubmit` | `Stop` | ✅ Full support |
+| **Gemini CLI** | `BeforeAgent` | `AfterAgent` | ✅ Full support |
+| **Codex CLI** | `SessionStart` | `Stop` | ⏳ Session-level |
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/cry8a8y/HushFlow/main/install-remote.sh | sh
+hushflow install --target gemini   # Install for a specific tool
 ```
 
-### 🛠️ With npx
+## ⌨️ Commands
 
 ```bash
-npx hushflow install
+# Breathing exercise
+hushflow config hrv            # Coherent Breathing
+hushflow config sigh           # Physiological Sigh
+hushflow config box            # Box Breathing
+hushflow config 478            # 4-7-8 Breathing
+
+# Theme & animation
+hushflow theme twilight        # Soft purple
+hushflow theme list            # List all available themes
+hushflow animation orbit       # Orbiting comets
+
+# Sound, stats & wrapper
+hushflow sound on              # Enable breath transition chimes
+hushflow stats                 # View sessions, streaks, mindful time
+hushflow wrap -- npm install   # Breathe while any command runs
+
+# Diagnostics
+hushflow doctor                # Check installation & environment
 ```
 
-### 📖 Manually
-
-```bash
-git clone https://github.com/cry8a8y/HushFlow.git
-cd HushFlow
-./install.sh
-```
-
-### 📋 Dependencies
-
-| Type | Package | Platform | Purpose |
-|------|---------|----------|---------|
-| **Core** | `bash` 4.0+ | All | Shell runtime |
-| **Core** | `jq` | All | Config & theme parsing |
-| **macOS** | `osascript` | macOS | Window positioning (built-in) |
-| **Linux** | `xdotool` | Linux (X11) | Window focus & geometry |
-| **Optional** | `tmux` | Any | tmux-pane / tmux-popup UI mode |
-| **Optional** | `ffplay` / `mpv` / `afplay` | Any | Sound playback |
-
-### 🪟 Windows
-
-```powershell
-git clone https://github.com/cry8a8y/HushFlow.git
-cd HushFlow
-.\install.ps1
-```
+> [!TIP]
+> In Claude Code, you can also use the `/hushflow` slash command for interactive settings.
 
 ## 🧠 How It Works
 
@@ -173,134 +223,14 @@ flowchart TD
     style cleanup fill:#1a1a2e,stroke:#0f3460,color:#e0e0e0
 ```
 
-## 🛠️ Supported AI Tools
+## 📚 Advanced Docs
 
-| Tool | 🟢 Start Hook | 🔴 Stop Hook | Status |
-|------|-----------|-----------|--------|
-| **Claude Code** | `UserPromptSubmit` | `Stop` | ✅ Full support |
-| **Gemini CLI** | `BeforeAgent` | `AfterAgent` | ✅ Full support |
-| **Codex CLI** | `SessionStart` | `Stop` | ⏳ Session-level |
-
-Install for a specific tool:
-
-```bash
-hushflow install --target gemini
-```
-
-## ⚙️ Configuration
-
-Settings are stored per-tool at `~/.<tool>/hushflow/config`:
-
-```ini
-enabled=true
-exercise=0
-delay=5
-theme=teal
-animation=constellation
-sound=false
-```
-
-### ⌨️ CLI Commands
-
-```bash
-# Set exercise
-hushflow config hrv            # Coherent Breathing
-hushflow config sigh           # Physiological Sigh
-hushflow config box            # Box Breathing
-hushflow config 478            # 4-7-8 Breathing
-
-# Set theme
-hushflow theme twilight        # Soft purple
-hushflow theme catppuccin-mocha # Community theme
-hushflow theme list            # List all available themes
-
-# Set animation
-hushflow animation orbit       # Orbiting comets
-
-# Sound
-hushflow sound on              # Enable breath transition chimes
-hushflow sound off             # Disable sounds
-
-# Stats
-hushflow stats                 # View sessions, streaks, and mindful time
-
-# Universal wrapper
-hushflow wrap -- npm install   # Breathe while any command runs
-
-# Diagnostics
-hushflow doctor                # Check installation & environment
-```
-
-> [!TIP]
-> In Claude Code, you can also use the `/hushflow` slash command for interactive settings.
-
-## 🛠️ Advanced Customization
-
-### 🎨 Community Themes
-
-HushFlow ships with 5 community themes: **Catppuccin Mocha**, **Dracula**, **Nord**, **Solarized Dark**, and **Gruvbox**.
-
-```bash
-hushflow theme catppuccin-mocha
-hushflow theme list              # See all available themes
-```
-
-Create your own theme as a JSON file in `~/.hushflow/themes/`:
-
-```json
-{
-  "name": "my-theme",
-  "author": "your-name",
-  "colors": {
-    "primary": "R;G;B",
-    "secondary": "R;G;B",
-    "mid": "R;G;B",
-    "mid_dim": "R;G;B",
-    "dim": "R;G;B"
-  }
-}
-```
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for theme contribution guidelines.
-
-### 🧩 Plugin API (Experimental)
-
-Create custom animations by placing scripts in `~/.hushflow/plugins/`. Each plugin defines a `render_<name>()` function that appends ANSI escape codes to the `$frame` variable.
-
-```bash
-# Install the example plugin
-mkdir -p ~/.hushflow/plugins
-cp plugins/example-pulse.sh ~/.hushflow/plugins/pulse.sh
-hushflow animation pulse
-```
-
-See the [Plugin API documentation](docs/PLUGIN-API.md) for available variables, trig tables, color palette, and performance tips.
-
-### 🌐 Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `HUSHFLOW_UI_MODE` | `window` | `window`, `tmux-pane`, `tmux-popup`, `inline`, or `off` |
-| `HUSHFLOW_DELAY_SECONDS` | config `delay` | Override the startup delay |
-| `HUSHFLOW_COLS` | auto-detect | Override terminal width (columns) |
-| `HUSHFLOW_ROWS` | auto-detect | Override terminal height (rows) |
-| `HUSHFLOW_TERMINAL` | auto-detect | Force terminal type (e.g. `ghostty`, `iterm`, `xterm`) |
-| `HUSHFLOW_PLUGIN_DIR` | `~/.hushflow/plugins` | Custom plugin directory |
-| `HUSHFLOW_DEBUG` | off | Set to `1` to enable debug logging to `/tmp/hushflow-debug.log` |
-
-## 🔍 Troubleshooting
-
-If animations don't appear as expected, run the built-in diagnostic tool:
-
-```bash
-hushflow doctor
-```
-
-## 🗑️ Uninstall
-
-```bash
-hushflow uninstall
-```
+| Topic | Link |
+|-------|------|
+| **Community Themes** | 5 themes (Catppuccin, Dracula, Nord, Solarized, Gruvbox) + [create your own](CONTRIBUTING.md) |
+| **Plugin API** | Custom animations — [docs/PLUGIN-API.md](docs/PLUGIN-API.md) |
+| **Environment Variables** | `HUSHFLOW_UI_MODE`, `HUSHFLOW_DEBUG`, etc. — [full list](docs/ENVIRONMENT.md) |
+| **Troubleshooting** | `hushflow doctor` or [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) |
 
 ## 🤝 Contributing
 
