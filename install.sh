@@ -74,7 +74,7 @@ ensure_config() {
     local config_dir=$1
     mkdir -p "$config_dir"
     if [ ! -f "$config_dir/config" ]; then
-        printf 'enabled=true\nexercise=0\ndelay=5\ntheme=teal\nanimation=constellation\nsound=true\n' > "$config_dir/config"
+        printf 'enabled=true\nexercise=0\ndelay=5\ntheme=teal\nanimation=random\nsound=false\n' > "$config_dir/config"
         echo "  Created config at $config_dir/config"
     fi
 }
