@@ -632,6 +632,8 @@ log_session_stats() {
 graceful_exit() {
     # Restore terminal to normal mode before fade-out
     [ -n "${_hf_old_stty:-}" ] && stty "$_hf_old_stty" 2>/dev/null
+    # Stop current phase sound, then play completion bell
+    type hf_stop_sound &>/dev/null && hf_stop_sound
     type hf_play_sound &>/dev/null && hf_play_sound complete
     # Log stats
     log_session_stats
@@ -720,12 +722,19 @@ while true; do
         progress=0
     fi
 
-    # Play sound on phase transition
+    # Play sound on phase transition (with duration matching + skip zero-length holds)
     if [ "$phase" != "$_last_phase" ] && type hf_play_sound &>/dev/null; then
         case "$phase" in
-            "Breathe in"|"Sip in") hf_play_sound inhale ;;
-            "Breathe out")         hf_play_sound exhale ;;
-            "Hold")                hf_play_sound hold ;;
+            "Breathe in") hf_play_sound inhale "$IN_DUR" ;;
+            "Sip in")     hf_play_sound inhale "$HOLD1_DUR" ;;
+            "Breathe out") hf_play_sound exhale "$EX_DUR" ;;
+            "Hold")
+                _hold_dur="$HOLD1_DUR"
+                [ "$t" -ge "$((IN_TICKS + H1_TICKS + EX_TICKS))" ] && _hold_dur="$HOLD2_DUR"
+                if [ "$_hold_dur" != "0" ]; then
+                    hf_play_sound hold "$_hold_dur"
+                fi
+                ;;
         esac
         _last_phase="$phase"
     fi
