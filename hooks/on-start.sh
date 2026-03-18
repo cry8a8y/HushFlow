@@ -32,7 +32,7 @@ _hf_session_init() {
     if [ -f "$CONFIG_DIR/.session" ]; then
         OLD_SESSION_DIR=$(cat "$CONFIG_DIR/.session" 2>/dev/null || true)
     fi
-    if [ -n "$OLD_SESSION_DIR" ] && [ -d "$OLD_SESSION_DIR" ]; then
+    if [[ "$OLD_SESSION_DIR" == /tmp/hushflow-* ]] && [ -d "$OLD_SESSION_DIR" ]; then
         old_pid=$(cat "$OLD_SESSION_DIR/window-pid" 2>/dev/null || true)
         if [ -n "$old_pid" ]; then
             pid_comm=$(ps -p "$old_pid" -o comm= 2>/dev/null || true)

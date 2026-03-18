@@ -1,6 +1,6 @@
 Configure HushFlow.
 
-Read the config file at `~/.claude/hushflow/config` to check current settings. If it doesn't exist, the defaults are: enabled=true, exercise=0, delay=5, theme=teal, animation=constellation, sound=false.
+Read the config file at `~/.claude/hushflow/config` to check current settings. If it doesn't exist, the defaults are: enabled=true, exercise=0, delay=5, theme=teal, animation=constellation, sound=true.
 
 Show the user the current status:
 - **Enabled**: true/false
@@ -18,7 +18,7 @@ exercise=0
 delay=5
 theme=teal
 animation=constellation
-sound=false
+sound=true
 ```
 
 Additional commands the user can run directly:

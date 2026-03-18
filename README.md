@@ -55,7 +55,19 @@ npx hushflow install
 - 💻 **Cross-Platform** — macOS, Linux, and Windows. Ghostty, iTerm2, Windows Terminal, etc.
 - 🫁 **Breath Work** — 4 built-in patterns: *Coherent*, *Sigh*, *Box*, and *4-7-8*.
 - 🎨 **Custom Themes** — 8+ themes (**3 built-in + 5 community** like Catppuccin, Dracula).
+- 🎵 **Immersive Audio** — Zen-crafted 10s deep loops: *Hearth*, *Deep Zen*, and *Master Bell*.
 - ⚡ **Engineered for Speed** — Pure Bash logic. Render path has zero external dependencies.
+
+## 🎵 Immersive Audio
+
+HushFlow features a built-in soundscape designed for deep immersion and functional guidance. Enable it with `hushflow sound on`.
+
+- **Inhale**: **Harmonic Bloom** — A deep 60Hz swell with warming fireplace crackles.
+- **Hold**: **Tri-Harmonic Stillness** — Interweaving resonances that eliminate flat tones.
+- **Exhale**: **Parabolic Recede** — Silky 65Hz airflow that settles naturally like a tide.
+- **Complete**: **The Master Bell** — A heavy 82Hz bronze bell struck by a mellow mallet.
+
+*Crafted using acoustic physics to induces parasympathetic relaxation.*
 
 ## 📺 UI Modes
 
