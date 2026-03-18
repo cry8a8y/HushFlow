@@ -22,6 +22,13 @@ fi
 if [ -d "$INSTALL_DIR/.git" ]; then
     echo "Updating existing installation..."
     git -C "$INSTALL_DIR" pull --quiet
+elif [ -d "$INSTALL_DIR" ]; then
+    # Directory exists but isn't a git repo (e.g. only stats.log from a previous run)
+    echo "Found existing $INSTALL_DIR (not a git repo). Reinstalling..."
+    tmpdir=$(mktemp -d)
+    git clone --quiet "$REPO" "$tmpdir"
+    cp -a "$tmpdir"/. "$INSTALL_DIR"/
+    rm -rf "$tmpdir"
 else
     echo "Installing to $INSTALL_DIR..."
     git clone --quiet "$REPO" "$INSTALL_DIR"
