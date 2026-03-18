@@ -714,6 +714,75 @@ else
     fail "open-window.sh missing HUSHFLOW_FADE_TICKS propagation"
 fi
 
+# --- Permission resume behavioral test ---
+section "Permission resume 3-tier expiry"
+
+# Create isolated mock environment for on-resume.sh
+_RESUME_TMPDIR=$(mktemp -d)
+_RESUME_SESSION="$_RESUME_TMPDIR/session"
+_RESUME_CONFIG="$_RESUME_TMPDIR/config"
+mkdir -p "$_RESUME_SESSION" "$_RESUME_CONFIG"
+
+# Helper: run on-resume.sh with a specific elapsed time.
+# We check the "working" marker file as evidence of resume intent —
+# on-resume.sh writes it before calling open-window.sh (which will fail
+# harmlessly in test since there's no real terminal).
+_run_resume_with_elapsed() {
+    local elapsed="$1"
+    local now
+    now=$(date +%s)
+    local ts=$((now - elapsed))
+
+    # Set up state
+    rm -f "$_RESUME_SESSION/working"
+    echo "$_RESUME_SESSION" > "$_RESUME_CONFIG/.session"
+    touch "$_RESUME_CONFIG/.permission-pending"
+    echo "$ts" > "$_RESUME_SESSION/permission-ts"
+
+    # Run on-resume.sh — open-window.sh will fail (no terminal) but that's OK,
+    # we're testing the decision logic, not the window opening
+    HUSHFLOW_CONFIG_DIR="$_RESUME_CONFIG" \
+        bash "$SCRIPT_DIR/hooks/on-resume.sh" 2>/dev/null || true
+
+    # Check: did on-resume.sh write the working marker (= intended to resume)?
+    if [ -f "$_RESUME_SESSION/working" ]; then
+        echo "resumed"
+    else
+        echo "no-resume"
+    fi
+}
+
+# Test: ≤30s → auto-resume (writes working marker)
+result=$(_run_resume_with_elapsed 10)
+[ "$result" = "resumed" ] && pass "≤30s: writes working marker (auto-resume)" || fail "≤30s: expected resume (got '$result')"
+
+# Test: 30-60s → auto-resume with longer delay
+result=$(_run_resume_with_elapsed 45)
+[ "$result" = "resumed" ] && pass "30-60s: writes working marker (slow resume)" || fail "30-60s: expected resume (got '$result')"
+
+# Test: >60s → no auto-resume (notification only, no working marker)
+result=$(_run_resume_with_elapsed 90)
+[ "$result" = "no-resume" ] && pass ">60s: no working marker (notification only)" || fail ">60s: expected no-resume (got '$result')"
+
+# Test: no .permission-pending → fast-path exit (permission-ts untouched)
+echo "$_RESUME_SESSION" > "$_RESUME_CONFIG/.session"
+echo "$(date +%s)" > "$_RESUME_SESSION/permission-ts"
+rm -f "$_RESUME_CONFIG/.permission-pending"
+HUSHFLOW_CONFIG_DIR="$_RESUME_CONFIG" \
+    bash "$SCRIPT_DIR/hooks/on-resume.sh" 2>/dev/null || true
+[ -f "$_RESUME_SESSION/permission-ts" ] && pass "fast-path: skips when no .permission-pending" || fail "fast-path: consumed permission-ts without .permission-pending"
+
+# Test: non-numeric timestamp → safe exit (no crash)
+echo "$_RESUME_SESSION" > "$_RESUME_CONFIG/.session"
+touch "$_RESUME_CONFIG/.permission-pending"
+echo "not-a-number" > "$_RESUME_SESSION/permission-ts"
+rm -f "$_RESUME_SESSION/working"
+HUSHFLOW_CONFIG_DIR="$_RESUME_CONFIG" \
+    bash "$SCRIPT_DIR/hooks/on-resume.sh" 2>/dev/null || true
+[ ! -f "$_RESUME_SESSION/working" ] && pass "non-numeric timestamp: safe exit (no crash)" || fail "non-numeric timestamp: unexpected resume"
+
+rm -rf "$_RESUME_TMPDIR"
+
 # --- Security: config validation ---
 section "Security: config validation"
 

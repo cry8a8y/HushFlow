@@ -185,6 +185,8 @@ if [ -d "$PLUGIN_DIR" ]; then
     for plugin_file in "$PLUGIN_DIR"/*.sh; do
         [ -f "$plugin_file" ] || continue
         if bash -n "$plugin_file" 2>/dev/null; then
+            # Plugins are user-trusted code (same trust level as dotfiles).
+            # The function audit below is a development aid, not a security boundary.
             _pre_funcs=$(declare -F | awk '{print $3}')
             source "$plugin_file"
             _post_funcs=$(declare -F | awk '{print $3}')
