@@ -55,6 +55,7 @@ npx hushflow install
 - 🎯 **Focus-First** — Runs in a separate window or tmux pane. Your terminal stays focused.
 - 🛠️ **Universal Integration** — Native for **Claude Code**, **Gemini CLI**, and **Codex CLI**.
 - 📊 **Mindful Stats** — Track your breathing sessions and keep your daily streak alive with `hushflow stats`.
+- 🔔 **Session Notifications** — macOS notification after each session with exercise name, cycles completed, and duration.
 - 💻 **Cross-Platform** — macOS, Linux, and Windows. optimized for **Ghostty 1.3.1**, iTerm2, Windows Terminal.
 - 🫁 **Breath Work** — 4 built-in patterns: *Coherent*, *Sigh*, *Box*, and *4-7-8*.
 - 🎨 **Custom Themes** — 8+ themes (**3 built-in + 5 community** like Catppuccin, Dracula).

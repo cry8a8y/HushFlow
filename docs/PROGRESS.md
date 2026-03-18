@@ -18,7 +18,7 @@
 - Async audio playback (ffplay/mpv/afplay/paplay priority detection)
 - Duration-matched sound files (e.g., `inhale-5.5s.ogg`) with fallback to base files
 - Crossfade: new sound starts before old is killed (150ms overlap)
-- Sound enabled by default; only disabled on explicit `sound=false`
+- Sound disabled by default (`sound=false`); enable with `hushflow sound on`
 
 ### Window Launcher (`hooks/open-window.sh`)
 - Cross-platform: Ghostty, Terminal.app, iTerm2, gnome-terminal, konsole, xfce4, xterm, Windows Terminal
@@ -52,9 +52,9 @@
 
 ### Hooks
 - `on-start.sh` — creates session dir + marker, dispatches UI mode
-- `on-stop.sh` — removes marker, cleans up window/pane/session
+- `on-stop.sh` — removes marker, cleans up window/pane/session, sends macOS notification with session summary (exercise name, cycles, duration)
 - `on-permission.sh` — pauses breathing window on PermissionRequest
-- `on-resume.sh` — smart resume after permission approval (3-tier: ≤30s auto, 30-60s slow, >60s notify)
+- `on-resume.sh` — smart resume after permission approval (3-tier: ≤30s auto, 30-60s slow, >60s notify); exports `HUSHFLOW_SESSION_DIR` for child processes
 - `lib/hook-common.sh` — shared bootstrap (hf_log, CONFIG_DIR, SESSION_DIR loading)
 
 ---

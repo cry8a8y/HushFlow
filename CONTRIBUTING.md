@@ -14,10 +14,16 @@ No build step required — HushFlow is pure Bash + JSON.
 ## Running Tests
 
 ```bash
-bash test/smoke-test.sh
+bash test/smoke-test.sh              # Core smoke tests (138+ tests)
+bash test/terminal-detect-test.sh    # Terminal detection (19 tests)
+bash test/unit-test.sh               # Unit tests (29 tests)
+bash test/sound-test.sh              # Sound system (27 tests)
+bash test/install-contract-test.sh   # Installer contracts (76+ tests)
+bash test/e2e-install-test.sh        # E2E install flow (31 tests)
+bash scripts/test-ui-layout.sh --ci  # UI layout (requires tmux)
 ```
 
-All tests must pass before submitting a PR.
+All tests must pass before submitting a PR. At minimum, run `bash test/smoke-test.sh`.
 
 ## Project Structure
 
@@ -29,7 +35,7 @@ HushFlow/
 ├── install.ps1           # Installer (Windows)
 ├── set-exercise.sh       # Configuration management
 ├── doctor.sh             # Diagnostic tool
-├── hooks/                # AI tool hook scripts (on-start/on-stop)
+├── hooks/                # AI tool hooks (on-start, on-stop, on-permission, on-resume, open-window)
 ├── lib/                  # Helper modules (stats, wrap, sound, detect)
 ├── themes/               # Community theme JSON files
 ├── sounds/               # Sound files (user-provided)

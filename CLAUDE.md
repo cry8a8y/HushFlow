@@ -12,6 +12,7 @@ HushFlow is a CLI tool that turns AI coding assistant wait time into guided brea
 - **Testing**: Run all test suites before committing. All tests must pass.
   - `bash test/smoke-test.sh` — Core smoke tests (138+ tests)
   - `bash test/terminal-detect-test.sh` — Terminal detection tests (19 tests)
+  - `bash test/unit-test.sh` — Unit tests for pure functions (29 tests)
   - `bash test/sound-test.sh` — Sound system tests (27 tests)
   - `bash test/install-contract-test.sh` — Installer contracts: 3 targets × 7 scenarios (76+ tests)
   - `bash test/e2e-install-test.sh` — E2E install flow: fresh, non-git dir, update, reinstall (31 tests)
@@ -24,7 +25,7 @@ HushFlow is a CLI tool that turns AI coding assistant wait time into guided brea
 - `breathe-compact.sh` — Core rendering engine (SIN64/COS32 lookup tables, 10fps double-buffer)
 - `cli.sh` — CLI entry point for `npx hushflow`
 - `set-exercise.sh` — Config management (exercises, themes, animations, sound)
-- `hooks/on-start.sh` / `on-stop.sh` — AI tool lifecycle hooks (start/stop)
+- `hooks/on-start.sh` / `on-stop.sh` — AI tool lifecycle hooks (start/stop + session notification)
 - `hooks/on-permission.sh` — Pauses breathing on PermissionRequest
 - `hooks/on-resume.sh` — Smart resume after permission approval (3-tier expiry)
 - `lib/hook-common.sh` — Shared hook bootstrap (hf_log, CONFIG_DIR, SESSION_DIR)

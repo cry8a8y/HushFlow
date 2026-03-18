@@ -52,8 +52,8 @@ HushFlow acts as a silent observer to your AI terminal sessions.
        │  responds    │           ┌──────────────────┐
        └──────────────┘           │  on-stop.sh      │
               │                   │  Close & Cleanup  │
-              ▼                   └──────────────────┘
-       (Back to you)
+              ▼                   │  + Notification   │
+       (Back to you)              └──────────────────┘
 ```
 
 ## Hook Lifecycle
