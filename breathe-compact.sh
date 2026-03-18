@@ -796,7 +796,7 @@ while true; do
         _esc_hint="ESC to close"
         _esc_pos=$(( (PANE_W - ${#_esc_hint}) / 2 + 1 ))
         _term_bottom=$(tput lines 2>/dev/null || echo "$PANE_H")
-        frame+="\033[${_term_bottom};1H\033[2K\033[${_term_bottom};${_esc_pos}H\033[2m${DIM}${_esc_hint}${RESET}"
+        frame+="\033[${_term_bottom};1H\033[2K\033[${_term_bottom};${_esc_pos}H\033[2;38;2;70;75;80m${_esc_hint}${RESET}"
     fi
 
     printf '%b' "$frame"
