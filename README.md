@@ -55,7 +55,7 @@ npx hushflow install
 - 💻 **Cross-Platform** — macOS, Linux, and Windows. Ghostty, iTerm2, Windows Terminal, etc.
 - 🫁 **Breath Work** — 4 built-in patterns: *Coherent*, *Sigh*, *Box*, and *4-7-8*.
 - 🎨 **Custom Themes** — 8+ themes (**3 built-in + 5 community** like Catppuccin, Dracula).
-- 🎵 **Immersive Audio** — Zen-crafted soundscape: *Harmonic Bloom*, *Tri-Harmonic Stillness*, *Parabolic Recede*, and *The Master Bell*.
+- 🎵 **Immersive Audio** — Zen-crafted soundscape with phase-specific breath cues.
 - ⚡ **Engineered for Speed** — Pure Bash logic. Render path has zero external dependencies.
 
 ## 🎵 Immersive Audio
@@ -101,7 +101,7 @@ HushFlow monitors your AI terminal hooks in the background:
 
 ## 🔒 Transparency & Trust
 
-- **Modified Files**: HushFlow only touches your AI tool's hook settings (e.g., `~/.claude/settings.json`, `~/.gemini/settings.json`, `~/.codex/hooks.json`).
+- **Modified Files**: HushFlow only modifies your AI tool's hook settings (e.g., `~/.claude/settings.json`, `~/.gemini/settings.json`, `~/.codex/hooks.json`).
 - **Uninstall**: Run `hushflow uninstall` to revert all changes immediately.
 - **Privacy**: Zero telemetry. All logic runs locally in your shell.
 
@@ -110,6 +110,7 @@ HushFlow monitors your AI terminal hooks in the background:
 - [Community Themes](themes/) (Catppuccin, Dracula, Nord, Solarized, Gruvbox)
 - [Plugin API](docs/PLUGIN-API.md) — Create custom animations
 - [Environment Variables](docs/ENVIRONMENT.md) — Advanced configuration
+- [Troubleshooting](docs/TROUBLESHOOTING.md) — Common issues & fixes
 
 ---
 
