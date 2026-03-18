@@ -9,7 +9,14 @@
 <p align="center">
   <a href="https://github.com/cry8a8y/HushFlow/stargazers"><img src="https://img.shields.io/github/stars/cry8a8y/HushFlow?style=social" alt="GitHub Stars" /></a>
   <img src="https://img.shields.io/npm/v/hushflow?color=cb3837&label=npm" alt="npm" />
+  <img src="https://github.com/cry8a8y/HushFlow/actions/workflows/ci.yml/badge.svg" alt="CI Status" />
+  <img src="https://img.shields.io/github/license/cry8a8y/HushFlow" alt="License" />
   <img src="https://img.shields.io/badge/platform-macOS%20|%20Linux%20|%20Windows-blue" alt="Platform Support" />
+</p>
+
+<p align="center">
+  <b>Every AI wait is a chance to breathe.</b><br/>
+  <i>Turn 50-200 daily idle moments into effortless focus & recovery.</i>
 </p>
 
 A breathing layer for AI-powered terminals. Turns every wait into a calm ritual — across tools, across platforms, automatically.
@@ -49,6 +56,18 @@ npx hushflow install
 
 ---
 
+## 🧘 Why HushFlow?
+
+Typical developers face dozens of "dead moments" every day waiting for AI models to plan, edit, or test. Most fill these gaps with micro-distractions (scrolling, checking Slack) that break the flow state. 
+
+**HushFlow turns them into recovery.** Leveraging the physiological sigh, it naturally lowers heart rate and maintains your focus, all without leaving your terminal.
+
+- ⚡ **Ultra-lightweight**: < 2% CPU during animation.
+- 🧠 **Tiny footprint**: ~3MB RAM (Shell-native).
+- 🔒 **Zero Telemetry**: All logic stays local. Forever.
+
+---
+
 ## ✨ Features
 
 - 🧘 **Auto-Mindfulness** — Appears after a delay, disappears when AI finishes. Zero-click calm.
@@ -70,6 +89,15 @@ npx hushflow install
 | Linux | gnome-terminal, Konsole, xfce4-terminal, xterm, Ghostty | `xdotool` for window positioning |
 | Windows | Windows Terminal, PowerShell | Via Git Bash |
 | Fallback | Any terminal | Inline mode (no separate window) |
+
+## ⚔️ Why HushFlow vs. Others
+
+| Feature | **HushFlow** | Mindful-Claude |
+| :--- | :--- | :--- |
+| **Integration** | Native (Claude/Gemini/Codex) | Wrapper-only |
+| **Experience** | Separate Window / Tmux Pane | Main terminal only |
+| **Performance** | Shell Native (~3MB RAM) | Node.js Heavy |
+| **Customization** | 8+ Themes / Immersive Sound | Basic |
 
 ## 🎵 Immersive Audio
 
@@ -122,9 +150,12 @@ HushFlow monitors your AI terminal hooks in the background:
 
 ## 🔒 Transparency & Trust
 
-- **Modified Files**: HushFlow only modifies your AI tool's hook settings (e.g., `~/.claude/settings.json`, `~/.gemini/settings.json`, `~/.codex/hooks.json`).
-- **Uninstall**: Run `hushflow uninstall` to revert all changes immediately.
-- **Privacy**: Zero telemetry. All logic runs locally in your shell.
+HushFlow is designed to be completely non-intrusive:
+- **Hook Settings**: Appends execution triggers to `~/.claude/settings.json`, `~/.gemini/settings.json`, and `~/.codex/hooks.json`.
+- **Config Path**: Stores preferences, themes, and streak data in `~/.hushflow/`.
+- **Session State**: Uses a temporary `.session` file for state sync (auto-cleaned).
+- **Uninstall**: Run `hushflow uninstall` to clean up all the above immediately.
+- **Privacy**: Zero telemetry. 100% local execution.
 
 ## 📚 Advanced Docs
 
@@ -142,3 +173,8 @@ HushFlow is derived from [Mindful-Claude](https://github.com/halluton/Mindful-Cl
 If HushFlow helps you stay calm, please give it a ⭐ — it helps others find the project.
 
 MIT. See [LICENSE](LICENSE) for details.
+
+---
+<p align="center">
+  <i>breathe in. breathe out. ship code.</i>
+</p>

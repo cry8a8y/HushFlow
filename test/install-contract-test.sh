@@ -160,7 +160,7 @@ section "Claude: Fresh install from empty settings"
     CF="$H/.claude/hushflow/config"
     [ -f "$CF" ] && pass "claude-fresh: config created" || fail "claude-fresh: config missing"
     assert_config_key "$CF" "enabled" "true" "claude-fresh: enabled=true"
-    assert_config_key "$CF" "animation" "constellation" "claude-fresh: animation=constellation"
+    assert_config_key "$CF" "animation" "random" "claude-fresh: animation=constellation"
     assert_config_key "$CF" "theme" "teal" "claude-fresh: theme=teal"
 )
 
@@ -276,7 +276,7 @@ section "Gemini: Fresh install from empty settings"
 
     CF="$H/.gemini/hushflow/config"
     [ -f "$CF" ] && pass "gemini-fresh: config created" || fail "gemini-fresh: config missing"
-    assert_config_key "$CF" "animation" "constellation" "gemini-fresh: animation=constellation"
+    assert_config_key "$CF" "animation" "random" "gemini-fresh: animation=constellation"
 )
 
 section "Gemini: Idempotent — double install no duplicates"
@@ -349,7 +349,7 @@ section "Codex: Fresh install from empty settings"
 
     CF="$H/.codex/hushflow/config"
     [ -f "$CF" ] && pass "codex-fresh: config created" || fail "codex-fresh: config missing"
-    assert_config_key "$CF" "animation" "constellation" "codex-fresh: animation=constellation"
+    assert_config_key "$CF" "animation" "random" "codex-fresh: animation=constellation"
 )
 
 section "Codex: Idempotent — double install no duplicates"
