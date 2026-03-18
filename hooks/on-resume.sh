@@ -12,6 +12,7 @@ rm -f "$CONFIG_DIR/.permission-pending"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 _hf_load_session || exit 0
+export HUSHFLOW_SESSION_DIR="$SESSION_DIR"
 [ ! -f "$SESSION_DIR/permission-ts" ] && exit 0
 
 ts=$(cat "$SESSION_DIR/permission-ts")
