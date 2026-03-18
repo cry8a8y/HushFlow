@@ -17,18 +17,29 @@
 
 为 AI 终端打造的呼吸层。把每一次等待，变成自动化的平静片刻 — 跨工具、跨平台。
 
-**Claude Code** 和 **Gemini CLI** 完整支持逐次 prompt hook。**Codex CLI** 为 session 级别支持。
+<br/>
+<p align="center">
+  <img src="../demo.gif" alt="HushFlow — AI 工作时，呼吸动画自然出现在你的终端旁边" width="720" />
+</p>
+<br/>
 
-## 🚀 60 秒安装
+## 🚀 安装
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/cry8a8y/HushFlow/main/install-remote.sh | sh
+npm install -g hushflow
+hushflow install
 ```
 
 <details>
 <summary>其他安装方式</summary>
 
-**npx：**
+**一行安装（无需 npm）：**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/cry8a8y/HushFlow/main/install-remote.sh | sh
+```
+
+**npx（无需全局安装）：**
 
 ```bash
 npx hushflow install
@@ -53,14 +64,13 @@ cd HushFlow
 </details>
 
 **安装程序做了什么：**
-1. 将 HushFlow 复制到 `~/.hushflow/`
-2. 在 AI 工具的配置文件中注册启动/停止 hook
-3. 创建默认配置 `~/.<tool>/hushflow/config`
+1. 在 AI 工具的配置文件中注册启动/停止 hook
+2. 创建默认配置 `~/.<tool>/hushflow/config`
 
 **验证安装：**
 
 ```bash
-~/.hushflow/doctor.sh  # 检查安装状态与环境
+hushflow doctor        # 检查安装状态与环境
 ```
 
 然后发送任何 prompt 给 AI 工具，等待 5 秒 — 呼吸窗口就会出现。
@@ -76,32 +86,6 @@ cd HushFlow
 | **可选** | `tmux` | 任意 | tmux-pane / tmux-popup 模式 |
 | **可选** | `ffplay` / `mpv` / `afplay` | 任意 | 音效播放 |
 
-## 📺 使用体验
-
-<br/>
-<p align="center">
-  <img src="../demo.gif" alt="HushFlow — AI 工作时，呼吸动画自然出现在你的终端旁边" width="720" />
-</p>
-<br/>
-
-HushFlow 提供 4 种 UI 模式，适应不同工作流程：
-
-| 模式 | 适用场景 | 启用方式 |
-|------|---------|---------|
-| **Window** | 默认 — 打开伴随终端窗口 | `HUSHFLOW_UI_MODE=window` |
-| **tmux pane** | tmux 用户 — 分割窗格 | `HUSHFLOW_UI_MODE=tmux-pane` |
-| **tmux popup** | tmux 3.2+ — 浮动覆盖层 | `HUSHFLOW_UI_MODE=tmux-popup` |
-| **Inline** | 极简 — 在当前终端渲染 | `HUSHFLOW_UI_MODE=inline` |
-
-## ✨ 为什么好用
-
-- **自动出现** — 设定延迟后自动启动，AI 完成后自动消失。不需要手动触发。
-- **不抢焦点** — 在独立窗口或 tmux 窗格中运行。你的终端完全不受影响。
-- **支持你的工具** — Claude Code、Gemini CLI、Codex CLI。一次安装全部覆盖。
-- **跨平台** — macOS、Linux、Windows。Ghostty、iTerm2、Terminal.app、GNOME Terminal、xterm、Windows Terminal。
-- **4 种呼吸节奏** — 谐振、生理叹息、箱式、4-7-8。选好节奏，HushFlow 会记住。
-- **6 种动画、8+ 主题** — 从星座到落雨，从海洋青到 Dracula。想调就调，不调也行。
-
 ## 🛠️ 支持的 AI 工具
 
 | 工具 | 🟢 启动 Hook | 🔴 停止 Hook | 状态 |
@@ -113,6 +97,27 @@ HushFlow 提供 4 种 UI 模式，适应不同工作流程：
 ```bash
 hushflow install --target gemini   # 安装特定工具
 ```
+
+## ✨ 功能特色
+
+- **自动出现** — 设定延迟后自动启动，AI 完成后自动消失。不需要手动触发。
+- **不抢焦点** — 在独立窗口或 tmux 窗格中运行。你的终端完全不受影响。
+- **支持你的工具** — Claude Code、Gemini CLI、Codex CLI。一次安装全部覆盖。
+- **跨平台** — macOS、Linux、Windows。Ghostty、iTerm2、Terminal.app、GNOME Terminal、xterm、Windows Terminal。
+- **4 种呼吸节奏** — 谐振、生理叹息、箱式、4-7-8。选好节奏，HushFlow 会记住。
+- **6 种动画、8+ 主题** — 从星座到落雨，从海洋青到 Dracula。想调就调，不调也行。
+- **轻量高效** — < 2% CPU、~3 MB 内存、< 50 ms 启动。纯 Bash，渲染路径零依赖。
+
+## 📺 UI 模式
+
+HushFlow 提供 4 种 UI 模式，适应不同工作流程：
+
+| 模式 | 适用场景 | 启用方式 |
+|------|---------|---------|
+| **Window** | 默认 — 打开伴随终端窗口 | `HUSHFLOW_UI_MODE=window` |
+| **tmux pane** | tmux 用户 — 分割窗格 | `HUSHFLOW_UI_MODE=tmux-pane` |
+| **tmux popup** | tmux 3.2+ — 浮动覆盖层 | `HUSHFLOW_UI_MODE=tmux-popup` |
+| **Inline** | 极简 — 在当前终端渲染 | `HUSHFLOW_UI_MODE=inline` |
 
 ## ⌨️ 命令
 

@@ -17,18 +17,29 @@
 
 A breathing layer for AI-powered terminals. Turns every wait into a calm ritual — across tools, across platforms, automatically.
 
-**Claude Code** and **Gemini CLI** are fully supported with per-prompt hooks. **Codex CLI** works at session level.
+<br/>
+<p align="center">
+  <img src="demo.gif" alt="HushFlow — breathing animation appears beside your terminal while AI works" width="720" />
+</p>
+<br/>
 
-## 🚀 Install in 60 Seconds
+## 🚀 Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/cry8a8y/HushFlow/main/install-remote.sh | sh
+npm install -g hushflow
+hushflow install
 ```
 
 <details>
 <summary>Other install methods</summary>
 
-**npx:**
+**One-line (no npm):**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/cry8a8y/HushFlow/main/install-remote.sh | sh
+```
+
+**npx (no global install):**
 
 ```bash
 npx hushflow install
@@ -53,14 +64,13 @@ cd HushFlow
 </details>
 
 **What the installer does:**
-1. Copies HushFlow to `~/.hushflow/`
-2. Registers start/stop hooks in your AI tool's config
-3. Creates a default config at `~/.<tool>/hushflow/config`
+1. Registers start/stop hooks in your AI tool's config
+2. Creates a default config at `~/.<tool>/hushflow/config`
 
 **Verify it works:**
 
 ```bash
-~/.hushflow/doctor.sh  # Check installation & environment
+hushflow doctor        # Check installation & environment
 ```
 
 Then send any prompt to your AI tool and wait 5 seconds — a breathing window will appear.
@@ -76,32 +86,6 @@ Then send any prompt to your AI tool and wait 5 seconds — a breathing window w
 | **Optional** | `tmux` | Any | tmux-pane / tmux-popup UI mode |
 | **Optional** | `ffplay` / `mpv` / `afplay` | Any | Sound playback |
 
-## 📺 What You See
-
-<br/>
-<p align="center">
-  <img src="demo.gif" alt="HushFlow — breathing animation appears beside your terminal while AI works" width="720" />
-</p>
-<br/>
-
-HushFlow adapts to your workflow with 4 UI modes:
-
-| Mode | Best for | How to enable |
-|------|----------|---------------|
-| **Window** | Default — opens a companion terminal | `HUSHFLOW_UI_MODE=window` |
-| **tmux pane** | tmux users — splits a pane | `HUSHFLOW_UI_MODE=tmux-pane` |
-| **tmux popup** | tmux 3.2+ — floating overlay | `HUSHFLOW_UI_MODE=tmux-popup` |
-| **Inline** | Minimal — renders in current terminal | `HUSHFLOW_UI_MODE=inline` |
-
-## ✨ What Makes It Work
-
-- **Shows up on its own** — Appears after a configurable delay, disappears when AI finishes. No manual triggers.
-- **Never steals focus** — Runs in a separate window or tmux pane. Your terminal stays yours.
-- **Works with your tools** — Claude Code, Gemini CLI, Codex CLI. One install covers all.
-- **Runs everywhere** — macOS, Linux, Windows. Ghostty, iTerm2, Terminal.app, GNOME Terminal, xterm, Windows Terminal.
-- **4 breathing patterns** — Coherent, Physiological Sigh, Box, 4-7-8. Pick your rhythm, HushFlow remembers it.
-- **6 animations, 8+ themes** — From Constellation to Rain, from Teal to Dracula. Customize later, or never.
-
 ## 🛠️ Supported AI Tools
 
 | Tool | 🟢 Start Hook | 🔴 Stop Hook | Status |
@@ -113,6 +97,27 @@ HushFlow adapts to your workflow with 4 UI modes:
 ```bash
 hushflow install --target gemini   # Install for a specific tool
 ```
+
+## ✨ Features
+
+- **Shows up on its own** — Appears after a configurable delay, disappears when AI finishes. No manual triggers.
+- **Never steals focus** — Runs in a separate window or tmux pane. Your terminal stays yours.
+- **Works with your tools** — Claude Code, Gemini CLI, Codex CLI. One install covers all.
+- **Runs everywhere** — macOS, Linux, Windows. Ghostty, iTerm2, Terminal.app, GNOME Terminal, xterm, Windows Terminal.
+- **4 breathing patterns** — Coherent, Physiological Sigh, Box, 4-7-8. Pick your rhythm, HushFlow remembers it.
+- **6 animations, 8+ themes** — From Constellation to Rain, from Teal to Dracula. Customize later, or never.
+- **Lightweight** — < 2% CPU, ~3 MB RAM, < 50 ms startup. Pure Bash, zero dependencies in the render path.
+
+## 📺 UI Modes
+
+HushFlow adapts to your workflow with 4 UI modes:
+
+| Mode | Best for | How to enable |
+|------|----------|---------------|
+| **Window** | Default — opens a companion terminal | `HUSHFLOW_UI_MODE=window` |
+| **tmux pane** | tmux users — splits a pane | `HUSHFLOW_UI_MODE=tmux-pane` |
+| **tmux popup** | tmux 3.2+ — floating overlay | `HUSHFLOW_UI_MODE=tmux-popup` |
+| **Inline** | Minimal — renders in current terminal | `HUSHFLOW_UI_MODE=inline` |
 
 ## ⌨️ Commands
 
