@@ -23,18 +23,18 @@ A breathing layer for AI-powered terminals. Turns every wait into a calm ritual 
 </p>
 <br/>
 
-## 🚀 Quick Start
+## 🚀 Get Started in < 60 Seconds
 
-Get up and running in 30 seconds. Choose your preferred method:
+Fast. Clean. Zero-Config. Get up and running before your next breath:
 
-### Method 1: One-Line (Recommended)
-The cleanest way to install. No Node.js required.
+### Method 1: One-Line Install (Fastest)
+The absolute cleanest way. No Node.js or extra dependencies required.
 ```bash
 curl -fsSL https://raw.githubusercontent.com/cry8a8y/HushFlow/main/install-remote.sh | sh
 ```
 
 ### Method 2: Node.js / npm
-If you prefer managing CLI tools via npm:
+If you prefer managing your tools via npm:
 ```bash
 npm install -g hushflow
 hushflow install
@@ -59,10 +59,10 @@ cd HushFlow
 ```
 </details>
 
-**What happens during installation?**
-1. 🔌 **Hooks**: Automatically registers with your AI tools (Claude, Gemini, etc.).
-2. ⚙️ **Config**: Creates a default profile at `~/.<tool>/hushflow/config`.
-3. ✅ **Verify**: Run `hushflow doctor` to ensure everything is set up correctly.
+**What happens during the 60s?**
+1. 🔌 **Instant Hooks**: Automatically wires into your AI tools (Claude, Gemini, etc.).
+2. ⚙️ **Auto-Config**: Creates your personal profile at `~/.<tool>/hushflow/config`.
+3. ✅ **Ready to Breathe**: Run `hushflow doctor` to confirm you're all set.
 
 ### 📋 Dependencies
 
