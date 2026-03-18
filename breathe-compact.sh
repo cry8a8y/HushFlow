@@ -314,12 +314,13 @@ trap 'cleanup' EXIT
 trap read_size WINCH
 printf '\033]0;%s\a\033[?25l\033[2J' "$WINDOW_TITLE"
 
-# === Keyboard input ===
-# Bash's `read -n1` handles raw mode internally; no stty needed.
-# We save/restore stty only as a safety net for abnormal exits.
+# === Keyboard input: stty raw mode for ESC detection ===
+# Use stty min 0 time 1 (0.1s timeout) instead of read -t 0.1
+# because macOS /bin/bash 3.2 does not support fractional read timeouts.
 _hf_old_stty=""
 if [ -t 0 ]; then
     _hf_old_stty=$(stty -g 2>/dev/null) || true
+    stty -echo -icanon min 0 time 1 2>/dev/null || true
 fi
 hf_log "started animation=$animation exercise=$EX_NAME theme=${theme:-teal} PANE=${PANE_W}x${PANE_H}"
 
@@ -777,30 +778,32 @@ while true; do
     [ "$gc" -lt 1 ] && gc=1
     frame+="\033[3;1H\033[2K\033[3;${gc}H${fade_prefix}${DIM}${GREETING}${RESET}"
 
-    # Status (bottom row) — bold, primary instruction the eye follows
-    status="${phase}... ${remaining_s}s"
-    sc_pos=$(( (PANE_W - ${#status}) / 2 + 1 ))
-    frame+="\033[${PANE_H};1H\033[2K\033[${PANE_H};${sc_pos}H${fade_prefix}\033[1m${color}${status}${RESET}"
-
-    # Exercise name + cycle (row above bottom) — subdued, secondary info
-    info_row=$((PANE_H - 1))
+    # Exercise name + cycle (row PANE_H-2) — subdued, secondary info
+    info_row=$((PANE_H - 2))
     info_text="${EX_NAME}  ·  Cycle ${cycle_num}"
     ic=$(( (PANE_W - ${#info_text}) / 2 + 1 ))
     frame+="\033[${info_row};1H\033[2K\033[${info_row};${ic}H${fade_prefix}${COLOR_MDIM}${info_text}${RESET}"
 
-    # ESC hint (right edge of bottom row, only if terminal has input)
-    if [ -t 0 ] && [ "$PANE_W" -ge 40 ]; then
+    # Status (row PANE_H-1) — bold, primary instruction the eye follows
+    status="${phase}... ${remaining_s}s"
+    sc_pos=$(( (PANE_W - ${#status}) / 2 + 1 ))
+    status_row=$((PANE_H - 1))
+    frame+="\033[${status_row};1H\033[2K\033[${status_row};${sc_pos}H${fade_prefix}\033[1m${color}${status}${RESET}"
+
+    # ESC hint (bottom row, centered, dim)
+    if [ -t 0 ]; then
         _esc_hint="ESC to close"
-        _esc_col=$(( PANE_W - ${#_esc_hint} ))
-        frame+="\033[${PANE_H};${_esc_col}H${fade_prefix}${DIM}${_esc_hint}${RESET}"
+        _esc_pos=$(( (PANE_W - ${#_esc_hint}) / 2 + 1 ))
+        frame+="\033[${PANE_H};1H\033[2K\033[${PANE_H};${_esc_pos}H${fade_prefix}${DIM}${_esc_hint}${RESET}"
     fi
 
     printf '%b' "$frame"
 
     # Frame delay + non-blocking keyboard input
+    # stty min 0 time 1 provides the 0.1s timeout (works on bash 3.2)
     _hf_key=""
     if [ -t 0 ]; then
-        IFS= read -r -n1 -t 0.1 _hf_key 2>/dev/null || true
+        IFS= read -r -n1 _hf_key 2>/dev/null || true
     else
         sleep 0.1
     fi
@@ -808,8 +811,12 @@ while true; do
     # ESC key detection
     if [ "$_hf_key" = $'\x1b' ]; then
         # Distinguish bare ESC from escape sequences (arrow keys, etc.)
+        # Read next char with short stty timeout
+        _old_time=$(stty -g 2>/dev/null)
+        stty min 0 time 0 2>/dev/null || true
         _hf_seq=""
-        IFS= read -r -n1 -t 0.05 _hf_seq 2>/dev/null || true
+        IFS= read -r -n1 _hf_seq 2>/dev/null || true
+        stty "$_old_time" 2>/dev/null || true
         if [ -z "$_hf_seq" ]; then
             # Bare ESC pressed — close window
             hf_log "ESC pressed, closing"
