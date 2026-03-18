@@ -142,39 +142,21 @@ hushflow doctor                # 檢查安裝狀態與環境
 
 ## 🧠 運作原理
 
-```mermaid
-flowchart TD
-    subgraph trigger ["🎯 觸發"]
-        A["💬 送出 prompt 給 AI 工具"]
-    end
-
-    subgraph hook ["🔗 Hook 生命週期"]
-        B["⚡ on-start.sh 執行"]
-        C{"⚙️ enabled?"}
-        Z["🚫 結束"]
-        D["📌 建立 session 標記"]
-        E["⏳ 等待延遲"]
-    end
-
-    subgraph breathe ["🧘 呼吸 Session"]
-        F["🖥️ 開啟伴隨視窗"]
-        G["🌊 breathe-compact.sh 渲染動畫"]
-    end
-
-    subgraph cleanup ["🧹 清理"]
-        H["✅ AI 完成"]
-        I["🔴 on-stop.sh 關閉 UI"]
-        J["🗑️ Session 清理完成"]
-    end
-
-    A --> B --> C
-    C -- 否 --> Z
-    C -- 是 --> D --> E --> F --> G --> H --> I --> J
-
-    style trigger fill:#1a1a2e,stroke:#0f3460,color:#e0e0e0
-    style hook fill:#16213e,stroke:#0f3460,color:#e0e0e0
-    style breathe fill:#0f3460,stroke:#533483,color:#e0e0e0
-    style cleanup fill:#1a1a2e,stroke:#0f3460,color:#e0e0e0
+```
+  送出 prompt 給 AI
+        │
+        ▼
+  ┌─────────────┐    ┌──────────┐    ┌──────────────────┐    ┌──────────────┐
+  │ on-start.sh │───▶│  延遲等待 │───▶│  開啟伴隨視窗     │───▶│   呼吸動畫   │
+  │  檢查設定   │    │ (預設 5s) │    │                  │    │              │
+  └─────────────┘    └──────────┘    └──────────────────┘    └──────┬───────┘
+        │                                                          │
+        │ 已停用                                    AI 完成回應     │
+        ▼                                                          ▼
+     [結束]                                               ┌──────────────┐
+                                                          │ on-stop.sh   │
+                                                          │ 關閉並清理    │
+                                                          └──────────────┘
 ```
 
 ### ⚡ 技術底層

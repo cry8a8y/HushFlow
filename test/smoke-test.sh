@@ -490,6 +490,60 @@ for cmd in wrap sound stats; do
     grep -q "$cmd" "$SCRIPT_DIR/cli.sh" && pass "cli.sh routes $cmd" || fail "cli.sh missing $cmd route"
 done
 
+# --- Version sync ---
+section "Version sync"
+
+PKG_VER=$(grep '"version"' "$SCRIPT_DIR/package.json" | sed 's/.*"\([0-9][0-9.]*\)".*/\1/')
+[ -n "$PKG_VER" ] && pass "package.json version = $PKG_VER" || fail "package.json version missing"
+
+# Banner SVG should contain matching major.minor.patch
+if [ -f "$SCRIPT_DIR/docs/hushflow-banner.svg" ]; then
+    grep -q "v${PKG_VER}" "$SCRIPT_DIR/docs/hushflow-banner.svg" && \
+        pass "banner.svg matches v${PKG_VER}" || fail "banner.svg version mismatch (expected v${PKG_VER})"
+else
+    pass "banner.svg: file not found (skip)"
+fi
+
+# --- README sync ---
+section "README sync"
+
+# All README files should exist
+for lang in "" ".zh-TW" ".zh-CN" ".ja"; do
+    if [ -z "$lang" ]; then
+        f="$SCRIPT_DIR/README.md"
+    else
+        f="$SCRIPT_DIR/docs/README${lang}.md"
+    fi
+    [ -f "$f" ] && pass "README${lang:-.en} exists" || fail "README${lang:-.en} missing"
+done
+
+# Section count comparison (main README is canonical)
+main_sections=$(grep -c '^## ' "$SCRIPT_DIR/README.md")
+for lang in zh-TW zh-CN ja; do
+    f="$SCRIPT_DIR/docs/README.${lang}.md"
+    [ -f "$f" ] || continue
+    lang_sections=$(grep -c '^## ' "$f")
+    [ "$lang_sections" -eq "$main_sections" ] && \
+        pass "README.${lang} section count matches ($lang_sections)" || \
+        fail "README.${lang} section count: $lang_sections (expected $main_sections)"
+done
+
+# Key structural elements in all READMEs
+for lang in "" ".zh-TW" ".zh-CN" ".ja"; do
+    if [ -z "$lang" ]; then
+        f="$SCRIPT_DIR/README.md"
+        label="en"
+    else
+        f="$SCRIPT_DIR/docs/README${lang}.md"
+        label="${lang#.}"
+    fi
+    [ -f "$f" ] || continue
+    # Must have install command
+    grep -q "install" "$f" && pass "README.$label has install" || fail "README.$label missing install"
+    # Must have license section
+    grep -qi "license\|授權\|许可\|ライセンス" "$f" && pass "README.$label has license" || fail "README.$label missing license"
+done
+
 # --- Summary ---
 echo ""
 echo "================================"
