@@ -39,12 +39,14 @@ fi
 run_install() {
     local test_home="$1"; shift
     # Suppress interactive output, auto-accept
-    HOME="$test_home" bash "$SCRIPT_DIR/install.sh" "$@" 2>/dev/null || true
+    HOME="$test_home" HUSHFLOW_INSTALL_SKIP_PRECHECKS=1 \
+        bash "$SCRIPT_DIR/install.sh" "$@" 2>/dev/null || true
 }
 
 run_uninstall() {
     local test_home="$1"
-    HOME="$test_home" bash "$SCRIPT_DIR/install.sh" --uninstall 2>/dev/null || true
+    HOME="$test_home" HUSHFLOW_INSTALL_SKIP_PRECHECKS=1 \
+        bash "$SCRIPT_DIR/install.sh" --uninstall 2>/dev/null || true
 }
 
 # ============================================================

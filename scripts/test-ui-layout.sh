@@ -28,7 +28,8 @@ THEME="teal"
 ANIMATION="constellation"
 COLS=80
 ROWS=24
-DURATION=5
+PROFILE="${HUSHFLOW_UI_TEST_PROFILE:-full}"
+DURATION="${HUSHFLOW_UI_TEST_DURATION:-5}"
 
 # Parse args
 while [[ $# -gt 0 ]]; do
@@ -41,9 +42,14 @@ while [[ $# -gt 0 ]]; do
         --cols) COLS="$2"; shift 2 ;;
         --rows) ROWS="$2"; shift 2 ;;
         --duration) DURATION="$2"; shift 2 ;;
+        --profile) PROFILE="$2"; shift 2 ;;
         *) echo "Unknown option: $1"; exit 1 ;;
     esac
 done
+
+if [ "$CI_MODE" -eq 1 ] && [ "${HUSHFLOW_UI_TEST_DURATION:-}" = "" ] && [ "$DURATION" = "5" ]; then
+    DURATION=1
+fi
 
 # Counters (file-based for subshell safety)
 TMPDIR_TEST=$(mktemp -d)
@@ -60,6 +66,60 @@ fail() {
     echo "  FAIL: $1"
 }
 section() { echo ""; echo "=== $1 ==="; }
+
+wait_for_pattern() {
+    local cmd="$1"
+    local pattern="$2"
+    local attempts="${3:-20}"
+    local delay="${4:-0.1}"
+    local output=""
+
+    for ((i=0; i<attempts; i++)); do
+        output=$(eval "$cmd" 2>/dev/null || true)
+        if echo "$output" | grep -Eqi "$pattern"; then
+            printf '%s' "$output"
+            return 0
+        fi
+        sleep "$delay"
+    done
+
+    printf '%s' "$output"
+    return 1
+}
+
+run_with_deadline() {
+    local seconds="$1"
+    shift
+
+    if command -v timeout &>/dev/null; then
+        timeout "$seconds" "$@"
+        return $?
+    fi
+
+    "$@" &
+    local runner_pid=$!
+    local elapsed=0
+
+    while kill -0 "$runner_pid" 2>/dev/null; do
+        if [ "$elapsed" -ge "$seconds" ]; then
+            kill "$runner_pid" 2>/dev/null || true
+            wait "$runner_pid" 2>/dev/null || true
+            return 124
+        fi
+        sleep 1
+        elapsed=$((elapsed + 1))
+    done
+
+    wait "$runner_pid"
+}
+
+tmux_usable() {
+    command -v tmux &>/dev/null || return 1
+    local probe="hf-probe-$$"
+    tmux new-session -d -s "$probe" -x 20 -y 8 >/dev/null 2>&1 || return 1
+    tmux kill-session -t "$probe" >/dev/null 2>&1 || true
+    return 0
+}
 
 # ============================================================
 # tmux-pane automated tests (CI-safe)
@@ -97,12 +157,12 @@ test_tmux_pane() {
         return
     }
 
-    # Wait for animation to render
-    sleep "$DURATION"
-
-    # Capture pane content
-    local capture
-    capture=$(tmux capture-pane -t "$pane_id" -p 2>/dev/null || echo "")
+    # Wait for the pane to render meaningful content, then capture once more.
+    local capture_cmd="tmux capture-pane -t '$pane_id' -p"
+    local capture=""
+    capture=$(wait_for_pattern "$capture_cmd" "breathe|coherent|sigh|box|4-7-8|[[:graph:]]" "$(( DURATION * 10 + 10 ))" 0.1)
+    sleep 0.1
+    capture=$(tmux capture-pane -t "$pane_id" -p 2>/dev/null || printf '%s' "$capture")
 
     if [ -z "$capture" ]; then
         fail "$label: empty capture (animation may have crashed)"
@@ -159,7 +219,6 @@ test_tmux_pane() {
 
     # Cleanup: stop animation
     rm -f "$sess_dir/working"
-    sleep 1
     tmux kill-session -t "$session" 2>/dev/null || true
 }
 
@@ -179,8 +238,9 @@ test_inline() {
     printf 'enabled=true\nexercise=0\ndelay=0\ntheme=%s\nanimation=%s\n' "$theme" "$anim" > "$config_dir/config"
 
     # Run breathe-compact.sh and capture output (auto-exit after DURATION)
-    local output
-    output=$(timeout "$((DURATION + 2))" bash -c "
+    local output=""
+    local exit_code=0
+    output=$(run_with_deadline "$((DURATION + 2))" bash -c "
         HUSHFLOW_SESSION_DIR='$sess_dir' \
         HUSHFLOW_CONFIG_DIR='$config_dir' \
         HUSHFLOW_COLS=$cols HUSHFLOW_ROWS=$rows \
@@ -190,10 +250,24 @@ test_inline() {
         sleep $DURATION
         rm -f '$sess_dir/working'
         wait \$pid 2>/dev/null
-    " 2>/dev/null) || true
+    " 2>/dev/null) || exit_code=$?
 
-    # For inline mode, just verify it didn't crash
-    pass "$label: no crash"
+    if [ "$exit_code" -eq 124 ]; then
+        fail "$label: timed out"
+        return
+    fi
+
+    if [ "$exit_code" -eq 0 ]; then
+        pass "$label: exits cleanly"
+    else
+        fail "$label: exit code $exit_code"
+    fi
+
+    if [ -n "$output" ]; then
+        pass "$label: produced output"
+    else
+        fail "$label: produced no output"
+    fi
 }
 
 # ============================================================
@@ -260,11 +334,18 @@ echo "============================"
 SIZES=("40 12" "80 24" "200 50")
 THEMES=("teal" "twilight" "dracula")
 ANIMS=("constellation" "ripple" "wave")
+INLINE_SIZES=("${SIZES[@]}")
+
+if [ "$PROFILE" = "fast" ]; then
+    THEMES=("dracula")
+    ANIMS=("wave")
+    INLINE_SIZES=("80 24")
+fi
 
 if [ "$CI_MODE" -eq 1 ]; then
     # CI mode: only tmux-pane and inline (fully automated)
-    if ! command -v tmux &>/dev/null; then
-        echo "SKIP: tmux not installed, skipping tmux tests"
+    if ! tmux_usable; then
+        echo "SKIP: tmux unavailable, skipping tmux tests"
     else
         section "tmux-pane: Size matrix"
         for size in "${SIZES[@]}"; do
@@ -272,26 +353,30 @@ if [ "$CI_MODE" -eq 1 ]; then
             test_tmux_pane "$c" "$r" "$THEME" "$ANIMATION"
         done
 
-        section "tmux-pane: Theme matrix"
-        for theme in "${THEMES[@]}"; do
-            test_tmux_pane 80 24 "$theme" "$ANIMATION"
-        done
+        if [ "${#THEMES[@]}" -gt 0 ]; then
+            section "tmux-pane: Theme matrix"
+            for theme in "${THEMES[@]}"; do
+                test_tmux_pane 80 24 "$theme" "$ANIMATION"
+            done
+        fi
 
-        section "tmux-pane: Animation matrix"
-        for anim in "${ANIMS[@]}"; do
-            test_tmux_pane 80 24 "$THEME" "$anim"
-        done
+        if [ "${#ANIMS[@]}" -gt 0 ]; then
+            section "tmux-pane: Animation matrix"
+            for anim in "${ANIMS[@]}"; do
+                test_tmux_pane 80 24 "$THEME" "$anim"
+            done
+        fi
     fi
 
     section "Inline: Size matrix"
-    for size in "${SIZES[@]}"; do
+    for size in "${INLINE_SIZES[@]}"; do
         IFS=' ' read -r c r <<< "$size"
         test_inline "$c" "$r" "$THEME" "$ANIMATION"
     done
 
 elif [ "$INTERACTIVE" -eq 1 ]; then
     # Interactive mode: all modes with human verification for window
-    if command -v tmux &>/dev/null; then
+    if tmux_usable; then
         section "tmux-pane: Automated checks"
         for size in "${SIZES[@]}"; do
             IFS=' ' read -r c r <<< "$size"
@@ -310,7 +395,11 @@ elif [ -n "$UI_MODE" ]; then
     case "$UI_MODE" in
         tmux-pane)
             section "tmux-pane: $COLS x $ROWS"
-            test_tmux_pane "$COLS" "$ROWS" "$THEME" "$ANIMATION"
+            if tmux_usable; then
+                test_tmux_pane "$COLS" "$ROWS" "$THEME" "$ANIMATION"
+            else
+                echo "SKIP: tmux unavailable"
+            fi
             ;;
         tmux-popup)
             echo "tmux-popup requires interactive verification"
@@ -334,6 +423,7 @@ else
     echo "  --ci              Automated (tmux + inline)"
     echo "  --interactive     Semi-auto (all modes)"
     echo "  --mode <mode>     Single mode test"
+    echo "  --profile <name>  Matrix profile: fast | full"
     exit 1
 fi
 

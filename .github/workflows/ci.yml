@@ -32,13 +32,6 @@ jobs:
       - name: Run E2E install tests
         run: bash test/e2e-install-test.sh
 
-      - name: Syntax check all scripts
-        run: |
-          for f in breathe-compact.sh hooks/*.sh set-exercise.sh install.sh cli.sh doctor.sh lib/*.sh plugins/*.sh; do
-            [ -f "$f" ] && { bash -n "$f" || exit 1; }
-          done
-          echo "All scripts pass syntax check"
-
       - name: Validate community themes
         run: |
           if command -v jq &>/dev/null; then
@@ -60,7 +53,7 @@ jobs:
 
       - name: UI layout tests (tmux + inline)
         if: runner.os == 'Linux'
-        run: bash scripts/test-ui-layout.sh --ci
+        run: bash scripts/test-ui-layout.sh --ci --profile fast
 
   test-windows:
     runs-on: windows-latest

@@ -137,22 +137,22 @@ section "ease function"
     eval "$(sed -n '/^ease()/,/^}/p' "$SCRIPT_DIR/breathe-compact.sh")"
 
     # ease(0) should be 0 (start)
-    result=$(ease 0)
+    ease 0; result=$EASE_OUT
     [ "$result" -eq 0 ] && pass "ease(0) = 0" || fail "ease(0): got $result, expected 0"
 
     # ease(1000) should be 1000 (end)
-    result=$(ease 1000)
+    ease 1000; result=$EASE_OUT
     [ "$result" -eq 1000 ] && pass "ease(1000) = 1000" || fail "ease(1000): got $result, expected 1000"
 
     # ease(500) should be approximately 500 (midpoint)
-    result=$(ease 500)
+    ease 500; result=$EASE_OUT
     [ "$result" -ge 450 ] && [ "$result" -le 550 ] && pass "ease(500) ≈ 500 (got $result)" || fail "ease(500): got $result, expected ~500"
 
     # Monotonicity: ease should be non-decreasing
     mono_ok=1
     prev=0
     for i in 0 100 200 300 400 500 600 700 800 900 1000; do
-        val=$(ease $i)
+        ease "$i"; val=$EASE_OUT
         if [ "$val" -lt "$prev" ]; then
             mono_ok=0
             fail "ease monotonicity: ease($i)=$val < ease(prev)=$prev"
@@ -260,6 +260,30 @@ section "read_stats with mock data"
     [ "$sessions" -eq 0 ] && pass "read_stats(empty): sessions=0" || fail "read_stats(empty): sessions=$sessions"
 )
 
+# --- get_streak (lib/stats.sh) ---
+section "get_streak"
+(
+    STATS_FILE="$TMPDIR_TEST/streak-stats.log"
+    TODAY="2026-03-18"
+    NOW_TS=$(date -j -f "%Y-%m-%d" "2026-03-18" "+%s" 2>/dev/null || date -d "2026-03-18" "+%s")
+    YESTERDAY_TS=$((NOW_TS - 86400))
+    TWO_DAYS_TS=$((NOW_TS - 172800))
+    printf "%s\t3\t180\tCoherent\tconstellation\tteal\n" "$NOW_TS" > "$STATS_FILE"
+    printf "%s\t2\t120\tCoherent\tconstellation\tteal\n" "$YESTERDAY_TS" >> "$STATS_FILE"
+    printf "%s\t2\t120\tCoherent\tconstellation\tteal\n" "$TWO_DAYS_TS" >> "$STATS_FILE"
+
+    eval "$(sed -n '/^get_streak()/,/^}/p' "$SCRIPT_DIR/lib/stats.sh")"
+
+    result=$(get_streak)
+    [ "$result" -eq 3 ] && pass "get_streak: consecutive 3-day streak" || fail "get_streak: got $result, expected 3"
+
+    STATS_FILE="$TMPDIR_TEST/streak-gap.log"
+    printf "%s\t3\t180\tCoherent\tconstellation\tteal\n" "$NOW_TS" > "$STATS_FILE"
+    printf "%s\t2\t120\tCoherent\tconstellation\tteal\n" "$TWO_DAYS_TS" >> "$STATS_FILE"
+    result=$(get_streak)
+    [ "$result" -eq 1 ] && pass "get_streak: gap resets streak" || fail "get_streak: got $result, expected 1"
+)
+
 # --- detect_terminal with override ---
 section "detect_terminal"
 (
@@ -279,29 +303,19 @@ section "detect_terminal"
 # --- read_size with env var override ---
 section "read_size (terminal size)"
 (
-    # We can't source the full breathe-compact.sh, so extract read_size and dependencies
-    # Mock the DOT arrays to avoid constellation data dependency
+    # Extract the production function and provide the globals it expects.
     DOT_ROW=(); DOT_COL=(); DOT_SROW=(); DOT_SCOL=(); NUM_DOTS=0
-
-    read_size() {
-        PANE_W=${HUSHFLOW_COLS:-$(tput cols 2>/dev/null || echo 59)}
-        PANE_H=${HUSHFLOW_ROWS:-$(tput lines 2>/dev/null || echo 20)}
-        [ "$PANE_W" -lt 20 ] && PANE_W=20
-        [ "$PANE_H" -lt 8 ] && PANE_H=8
-        center_row=$((PANE_H / 2))
-        center_col=$((PANE_W / 2))
-        half_w=$((PANE_W / 2))
-    }
+    eval "$(sed -n '/^read_size()/,/^}/p' "$SCRIPT_DIR/breathe-compact.sh")"
 
     # Test env var override
-    HUSHFLOW_COLS=80 HUSHFLOW_ROWS=24 read_size
+    HUSHFLOW_COLS=80 HUSHFLOW_ROWS=24 read_size >/dev/null
     [ "$PANE_W" -eq 80 ] && pass "read_size: HUSHFLOW_COLS=80 → PANE_W=80" || fail "read_size: PANE_W=$PANE_W"
     [ "$PANE_H" -eq 24 ] && pass "read_size: HUSHFLOW_ROWS=24 → PANE_H=24" || fail "read_size: PANE_H=$PANE_H"
     [ "$center_col" -eq 40 ] && pass "read_size: center_col=40" || fail "read_size: center_col=$center_col"
     [ "$center_row" -eq 12 ] && pass "read_size: center_row=12" || fail "read_size: center_row=$center_row"
 
     # Test minimum clamping
-    HUSHFLOW_COLS=10 HUSHFLOW_ROWS=5 read_size
+    HUSHFLOW_COLS=10 HUSHFLOW_ROWS=5 read_size >/dev/null
     [ "$PANE_W" -eq 20 ] && pass "read_size: cols 10 clamped to 20" || fail "read_size: PANE_W=$PANE_W, expected 20"
     [ "$PANE_H" -eq 8 ] && pass "read_size: rows 5 clamped to 8" || fail "read_size: PANE_H=$PANE_H, expected 8"
 
@@ -310,7 +324,7 @@ section "read_size (terminal size)"
     # Override tput to simulate missing terminal
     tput() { return 1; }
     export -f tput
-    read_size
+    read_size >/dev/null
     [ "$PANE_W" -eq 59 ] && pass "read_size: default PANE_W=59" || fail "read_size: default PANE_W=$PANE_W"
     [ "$PANE_H" -eq 20 ] && pass "read_size: default PANE_H=20" || fail "read_size: default PANE_H=$PANE_H"
     unset -f tput
@@ -319,33 +333,26 @@ section "read_size (terminal size)"
 # --- TrueColor detection ---
 section "TrueColor detection"
 (
+    eval "$(sed -n '/^_hf_detect_truecolor()/,/^}/p' "$SCRIPT_DIR/breathe-compact.sh")"
+
     # Test COLORTERM=truecolor
     result=$(COLORTERM=truecolor bash -c '
-        _hf_use_truecolor=1
-        if [ "${COLORTERM:-}" != "truecolor" ] && [ "${COLORTERM:-}" != "24bit" ]; then
-            _hf_use_truecolor=0
-        fi
-        echo $_hf_use_truecolor
+        '"$(sed -n '/^_hf_detect_truecolor()/,/^}/p' "$SCRIPT_DIR/breathe-compact.sh")"'
+        _hf_detect_truecolor
     ')
     [ "$result" -eq 1 ] && pass "TrueColor: COLORTERM=truecolor → enabled" || fail "TrueColor: got $result"
 
     # Test COLORTERM=24bit
     result=$(COLORTERM=24bit bash -c '
-        _hf_use_truecolor=1
-        if [ "${COLORTERM:-}" != "truecolor" ] && [ "${COLORTERM:-}" != "24bit" ]; then
-            _hf_use_truecolor=0
-        fi
-        echo $_hf_use_truecolor
+        '"$(sed -n '/^_hf_detect_truecolor()/,/^}/p' "$SCRIPT_DIR/breathe-compact.sh")"'
+        _hf_detect_truecolor
     ')
     [ "$result" -eq 1 ] && pass "TrueColor: COLORTERM=24bit → enabled" || fail "TrueColor: got $result"
 
     # Test no COLORTERM
     result=$(unset COLORTERM; bash -c '
-        _hf_use_truecolor=1
-        if [ "${COLORTERM:-}" != "truecolor" ] && [ "${COLORTERM:-}" != "24bit" ]; then
-            _hf_use_truecolor=0
-        fi
-        echo $_hf_use_truecolor
+        '"$(sed -n '/^_hf_detect_truecolor()/,/^}/p' "$SCRIPT_DIR/breathe-compact.sh")"'
+        _hf_detect_truecolor
     ')
     [ "$result" -eq 0 ] && pass "TrueColor: no COLORTERM → disabled" || fail "TrueColor: got $result"
 )
@@ -484,6 +491,35 @@ section "Theme loading"
             fi
         done
     fi
+)
+
+# --- detect_background.sh ---
+section "detect_background"
+(
+    source "$SCRIPT_DIR/lib/detect-background.sh"
+    result=$(detect_background)
+    [ "$result" = "unknown" ] && pass "detect_background: non-tty returns unknown" || fail "detect_background: got '$result', expected unknown"
+)
+
+# --- Plugin loading ---
+section "Plugin loading"
+(
+    source "$SCRIPT_DIR/plugins/example-pulse.sh"
+    tick=0
+    progress=600
+    PANE_W=80
+    PANE_H=24
+    center_row=12
+    center_col=40
+    color=$'\033[38;5;45m'
+    COLOR_MID=$'\033[38;5;39m'
+    COLOR_MDIM=$'\033[38;5;37m'
+    RESET=$'\033[0m'
+    SIN64=(0 98 195 290 383 471 556 634 707 773 831 882 924 957 981 995 1000 995 981 957 924 882 831 773 707 634 556 471 383 290 195 98 0 -98 -195 -290 -383 -471 -556 -634 -707 -773 -831 -882 -924 -957 -981 -995 -1000 -995 -981 -957 -924 -882 -831 -773 -707 -634 -556 -471 -383 -290 -195 -98)
+    COS64=(1000 995 981 957 924 882 831 773 707 634 556 471 383 290 195 98 0 -98 -195 -290 -383 -471 -556 -634 -707 -773 -831 -882 -924 -957 -981 -995 -1000 -995 -981 -957 -924 -882 -831 -773 -707 -634 -556 -471 -383 -290 -195 -98 0 98 195 290 383 471 556 634 707 773 831 882 924 957 981 995)
+    frame=""
+    render_pulse
+    [ -n "$frame" ] && pass "example-pulse: render_pulse appends frame data" || fail "example-pulse: empty frame"
 )
 
 # ############################################################
