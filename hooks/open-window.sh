@@ -100,7 +100,7 @@ tell application "Ghostty"
     set breathePath to quoted form of POSIX path of "$BREATHE_SCRIPT"
     set command of surfaceConfig to "/bin/bash -lc " & quoted form of ("exec " & breathePath)
     set font size of surfaceConfig to fontSize
-    set wait after command of surfaceConfig to false
+    set wait after command of surfaceConfig to "none"
     set environment variables of surfaceConfig to {"HUSHFLOW_SESSION_DIR=$SESSION_DIR", "HUSHFLOW_CONFIG_DIR=${HUSHFLOW_CONFIG_DIR:-$HOME/.claude/hushflow}", "HUSHFLOW_WINDOW_TITLE=$WINDOW_MATCH_TITLE", "HUSHFLOW_COLS=" & termCols, "HUSHFLOW_ROWS=" & termRows}
     set newWindow to new window with configuration surfaceConfig
     set winId to id of newWindow

@@ -673,17 +673,6 @@ graceful_exit() {
     # Final clear
     printf '\033[2J\033[H'
 
-    # Close Ghostty window, then keep process alive so Ghostty doesn't show
-    # "Process exited" prompt. exec replaces shell with sleep; Ghostty closing
-    # the window sends SIGHUP which kills sleep cleanly.
-    if [ -f "$SESSION_DIR/window-id" ] && [ -d "/Applications/Ghostty.app" ]; then
-        local wid
-        wid=$(cat "$SESSION_DIR/window-id" 2>/dev/null || true)
-        if [ -n "$wid" ]; then
-            osascript -e "tell application \"Ghostty\" to close (window id \"$wid\")" &>/dev/null
-            exec sleep 86400
-        fi
-    fi
     exit 0
 }
 
