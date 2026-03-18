@@ -18,7 +18,7 @@ WINDOW_TITLE="HushFlow"
 SESSION_NAME="$(basename "$SESSION_DIR")"
 WINDOW_MATCH_TITLE="$WINDOW_TITLE · $SESSION_NAME"
 # Env vars to pass to breathe-compact.sh in new terminal windows
-BREATHE_ENV="export HUSHFLOW_SESSION_DIR='$SESSION_DIR' HUSHFLOW_CONFIG_DIR='${HUSHFLOW_CONFIG_DIR:-}' HUSHFLOW_WINDOW_TITLE='$WINDOW_MATCH_TITLE'"
+BREATHE_ENV="export HUSHFLOW_SESSION_DIR='$SESSION_DIR' HUSHFLOW_CONFIG_DIR='${HUSHFLOW_CONFIG_DIR:-}' HUSHFLOW_WINDOW_TITLE='$WINDOW_MATCH_TITLE' HUSHFLOW_FADE_TICKS='${HUSHFLOW_FADE_TICKS:-}'"
 
 # Source terminal detection
 source "$SCRIPT_DIR/lib/detect-terminal.sh"
@@ -101,7 +101,7 @@ tell application "Ghostty"
     set command of surfaceConfig to "/bin/bash -lc " & quoted form of ("exec " & breathePath)
     set font size of surfaceConfig to fontSize
     set wait after command of surfaceConfig to false
-    set environment variables of surfaceConfig to {"HUSHFLOW_SESSION_DIR=$SESSION_DIR", "HUSHFLOW_CONFIG_DIR=${HUSHFLOW_CONFIG_DIR:-$HOME/.claude/hushflow}", "HUSHFLOW_WINDOW_TITLE=$WINDOW_MATCH_TITLE", "HUSHFLOW_COLS=" & termCols, "HUSHFLOW_ROWS=" & termRows}
+    set environment variables of surfaceConfig to {"HUSHFLOW_SESSION_DIR=$SESSION_DIR", "HUSHFLOW_CONFIG_DIR=${HUSHFLOW_CONFIG_DIR:-$HOME/.claude/hushflow}", "HUSHFLOW_WINDOW_TITLE=$WINDOW_MATCH_TITLE", "HUSHFLOW_FADE_TICKS=${HUSHFLOW_FADE_TICKS:-}", "HUSHFLOW_COLS=" & termCols, "HUSHFLOW_ROWS=" & termRows}
     set newWindow to new window with configuration surfaceConfig
     set winId to id of newWindow
 end tell

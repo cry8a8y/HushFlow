@@ -1,9 +1,9 @@
 #!/bin/bash
 # Hook: Called when Claude stops working
 
-hf_log() { [ "${HUSHFLOW_DEBUG:-}" = "1" ] && echo "$(date '+%H:%M:%S') [on-stop] $*" >> /tmp/hushflow-debug.log; }
+_HF_HOOK_NAME="on-stop"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/lib/hook-common.sh"
 
-CONFIG_DIR="${HUSHFLOW_CONFIG_DIR:-$HOME/.claude/hushflow}"
 CURRENT_USER="$(id -un 2>/dev/null || echo "${USER:-}")"
 
 is_hushflow_window_process() {
@@ -19,17 +19,11 @@ is_hushflow_window_process() {
 }
 
 # Find session directory
-SESSION_DIR=""
-if [ -f "$CONFIG_DIR/.session" ]; then
-    SESSION_DIR=$(cat "$CONFIG_DIR/.session" 2>/dev/null || true)
-fi
-if [ -z "$SESSION_DIR" ] || [ ! -d "$SESSION_DIR" ]; then
-    hf_log "no session dir found, nothing to stop"
-    exit 0
-fi
+_hf_load_session || { hf_log "nothing to stop"; exit 0; }
 
-# Remove marker file (triggers popup auto-close) and permission timestamp
+# Remove marker file (triggers popup auto-close), permission timestamp, and fast-path flag
 rm -f "$SESSION_DIR/working" "$SESSION_DIR/permission-ts"
+rm -f "$CONFIG_DIR/.permission-pending"
 hf_log "marker removed from $SESSION_DIR"
 
 # Kill the breathing pane if it exists

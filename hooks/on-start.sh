@@ -1,10 +1,10 @@
 #!/bin/bash
 # Hook: Called when Claude starts working
 
-hf_log() { [ "${HUSHFLOW_DEBUG:-}" = "1" ] && echo "$(date '+%H:%M:%S') [on-start] $*" >> /tmp/hushflow-debug.log; }
+_HF_HOOK_NAME="on-start"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/lib/hook-common.sh"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONFIG_DIR="${HUSHFLOW_CONFIG_DIR:-$HOME/.claude/hushflow}"
 export HUSHFLOW_CONFIG_DIR="$CONFIG_DIR"
 CONFIG_FILE="$CONFIG_DIR/config"
 UI_MODE="${HUSHFLOW_UI_MODE:-window}"
