@@ -20,6 +20,7 @@
 
 > [!IMPORTANT]
 > **前置需求：** 安裝前請確保系統已安裝 `bash` (4.0+), `git` 以及 `jq`。
+> **選裝：** `tmux`（tmux 窗格/彈出模式）、音效播放器（`ffplay`、`mpv`、`afplay` 或 `paplay`）以啟用沈浸音效。
 
 ### 方法 1：Unix / macOS（最快推薦）
 ```bash
@@ -37,9 +38,10 @@ npx hushflow install
 ```
 
 ### ✅ 5 秒驗證
-1. **重啟** 你的 AI 終端工具（例如：Claude Code）。
-2. 送出任何 **指令/對話**。
-3. **等待 5 秒** — 呼吸視窗會自然出現。
+1. 執行 `hushflow doctor` 驗證安裝結果。
+2. **重啟** 你的 AI 終端工具（例如：Claude Code）。
+3. 送出任何 **指令/對話**。
+4. **等待 5 秒** — 呼吸視窗會自然出現。
 
 <p align="center">
   <img src="../demo.gif" alt="HushFlow Demo" width="720" />
@@ -59,9 +61,20 @@ npx hushflow install
 - 🎵 **沈浸式音效** — 禪意打造的 10 秒深層循環：*火爐*、*深層禪定* 與 *大師古鐘*。
 - ⚡ **極致效能** — 純 Bash 邏輯。渲染路徑零依賴。
 
+## 🖥️ 支援終端機
+
+| 平台 | 終端機 | 備註 |
+|------|--------|------|
+| macOS | **Ghostty**（最佳化）、iTerm2、Terminal.app | 建議啟用 TrueColor |
+| Linux | gnome-terminal、Konsole、xfce4-terminal、xterm、Ghostty | `xdotool` 用於視窗定位 |
+| Windows | Windows Terminal、PowerShell | 透過 Git Bash |
+| Fallback | 任何終端機 | Inline 模式（無獨立視窗） |
+
 ## 🎵 沈浸式音效
 
-HushFlow 內建一套專為深層沈浸與生理引導設計的聲景。使用 `hushflow sound on` 即可啟用。
+HushFlow 內建一套選配的聲景，專為深層沈浸與生理引導設計。使用 `hushflow sound on` 即可啟用。
+
+> **支援播放器：** `ffplay` (FFmpeg)、`mpv`、`afplay` (macOS 內建)、`paplay` (PulseAudio/PipeWire)。
 
 - **吸氣 (Inhale)**：**諧波綻放 (Harmonic Bloom)** — 深沈的 60Hz 低音隨吸氣漲落，伴隨溫暖的火爐碎裂聲。
 - **憋氣 (Hold)**：**三維干涉律動 (Tri-Harmonic Stillness)** — 交織的物理共鳴，徹底消除死板平音，營造靜謐空間感。

@@ -8,6 +8,8 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ON_START="$SCRIPT_DIR/hooks/on-start.sh"
 ON_STOP="$SCRIPT_DIR/hooks/on-stop.sh"
+ON_PERMISSION="$SCRIPT_DIR/hooks/on-permission.sh"
+ON_RESUME="$SCRIPT_DIR/hooks/on-resume.sh"
 
 # Legacy paths (for migration from Mindful-Claude)
 LEGACY_CONFIG_DIR="$HOME/.claude/mindful"
@@ -151,22 +153,34 @@ install_claude() {
 
     local has_start=0
     local has_stop=0
+    local has_permission=0
+    local has_resume=0
     has_hook "$settings" "UserPromptSubmit" "on-start.sh" && has_start=1
     has_hook "$settings" "Stop" "on-stop.sh" && has_stop=1
+    has_hook "$settings" "PermissionRequest" "on-permission.sh" && has_permission=1
+    has_hook "$settings" "PostToolUse" "on-resume.sh" && has_resume=1
 
-    if [ "$has_start" -eq 1 ] && [ "$has_stop" -eq 1 ]; then
+    if [ "$has_start" -eq 1 ] && [ "$has_stop" -eq 1 ] && [ "$has_permission" -eq 1 ] && [ "$has_resume" -eq 1 ]; then
         echo "  Hooks already installed."
         return
     fi
 
     local start_hook='[{"hooks": [{"type": "command", "command": "HUSHFLOW_CONFIG_DIR='"$config_dir"' '"$ON_START"'", "async": true}]}]'
     local stop_hook='[{"hooks": [{"type": "command", "command": "HUSHFLOW_CONFIG_DIR='"$config_dir"' '"$ON_STOP"'", "async": true}]}]'
+    local permission_hook='[{"hooks": [{"type": "command", "command": "HUSHFLOW_CONFIG_DIR='"$config_dir"' '"$ON_PERMISSION"'", "async": true}]}]'
+    local resume_hook='[{"hooks": [{"type": "command", "command": "HUSHFLOW_CONFIG_DIR='"$config_dir"' '"$ON_RESUME"'", "async": true}]}]'
 
     if [ "$has_start" -eq 0 ]; then
         settings=$(append_hook_group "$settings" "UserPromptSubmit" "$start_hook")
     fi
     if [ "$has_stop" -eq 0 ]; then
         settings=$(append_hook_group "$settings" "Stop" "$stop_hook")
+    fi
+    if [ "$has_permission" -eq 0 ]; then
+        settings=$(append_hook_group "$settings" "PermissionRequest" "$permission_hook")
+    fi
+    if [ "$has_resume" -eq 0 ]; then
+        settings=$(append_hook_group "$settings" "PostToolUse" "$resume_hook")
     fi
 
     # Validate and write
@@ -261,10 +275,15 @@ uninstall_tool() {
                 local s=$(cat "$sf")
                 s=$(echo "$s" | jq \
                     --arg on_start "$ON_START" --arg on_stop "$ON_STOP" \
+                    --arg on_permission "$ON_PERMISSION" --arg on_resume "$ON_RESUME" \
                     '(.hooks.UserPromptSubmit // []) |= [.[] | select(.hooks | all(.command | contains($on_start) | not))] |
                      (.hooks.Stop // []) |= [.[] | select(.hooks | all(.command | contains($on_stop) | not))] |
+                     (.hooks.PermissionRequest // []) |= [.[] | select(.hooks | all(.command | contains($on_permission) | not))] |
+                     (.hooks.PostToolUse // []) |= [.[] | select(.hooks | all(.command | contains($on_resume) | not))] |
                      if .hooks.UserPromptSubmit == [] then del(.hooks.UserPromptSubmit) else . end |
                      if .hooks.Stop == [] then del(.hooks.Stop) else . end |
+                     if .hooks.PermissionRequest == [] then del(.hooks.PermissionRequest) else . end |
+                     if .hooks.PostToolUse == [] then del(.hooks.PostToolUse) else . end |
                      if .hooks == {} then del(.hooks) else . end')
                 echo "$s" > "$sf"
                 echo "  Removed Claude Code hooks"
@@ -340,6 +359,7 @@ fi
 # Make scripts executable
 chmod +x "$SCRIPT_DIR/breathe-compact.sh" "$SCRIPT_DIR/set-exercise.sh"
 chmod +x "$SCRIPT_DIR/hooks/on-start.sh" "$SCRIPT_DIR/hooks/on-stop.sh"
+chmod +x "$SCRIPT_DIR/hooks/on-permission.sh" "$SCRIPT_DIR/hooks/on-resume.sh"
 chmod +x "$SCRIPT_DIR/hooks/open-tmux-popup.sh"
 chmod +x "$SCRIPT_DIR/hooks/open-standalone-window.sh" 2>/dev/null || true
 chmod +x "$SCRIPT_DIR/hooks/open-window.sh"

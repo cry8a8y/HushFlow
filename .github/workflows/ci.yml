@@ -26,6 +26,12 @@ jobs:
       - name: Run unit tests
         run: bash test/unit-test.sh
 
+      - name: Run terminal detection tests
+        run: bash test/terminal-detect-test.sh
+
+      - name: Run sound system tests
+        run: bash test/sound-test.sh
+
       - name: Run installer contract tests
         run: bash test/install-contract-test.sh
 

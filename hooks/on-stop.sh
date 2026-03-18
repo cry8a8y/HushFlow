@@ -28,8 +28,8 @@ if [ -z "$SESSION_DIR" ] || [ ! -d "$SESSION_DIR" ]; then
     exit 0
 fi
 
-# Remove marker file (triggers popup auto-close)
-rm -f "$SESSION_DIR/working"
+# Remove marker file (triggers popup auto-close) and permission timestamp
+rm -f "$SESSION_DIR/working" "$SESSION_DIR/permission-ts"
 hf_log "marker removed from $SESSION_DIR"
 
 # Kill the breathing pane if it exists

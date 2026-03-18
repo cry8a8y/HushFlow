@@ -24,10 +24,10 @@ _hf_detect_sound_player() {
 _hf_check_sound_enabled() {
     [ -n "$_HF_SOUND_ENABLED" ] && return
     local config="${HUSHFLOW_CONFIG_DIR:-$HOME/.claude/hushflow}/config"
-    if [ -f "$config" ] && grep -q "^sound=true" "$config"; then
-        _HF_SOUND_ENABLED="true"
-    else
+    if [ -f "$config" ] && grep -q "^sound=false" "$config"; then
         _HF_SOUND_ENABLED="false"
+    else
+        _HF_SOUND_ENABLED="true"
     fi
 }
 
@@ -65,8 +65,7 @@ hf_play_sound() {
 
     [ -z "$sound_file" ] && return 0
 
-    # Kill previous sound before playing new one
-    hf_stop_sound
+    local old_pid="$_HF_SOUND_PID"
 
     # If we found a duration-matched file, play it directly (already has fade-out baked in).
     # Otherwise use the player's duration flag as fallback truncation.
@@ -75,6 +74,7 @@ hf_play_sound() {
         _need_truncate="1"
     fi
 
+    # Start new sound first (crossfade: overlap old + new briefly)
     case "$_HF_SOUND_PLAYER" in
         ffplay)
             if [ -n "$_need_truncate" ]; then
@@ -102,4 +102,9 @@ hf_play_sound() {
             ;;
     esac
     _HF_SOUND_PID=$!
+
+    # Delayed kill of old sound (150ms crossfade overlap)
+    if [ -n "$old_pid" ] && kill -0 "$old_pid" 2>/dev/null; then
+        { sleep 0.15; kill "$old_pid" 2>/dev/null; wait "$old_pid" 2>/dev/null; } &
+    fi
 }
