@@ -15,7 +15,8 @@ This checks your installation, dependencies, config files, and hook registration
 1. Check if HushFlow is enabled: `grep enabled ~/.<tool>/hushflow/config`
 2. Verify hooks are registered: `hushflow doctor`
 3. Check delay setting — default is 5 seconds
-4. Try inline mode: `HUSHFLOW_UI_MODE=inline`
+4. Force inline fallback: `HUSHFLOW_TERMINAL=inline`
+5. Enable debug logging and inspect `/tmp/hushflow-debug.log`
 
 ### Animation looks broken or has wrong colors
 

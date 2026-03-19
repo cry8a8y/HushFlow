@@ -129,7 +129,7 @@ HushFlowは4つのUIモードでワークフローに適応：
 | **Window** | デフォルト — コンパニオンターミナルを開く | `HUSHFLOW_UI_MODE=window` |
 | **tmux pane** | tmuxユーザー — ペインを分割 | `HUSHFLOW_UI_MODE=tmux-pane` |
 | **tmux popup** | tmux 3.2+ — フローティングオーバーレイ | `HUSHFLOW_UI_MODE=tmux-popup` |
-| **Inline** | ミニマル — 現在のターミナルで描画 | `HUSHFLOW_UI_MODE=inline` |
+| **Inline** | ミニマル — 現在のターミナルで描画 | `HUSHFLOW_TERMINAL=inline` |
 
 ## ⌨️ コマンド
 
