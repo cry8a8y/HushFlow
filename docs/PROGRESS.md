@@ -25,7 +25,8 @@
 - Tmux integration: pane mode + popup mode (merged into single launcher)
 - Same-screen positioning: centers on current Ghostty/Terminal window
 - Configurable delay before window appears
-- BREATHE_ENV propagates session, config, title, and fade ticks to new terminals
+- Session-scoped launch script propagates session, config, title, and fade ticks to new terminals
+- Falls back cleanly when terminal-specific automation fails
 
 ### CLI (`cli.sh`)
 - `hushflow config [hrv|sigh|box|478]` — set breathing exercise (or show all config)
@@ -47,7 +48,7 @@
 - Registers 4 Claude Code hooks: UserPromptSubmit, Stop, PermissionRequest, PostToolUse
 
 ### Testing
-- 138+ smoke tests (`test/smoke-test.sh`)
+- 156+ smoke tests (`test/smoke-test.sh`)
 - 29 unit tests (`test/unit-test.sh`)
 - 19 terminal detection tests (`test/terminal-detect-test.sh`)
 - 27 sound system tests (`test/sound-test.sh`)
@@ -67,16 +68,19 @@
 
 ## Known Issues
 
-### 1. Ghostty `window 1` targeting (High)
-`open-window.sh` uses `set position/size of window 1` via System Events.
-`window 1` is the frontmost window, which may be the user's terminal instead of
-the newly created HushFlow window. This can resize the wrong window.
+### 1. macOS terminal automation variability (Medium)
+Ghostty / Terminal.app / iTerm2 window automation depends on AppleScript and
+accessibility integration, which can vary across macOS versions and local app
+permissions. When terminal-specific launch automation fails, `open-window.sh`
+now falls back to inline mode instead of failing the hook.
 
-**Attempted fixes:**
-- Window count before/after → still uses `window 1` which is ambiguous
-- Title-based matching (`if wTitle contains "HushFlow"`) → causes bash heredoc quote conflicts inside `$(osascript <<EOF)`
+**Current behavior:**
+- Empty config files no longer cause `open-window.sh` to exit under `pipefail`
+- Terminal launch commands are emitted via a session-scoped launch script
+- Ghostty launch failures degrade to inline mode instead of breaking the session
 
-**Potential fix:** Use Ghostty's window ID (`winId`) to find the correct System Events window. Need to map Ghostty script window ID to System Events window reference.
+**Potential follow-up:** Add more terminal-specific diagnostics so `hushflow doctor`
+can distinguish "hook installed" from "window launch automation blocked".
 
 ### 2. Window pixel size vs terminal grid mismatch
 Previously hardcoded at 560x420 with COLS=58 ROWS=17. Now auto-calculated from
@@ -127,7 +131,7 @@ HushFlow/
 │   ├── nord.json
 │   └── solarized-dark.json
 ├── test/
-│   ├── smoke-test.sh       # 138+ tests
+│   ├── smoke-test.sh       # 156+ tests
 │   ├── unit-test.sh        # 29 tests
 │   ├── terminal-detect-test.sh  # 19 tests
 │   ├── sound-test.sh       # 27 tests

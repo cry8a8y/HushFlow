@@ -10,7 +10,7 @@ HushFlow is a CLI tool that turns AI coding assistant wait time into guided brea
 - **Commit format**: `<type>(<scope>): <description>` — types: feat, fix, docs, test, chore, refactor
 - **PR flow**: All changes via branch → PR → merge. No direct push to main.
 - **Testing**: Run all test suites before committing. All tests must pass.
-  - `bash test/smoke-test.sh` — Core smoke tests (138+ tests)
+  - `bash test/smoke-test.sh` — Core smoke tests (156+ tests)
   - `bash test/terminal-detect-test.sh` — Terminal detection tests (19 tests)
   - `bash test/unit-test.sh` — Unit tests for pure functions (29 tests)
   - `bash test/sound-test.sh` — Sound system tests (27 tests)

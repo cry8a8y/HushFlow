@@ -14,7 +14,7 @@ No build step required — HushFlow is pure Bash + JSON.
 ## Running Tests
 
 ```bash
-bash test/smoke-test.sh              # Core smoke tests (138+ tests)
+bash test/smoke-test.sh              # Core smoke tests (156+ tests)
 bash test/terminal-detect-test.sh    # Terminal detection (19 tests)
 bash test/unit-test.sh               # Unit tests (29 tests)
 bash test/sound-test.sh              # Sound system (27 tests)

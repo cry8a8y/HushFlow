@@ -129,7 +129,7 @@ HushFlow 提供 4 种 UI 模式，适应不同工作流程：
 | **Window** | 默认 — 打开伴随终端窗口 | `HUSHFLOW_UI_MODE=window` |
 | **tmux pane** | tmux 用户 — 分割窗格 | `HUSHFLOW_UI_MODE=tmux-pane` |
 | **tmux popup** | tmux 3.2+ — 浮动覆盖层 | `HUSHFLOW_UI_MODE=tmux-popup` |
-| **Inline** | 极简 — 在当前终端渲染 | `HUSHFLOW_UI_MODE=inline` |
+| **Inline** | 极简 — 在当前终端渲染 | `HUSHFLOW_TERMINAL=inline` |
 
 ## ⌨️ 命令
 
