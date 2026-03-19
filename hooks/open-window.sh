@@ -6,6 +6,26 @@ set -euo pipefail
 
 hf_log() { [ "${HUSHFLOW_DEBUG:-}" = "1" ] && echo "$(date '+%H:%M:%S') [open-window] $*" >> /tmp/hushflow-debug.log || true; }
 
+run_inline_fallback() {
+    hf_log "falling back to inline mode"
+    echo "inline" > "$SESSION_DIR/ui-fallback"
+    "$BREATHE_SCRIPT" > /dev/null 2>&1 &
+    echo $! > "$WINDOW_PID_FILE"
+}
+
+write_launch_script() {
+    LAUNCH_SCRIPT="$SESSION_DIR/launch-breathe.sh"
+    cat > "$LAUNCH_SCRIPT" <<EOF
+#!/bin/bash
+export HUSHFLOW_SESSION_DIR=$(printf '%q' "$SESSION_DIR")
+export HUSHFLOW_CONFIG_DIR=$(printf '%q' "${HUSHFLOW_CONFIG_DIR:-}")
+export HUSHFLOW_WINDOW_TITLE=$(printf '%q' "$WINDOW_MATCH_TITLE")
+export HUSHFLOW_FADE_TICKS=$(printf '%q' "${HUSHFLOW_FADE_TICKS:-}")
+exec $(printf '%q' "$BREATHE_SCRIPT")
+EOF
+    chmod +x "$LAUNCH_SCRIPT"
+}
+
 SESSION_DIR="${HUSHFLOW_SESSION_DIR:-/tmp/hushflow-$$}"
 MARKER_FILE="$SESSION_DIR/working"
 LOCKFILE="$SESSION_DIR/ui.lock"
@@ -17,15 +37,14 @@ CONFIG_FILE="${HUSHFLOW_CONFIG_DIR:-$HOME/.claude/hushflow}/config"
 WINDOW_TITLE="HushFlow"
 SESSION_NAME="$(basename "$SESSION_DIR")"
 WINDOW_MATCH_TITLE="$WINDOW_TITLE · $SESSION_NAME"
-# Env vars to pass to breathe-compact.sh in new terminal windows
-BREATHE_ENV="export HUSHFLOW_SESSION_DIR='$SESSION_DIR' HUSHFLOW_CONFIG_DIR='${HUSHFLOW_CONFIG_DIR:-}' HUSHFLOW_WINDOW_TITLE='$WINDOW_MATCH_TITLE' HUSHFLOW_FADE_TICKS='${HUSHFLOW_FADE_TICKS:-}'"
+LAUNCH_SCRIPT=""
 
 # Source terminal detection
 source "$SCRIPT_DIR/lib/detect-terminal.sh"
 
 config_delay=""
 if [ -f "$CONFIG_FILE" ]; then
-    config_delay=$(grep "^delay=" "$CONFIG_FILE" 2>/dev/null | cut -d= -f2)
+    config_delay=$(grep "^delay=" "$CONFIG_FILE" 2>/dev/null | cut -d= -f2 || true)
 fi
 
 HUSHFLOW_DELAY_SECONDS="${HUSHFLOW_DELAY_SECONDS:-${config_delay:-5}}"
@@ -47,6 +66,8 @@ cleanup() {
     rmdir "$LOCKFILE" 2>/dev/null || true
 }
 trap cleanup EXIT
+
+write_launch_script
 
 PANE_ID_FILE="$SESSION_DIR/tmux-pane-id"
 HUSHFLOW_TMUX_UI="${HUSHFLOW_TMUX_UI:-pane}"
@@ -72,8 +93,8 @@ hf_log "terminal=$terminal delay=$HUSHFLOW_DELAY_SECONDS"
 case "$terminal" in
     ghostty)
         # macOS Ghostty — centered on same screen, does NOT steal focus.
-        window_id=$(
-        osascript <<EOF
+        if ! window_id=$(
+        osascript 2>/dev/null <<EOF
 -- Grid & font → pixel size (auto-adapt)
 set termCols to 70
 set termRows to 20
@@ -97,11 +118,11 @@ if posY < 25 then set posY to 25
 
 tell application "Ghostty"
     set surfaceConfig to new surface configuration
-    set breathePath to quoted form of POSIX path of "$BREATHE_SCRIPT"
-    set command of surfaceConfig to "/bin/bash -lc " & quoted form of ("exec " & breathePath)
+    set launchPath to quoted form of POSIX path of "$LAUNCH_SCRIPT"
+    set command of surfaceConfig to "/bin/bash -lc " & quoted form of ("exec " & launchPath)
     set font size of surfaceConfig to fontSize
     set wait after command of surfaceConfig to false
-    set environment variables of surfaceConfig to {"HUSHFLOW_SESSION_DIR=$SESSION_DIR", "HUSHFLOW_CONFIG_DIR=${HUSHFLOW_CONFIG_DIR:-$HOME/.claude/hushflow}", "HUSHFLOW_WINDOW_TITLE=$WINDOW_MATCH_TITLE", "HUSHFLOW_FADE_TICKS=${HUSHFLOW_FADE_TICKS:-}", "HUSHFLOW_COLS=" & termCols, "HUSHFLOW_ROWS=" & termRows}
+    set environment variables of surfaceConfig to {"HUSHFLOW_COLS=" & termCols, "HUSHFLOW_ROWS=" & termRows}
     set newWindow to new window with configuration surfaceConfig
     set winId to id of newWindow
 end tell
@@ -122,7 +143,11 @@ end tell
 
 return winId
 EOF
-        )
+        ); then
+            hf_log "ghostty osascript failed; falling back to inline mode"
+            run_inline_fallback
+            exit 0
+        fi
         if [ -n "$window_id" ]; then
             echo "$window_id" > "$WINDOW_ID_FILE"
             # Background monitor: auto-dismiss Ghostty's "Process exited" prompt.
@@ -186,12 +211,13 @@ tell application "System Events"
     set frontApp to name of first application process whose frontmost is true
 end tell
 tell application "Terminal"
+    set launchPath to quoted form of POSIX path of "$LAUNCH_SCRIPT"
     set {wx, wy, wx2, wy2} to bounds of front window
     set posX to wx + ((wx2 - wx) - winW) / 2
     set posY to wy + ((wy2 - wy) - winH) / 2
     if posX < 0 then set posX to 0
     if posY < 25 then set posY to 25
-    do script "$BREATHE_ENV; exec \"$BREATHE_SCRIPT\""
+    do script "/bin/bash -lc " & launchPath
     delay 0.2
     set bounds of front window to {posX, posY, posX + winW, posY + winH}
     set name of front window to "$WINDOW_TITLE"
@@ -211,6 +237,7 @@ tell application "System Events"
     set frontApp to name of first application process whose frontmost is true
 end tell
 tell application "iTerm"
+    set launchPath to quoted form of POSIX path of "$LAUNCH_SCRIPT"
     set {wx, wy, wx2, wy2} to bounds of current window
     set posX to wx + ((wx2 - wx) - winW) / 2
     set posY to wy + ((wy2 - wy) - winH) / 2
@@ -218,7 +245,7 @@ tell application "iTerm"
     if posY < 25 then set posY to 25
     create window with default profile
     tell current session of current window
-        write text "$BREATHE_ENV; exec \"$BREATHE_SCRIPT\""
+        write text "/bin/bash -lc " & launchPath
     end tell
     delay 0.2
     set bounds of current window to {posX, posY, posX + winW, posY + winH}
@@ -245,41 +272,39 @@ EOF
 
         case "$TERMINAL" in
             gnome-terminal)
-                gnome-terminal --title="$WINDOW_TITLE" --geometry="$_linux_geom" -- bash -c "$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"" &
+                gnome-terminal --title="$WINDOW_TITLE" --geometry="$_linux_geom" -- bash -c "exec \"$LAUNCH_SCRIPT\"" &
                 ;;
             konsole)
-                konsole --geometry "$_linux_geom" -e bash -c "$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"" &
+                konsole --geometry "$_linux_geom" -e bash -c "exec \"$LAUNCH_SCRIPT\"" &
                 ;;
             xfce4-terminal)
-                xfce4-terminal --title="$WINDOW_TITLE" --geometry="$_linux_geom" -e "bash -c '$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"'" &
+                xfce4-terminal --title="$WINDOW_TITLE" --geometry="$_linux_geom" -e "bash -c 'exec \"$LAUNCH_SCRIPT\"'" &
                 ;;
             xterm)
-                xterm -title "$WINDOW_TITLE" -geometry "$_linux_geom" -e bash -c "$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"" &
+                xterm -title "$WINDOW_TITLE" -geometry "$_linux_geom" -e bash -c "exec \"$LAUNCH_SCRIPT\"" &
                 ;;
         esac
         echo $! > "$WINDOW_PID_FILE"
         ;;
 
     ghostty-linux)
-        ghostty --window-width=40 --window-height=20 -e bash -c "$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"" &
+        ghostty --window-width=40 --window-height=20 -e bash -c "exec \"$LAUNCH_SCRIPT\"" &
         echo $! > "$WINDOW_PID_FILE"
         ;;
 
     windows-terminal)
-        wt.exe new-tab --title "$WINDOW_TITLE" --size 40,20 bash -c "$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"" &
+        wt.exe new-tab --title "$WINDOW_TITLE" --size 40,20 bash -c "exec \"$LAUNCH_SCRIPT\"" &
         echo $! > "$WINDOW_PID_FILE"
         ;;
 
     powershell)
-        powershell.exe -Command "Start-Process bash -ArgumentList '-c','$BREATHE_ENV; exec \"$BREATHE_SCRIPT\"'" &
+        powershell.exe -Command "Start-Process bash -ArgumentList '-c','exec \"$LAUNCH_SCRIPT\"'" &
         echo $! > "$WINDOW_PID_FILE"
         ;;
 
     inline|*)
         # Fallback: no window, just run in background (output to /dev/null)
         hf_log "WARNING: no supported terminal detected (terminal=$terminal), running inline fallback"
-        echo "inline" > "$SESSION_DIR/ui-fallback"
-        "$BREATHE_SCRIPT" > /dev/null 2>&1 &
-        echo $! > "$WINDOW_PID_FILE"
+        run_inline_fallback
         ;;
 esac
