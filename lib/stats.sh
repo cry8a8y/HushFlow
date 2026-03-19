@@ -43,7 +43,7 @@ get_streak() {
             streak=$((streak + 1))
             # Go back one day
             if [[ "$OSTYPE" == darwin* ]]; then
-                check_date=$(date -j -v-${streak}d +%Y-%m-%d 2>/dev/null || break)
+                check_date=$(date -j -v-${streak}d -f "%Y-%m-%d" "$TODAY" +%Y-%m-%d 2>/dev/null || break)
             else
                 check_date=$(date -d "$TODAY - ${streak} days" +%Y-%m-%d 2>/dev/null || break)
             fi
