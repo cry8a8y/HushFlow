@@ -378,6 +378,29 @@ else
     pass "non-numeric exercise value rejected"
 fi
 
+# Test: empty config does not make open-window.sh fail under pipefail
+OPEN_EDGE_SESSION="$TMPDIR_TEST/open-window-empty-config"
+OPEN_EDGE_CONFIG="$TMPDIR_TEST/open-window-empty-config-dir"
+mkdir -p "$OPEN_EDGE_SESSION" "$OPEN_EDGE_CONFIG"
+: > "$OPEN_EDGE_CONFIG/config"
+echo "$(date +%s)" > "$OPEN_EDGE_SESSION/working"
+if HUSHFLOW_SESSION_DIR="$OPEN_EDGE_SESSION" \
+   HUSHFLOW_CONFIG_DIR="$OPEN_EDGE_CONFIG" \
+   HUSHFLOW_DELAY_SECONDS=0 \
+   HUSHFLOW_TERMINAL=inline \
+   bash "$SCRIPT_DIR/hooks/open-window.sh" >/dev/null 2>&1; then
+    pass "open-window survives empty config"
+else
+    fail "open-window fails on empty config"
+fi
+if [ -f "$OPEN_EDGE_SESSION/window-pid" ]; then
+    open_edge_pid=$(cat "$OPEN_EDGE_SESSION/window-pid" 2>/dev/null || true)
+    rm -f "$OPEN_EDGE_SESSION/working"
+    if [ -n "${open_edge_pid:-}" ]; then
+        kill "$open_edge_pid" 2>/dev/null || true
+    fi
+fi
+
 # --- Animation validation ---
 section "Animation validation"
 
