@@ -33,6 +33,12 @@ case "${1:-help}" in
     doctor)
         exec bash "$SCRIPT_DIR/doctor.sh"
         ;;
+    onboarding)
+        exec bash "$SCRIPT_DIR/onboarding.sh"
+        ;;
+    version|--version|-V)
+        echo "hushflow 2.0.0"
+        ;;
     help|--help|-h)
         echo "HushFlow — Turn AI thinking time into mindful breathing."
         echo ""
@@ -47,6 +53,8 @@ case "${1:-help}" in
         echo "  hushflow sound [on|off]"
         echo "  hushflow stats                  View session statistics and streak"
         echo "  hushflow doctor"
+        echo "  hushflow onboarding             Re-run the first-time setup wizard"
+        echo "  hushflow version"
         echo "  hushflow help"
         ;;
     *)
