@@ -25,6 +25,17 @@ if [ -f "$CONFIG_FILE" ] && grep -q "^enabled=false" "$CONFIG_FILE"; then
     exit 0
 fi
 
+# === Onboarding check ===
+if [ ! -f "$CONFIG_DIR/.onboarded" ]; then
+    if [ -t 0 ]; then
+        bash "$SCRIPT_DIR/../onboarding.sh"
+    else
+        # Non-interactive: mark onboarded with defaults, don't block hook
+        touch "$CONFIG_DIR/.onboarded"
+    fi
+    exit 0
+fi
+
 # === Atomic session initialization (flock on Linux, mkdir lock fallback) ===
 _hf_session_init() {
     # Clean up previous session (if Stop hook didn't fire)

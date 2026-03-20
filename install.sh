@@ -408,31 +408,18 @@ echo "Installed for $installed tool(s)."
 echo ""
 echo "  How it works:"
 echo "    Next time you send a prompt to your AI tool, HushFlow will"
-echo "    automatically open a breathing animation after a short delay."
-echo "    When the AI finishes, the animation closes on its own."
+echo "    guide you through a quick setup (exercise + theme), then"
+echo "    automatically start breathing animations when the AI thinks."
+echo ""
+echo "  First run:  A guided onboarding wizard will start automatically."
+echo "  Re-run it:  hushflow onboarding"
 echo ""
 echo "  Restart your AI tool for hooks to take effect."
 echo ""
-
-# Quick demo: show a 3-second breathing preview
-if [ -t 1 ]; then
-    echo "  Preview:"
-    echo ""
-    dots=("·" "✧" "✦" "✧" "·" " " " " " ")
-    for ((i=0; i<24; i++)); do
-        idx=$((i % 8))
-        line="    ${dots[$idx]}  ${dots[$(( (idx+2) % 8 ))]}  ${dots[$(( (idx+4) % 8 ))]}  ${dots[$(( (idx+6) % 8 ))]}"
-        printf "\r%s" "$line"
-        sleep 0.125
-    done
-    printf "\r                              \r"
-    echo ""
-fi
-
 echo "Configuration:"
-echo "  $SCRIPT_DIR/set-exercise.sh          # List exercises & themes"
-echo "  $SCRIPT_DIR/set-exercise.sh theme teal  # Change theme"
-echo "  $SCRIPT_DIR/set-exercise.sh box         # Change exercise"
+echo "  hushflow config          # List exercises & themes"
+echo "  hushflow theme teal      # Change theme"
+echo "  hushflow config box      # Change exercise"
 echo ""
-echo "Doctor:    $SCRIPT_DIR/doctor.sh"
-echo "Uninstall: $SCRIPT_DIR/install.sh --uninstall"
+echo "Doctor:    hushflow doctor"
+echo "Uninstall: hushflow uninstall"
