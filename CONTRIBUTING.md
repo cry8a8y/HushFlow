@@ -20,6 +20,7 @@ bash test/unit-test.sh               # Unit tests (29 tests)
 bash test/sound-test.sh              # Sound system (27 tests)
 bash test/install-contract-test.sh   # Installer contracts (76+ tests)
 bash test/e2e-install-test.sh        # E2E install flow (31 tests)
+bash test/onboarding-test.sh         # Onboarding wizard (23 tests)
 bash scripts/test-ui-layout.sh --ci  # UI layout (requires tmux)
 ```
 
@@ -31,6 +32,7 @@ All tests must pass before submitting a PR. At minimum, run `bash test/smoke-tes
 HushFlow/
 ├── breathe-compact.sh    # Core rendering engine
 ├── cli.sh                # CLI entry point (npx hushflow)
+├── onboarding.sh         # Guided first-run setup wizard
 ├── install.sh            # Installer (macOS/Linux)
 ├── install.ps1           # Installer (Windows)
 ├── set-exercise.sh       # Configuration management
@@ -41,7 +43,7 @@ HushFlow/
 ├── sounds/               # Sound files (user-provided)
 ├── plugins/              # Example animation plugins
 ├── commands/             # Slash command definitions
-├── test/                 # Smoke tests
+├── test/                 # Test suites (smoke, unit, install, onboarding, e2e)
 └── docs/                 # Documentation and translations
 ```
 

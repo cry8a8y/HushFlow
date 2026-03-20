@@ -20,6 +20,9 @@ HushFlow acts as a silent observer to your AI terminal sessions.
               │                     [ Enabled? ] ───▶ [No: Exit]
               │                            │
               │                            ▼ [Yes]
+              │                     [ Onboarded? ] ──▶ [No: Run wizard, exit]
+              │                            │
+              │                            ▼ [Yes]
               │                     Wait Delay (5s)
               │                            │
               │                            ▼

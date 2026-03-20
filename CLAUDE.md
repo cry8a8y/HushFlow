@@ -16,6 +16,7 @@ HushFlow is a CLI tool that turns AI coding assistant wait time into guided brea
   - `bash test/sound-test.sh` — Sound system tests (27 tests)
   - `bash test/install-contract-test.sh` — Installer contracts: 3 targets × 7 scenarios (76+ tests)
   - `bash test/e2e-install-test.sh` — E2E install flow: fresh, non-git dir, update, reinstall (31 tests)
+  - `bash test/onboarding-test.sh` — Onboarding wizard tests (23 tests)
   - `bash scripts/test-ui-layout.sh --ci` — UI layout tests (requires tmux)
   - `pwsh test/install-ps1-test.ps1` — PowerShell installer tests (Windows only)
   - See `docs/testing/install-matrix.md` for the full cross-platform test matrix
@@ -23,9 +24,10 @@ HushFlow is a CLI tool that turns AI coding assistant wait time into guided brea
 ## Architecture
 
 - `breathe-compact.sh` — Core rendering engine (SIN64/COS32 lookup tables, 10fps double-buffer)
-- `cli.sh` — CLI entry point for `npx hushflow`
+- `cli.sh` — CLI entry point for `npx hushflow` (routes: install, config, theme, animation, sound, stats, doctor, onboarding, version)
+- `onboarding.sh` — Guided first-run wizard (exercise/theme selection + 5-second live demo)
 - `set-exercise.sh` — Config management (exercises, themes, animations, sound)
-- `hooks/on-start.sh` / `on-stop.sh` — AI tool lifecycle hooks (start/stop + session notification)
+- `hooks/on-start.sh` / `on-stop.sh` — AI tool lifecycle hooks (start/stop + session notification + onboarding trigger)
 - `hooks/on-permission.sh` — Pauses breathing on PermissionRequest
 - `hooks/on-resume.sh` — Smart resume after permission approval (3-tier expiry)
 - `lib/hook-common.sh` — Shared hook bootstrap (hf_log, CONFIG_DIR, SESSION_DIR)
