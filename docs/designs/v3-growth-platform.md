@@ -77,13 +77,59 @@ After this plan ships, progress toward 12-month ideal:
 - **Retention:** 30% → 60% (+ onboarding wizard + stats card shareability)
 - **Community:** 0% → 20% (foundations laid, flywheel not yet spinning)
 
+## Design Specifications (Design Review 2026-03-20)
+
+### Design Principles
+- **Terminal aesthetic**: All black backgrounds, monospace typography (JetBrains Mono / Fira Code)
+- **Zero decoration**: No gradients, blobs, or illustrations — only breathing animations
+- **5-layer color system**: Reuse existing `primary/secondary/mid/mid_dim/dim` RGB values
+- **Subtraction default**: If it doesn't earn its pixels, cut it
+
+### Landing Page
+- **Structure**: Single-page scroll with anchor links, no multi-page
+- **Hero**: Full-black background, centered breathing animation (Canvas reproducing CLI animation), tagline below
+- **Tagline**: "Breathe while your AI thinks."
+- **Install**: Shell commands with tap/click-to-copy (`brew install hushflow` / `npx hushflow install`)
+- **Demo**: SVG terminal animation (svg-term/termtosvg), no external JS dependency
+- **Features**: Monospace typeset list (not 3-column cards), terminal aesthetic
+- **Footer**: Minimal — GitHub link + stars badge only
+- **Anti-slop rules**: No hero gradients, no icon cards, no CTA buttons, no newsletter signup
+- **Responsive**: max-width 720px centered; mobile full-width with 16px padding; touch targets 44px+
+- **A11y**: `prefers-reduced-motion: reduce` → static ASCII fallback; WCAG AA contrast (4.5:1)
+- **Loading fallback**: If Canvas fails → static ASCII art breathing pattern
+
+### Guided Onboarding
+- **Trigger**: First AI wait after install (not immediately after install)
+- **State**: Global flag `~/.hushflow/.onboarded`; `hushflow onboarding` to re-run manually
+- **Flow**: Welcome → Choose Exercise (↑↓ select) → Choose Theme (with 1-line color preview) → 5-sec Live Demo → Done
+- **Interrupted (ctrl-C)**: Partial config saved, can re-run
+- **Headless/no-window**: Inline demo (no windowed mode needed)
+- **Empty state**: N/A — onboarding is the empty state handler itself
+
+### Stats Card
+- **ASCII format**: Box-drawn card with sessions, cycles, time, streak, favorite exercise, hushflow.dev URL
+- **SVG format**: `hushflow stats --card --svg` — same layout with theme colors + mini breathing animation
+- **Theme**: Default teal brand color; `--theme <name>` flag to match user's preferred theme
+- **Empty state**: "Start your journey — run your first breathing session" (warm, not "No data")
+- **Error state**: Corrupted stats.log → error message + suggest reset
+
+### VS Code Extension
+- **Color system**: Hybrid — background follows VS Code theme; animations + accents use HushFlow theme colors
+- **Idle state**: Quick Stats (today's sessions, cycles, streak) + "Start a breathing session" button
+- **Breathing state**: Canvas animation + exercise name + cycle counter
+- **AI detection**: File watcher on session marker files (not VS Code LM API)
+- **Not installed**: Friendly install guide link (not red error)
+- **Animation fallback**: If Canvas fails → text breathing prompts ("Inhale..." / "Exhale...")
+- **Partial state**: AI responds early → gracefully end animation (fade out)
+- **A11y**: Follow VS Code a11y settings; screen-reader-readable breathing state text
+
 ## Key Risks
 - VS Code extension is the largest work item; mitigated by phased rollout
-- Landing page could feel generic ("AI slop"); maintain terminal aesthetic brand
+- Landing page could feel generic ("AI slop"); mitigated by terminal aesthetic brand + anti-slop rules
 - Awesome list PRs may be rejected; multiple lists = diversified risk
 
 ## Review Status
-- CEO Review: CLEAN (2026-03-20, this document)
-- Eng Review: STALE (2026-03-18, pre-dates this plan)
-- Design Review: Not yet run
+- CEO Review: CLEAN (2026-03-20)
+- Eng Review: CLEAN (2026-03-20)
+- Design Review: CLEAN (2026-03-20, this section)
 - Recommended: Run `/plan-eng-review` before implementing Phase 4 (VS Code extension)
