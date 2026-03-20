@@ -117,3 +117,10 @@
 - **Priority**: P3
 - **Effort**: L
 - **Depends on**: VS Code Extension (proves the architecture)
+
+### DESIGN.md — Formal Design System
+- **What**: Create DESIGN.md defining color system (5-layer RGB), typography (monospace), spacing (8px base grid), animation principles, and brand guidelines.
+- **Why**: Ensures visual consistency across Landing Page, VS Code Extension, and Stats Card SVG as the product expands beyond CLI.
+- **Priority**: P3
+- **Effort**: S
+- **Depends on**: Phase 2 Landing Page (more meaningful after multiple UI surfaces exist)
