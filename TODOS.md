@@ -42,6 +42,7 @@
 - **Priority**: P1
 - **Effort**: M
 - **Depends on**: Nothing
+- **Completed:** v2.0.0 (2026-03-20) — `onboarding.sh` with 5-step wizard, auto-triggered on first AI wait via `on-start.sh`, 23 tests
 
 ### Phase 2: Distribution
 
@@ -51,6 +52,7 @@
 - **Priority**: P1
 - **Effort**: S
 - **Depends on**: Nothing
+- **Completed:** v2.0.0 (2026-03-20) — `cry8a8y/homebrew-hushflow` repo with Formula, `brew install cry8a8y/hushflow/hushflow` works
 
 #### Landing Page (GitHub Pages)
 - **What**: Project website with animated demo, SEO meta tags, one-line install commands, feature highlights.

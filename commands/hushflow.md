@@ -25,4 +25,6 @@ Additional commands the user can run directly:
 - `hushflow stats` — View session statistics, streaks, and mindful time
 - `hushflow wrap -- <command>` — Run breathing while any command executes
 - `hushflow theme list` — List all available themes (built-in + community)
+- `hushflow onboarding` — Re-run the first-time setup wizard (exercise + theme + demo)
 - `hushflow doctor` — Check installation and environment
+- `hushflow --version` — Show installed version

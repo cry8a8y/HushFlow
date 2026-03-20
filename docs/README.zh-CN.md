@@ -26,12 +26,19 @@
 ## 🚀 安装
 
 ```bash
-npm install -g hushflow
+brew install cry8a8y/hushflow/hushflow
 hushflow install
 ```
 
 <details>
 <summary>其他安装方式</summary>
+
+**npm 全局安装：**
+
+```bash
+npm install -g hushflow
+hushflow install
+```
 
 **一行安装（无需 npm）：**
 
@@ -73,7 +80,7 @@ cd HushFlow
 hushflow doctor        # 检查安装状态与环境
 ```
 
-然后发送任何 prompt 给 AI 工具，等待 5 秒 — 呼吸窗口就会出现。
+然后发送任何 prompt 给 AI 工具。第一次使用时，引导式设置向导会帮你选择呼吸模式和主题。设置完成后，AI 思考时呼吸动画会自动出现。
 
 ### 📋 依赖
 
@@ -150,8 +157,10 @@ hushflow sound on              # 启用呼吸转换提示音
 hushflow stats                 # 查看使用统计与连续天数
 hushflow wrap -- npm install   # 任何命令执行时都能呼吸
 
-# 诊断工具
+# 引导与诊断
+hushflow onboarding            # 重新运行首次设置向导
 hushflow doctor                # 检查安装状态与环境
+hushflow --version             # 显示版本
 ```
 
 > [!TIP]
@@ -173,7 +182,10 @@ hushflow doctor                # 检查安装状态与环境
           └────┬────┘
          否/   \是
           ▼     ▼
-       [退出]  延迟等待 (5s)
+       [退出]  已引导？
+              否/   \是
+               ▼     ▼
+          [运行向导] 延迟等待 (5s)
                 │
                 ▼
        ┌─────────────────┐

@@ -22,17 +22,23 @@
 > **前置需求：** 安裝前請確保系統已安裝 `bash` (4.0+), `git` 以及 `jq`。
 > **選裝：** `tmux`（tmux 窗格/彈出模式）、音效播放器（`ffplay`、`mpv`、`afplay` 或 `paplay`）以啟用沈浸音效。
 
-### 方法 1：Unix / macOS（最快推薦）
+### 方法 1：Homebrew (macOS / Linux)
+```bash
+brew install cry8a8y/hushflow/hushflow
+hushflow install
+```
+
+### 方法 2：Unix / macOS (curl)
 ```bash
 curl -fsSL https://raw.githubusercontent.com/cry8a8y/HushFlow/main/install-remote.sh | bash
 ```
 
-### 方法 2：Windows (PowerShell)
+### 方法 3：Windows (PowerShell)
 ```powershell
 git clone https://github.com/cry8a8y/HushFlow.git; cd HushFlow; .\install.ps1
 ```
 
-### 方法 3：npm / npx
+### 方法 4：npm / npx
 ```bash
 npx hushflow install
 ```
@@ -41,7 +47,8 @@ npx hushflow install
 1. 執行 `hushflow doctor` 驗證安裝結果。
 2. **重啟** 你的 AI 終端工具（例如：Claude Code）。
 3. 送出任何 **指令/對話**。
-4. **等待 5 秒** — 呼吸視窗會自然出現。
+4. **第一次？** 引導式設定精靈會帶你選擇呼吸模式和主題。
+5. **設定完成後** — AI 思考時呼吸動畫會自動出現。
 
 <p align="center">
   <img src="../demo.gif" alt="HushFlow Demo" width="720" />
@@ -103,7 +110,9 @@ hushflow config hrv    # 設定諧振呼吸
 hushflow theme nord    # 套用 Nord 主題
 hushflow sound on      # 啟用呼吸提示音
 hushflow stats         # 查看使用統計
+hushflow onboarding    # 重新執行首次設定精靈
 hushflow doctor        # 執行健康檢查
+hushflow --version     # 顯示版本
 ```
 
 ## 🧠 運作原理

@@ -50,17 +50,23 @@ A breathing layer for AI-powered terminals. Turns every wait into a calm ritual 
 > **Prerequisites:** `bash` (4.0+), `git`, and `jq` are required.
 > **Optional:** `tmux` (for tmux pane/popup mode), audio player (`ffplay`, `mpv`, `afplay`, or `paplay`) for immersive sound.
 
-### Method 1: Unix / macOS (Fastest)
+### Method 1: Homebrew (macOS / Linux)
+```bash
+brew install cry8a8y/hushflow/hushflow
+hushflow install
+```
+
+### Method 2: Unix / macOS (curl)
 ```bash
 curl -fsSL https://raw.githubusercontent.com/cry8a8y/HushFlow/main/install-remote.sh | bash
 ```
 
-### Method 2: Windows (PowerShell)
+### Method 3: Windows (PowerShell)
 ```powershell
 git clone https://github.com/cry8a8y/HushFlow.git; cd HushFlow; .\install.ps1
 ```
 
-### Method 3: npm / npx
+### Method 4: npm / npx
 ```bash
 npx hushflow install
 ```
@@ -69,7 +75,8 @@ npx hushflow install
 1. Run `hushflow doctor` to verify your setup.
 2. **Restart** your AI tool (e.g., Claude Code).
 3. Send any **Prompt**.
-4. **Wait 5s** — The breathing window will appear naturally.
+4. **First time?** A guided setup wizard walks you through choosing your exercise and theme.
+5. **After setup** — The breathing window appears automatically when the AI thinks.
 
 ## 🧘 Why HushFlow?
 
@@ -144,7 +151,9 @@ hushflow animation orbit  # Set animation style
 hushflow sound on      # Enable breath audio
 hushflow wrap -- cmd   # Run breathing while a command executes
 hushflow stats         # View session statistics
+hushflow onboarding    # Re-run the first-time setup wizard
 hushflow doctor        # Run health check
+hushflow --version     # Show version
 ```
 
 ## 🧠 How It Works
