@@ -23,20 +23,71 @@
 
 ---
 
-## Future Items (Deferred)
+## v3 Growth & Platform Expansion (CEO Review 2026-03-20)
 
-### Homebrew Formula
-- **What**: `brew install hushflow` via a Homebrew tap (`cry8a8y/homebrew-hushflow`).
-- **Why**: One-line install for macOS/Linux users. 需要建獨立 repo，每次 release 要同步 SHA256。
-- **When**: 等版本穩定且有使用者需求再做。目前 `npx` + `curl` 已足夠。
-- **Priority**: P3
+> Design doc: [docs/designs/v3-growth-platform.md](docs/designs/v3-growth-platform.md)
+
+### Phase 1: Foundations
+
+#### Shared Exercises Config
+- **What**: Extract breathing mode parameters (inhale/exhale/hold times) to `exercises.json`, consumed by both Bash and TypeScript.
+- **Why**: Single source of truth for CLI and future VS Code extension. Avoids sync bugs.
+- **Priority**: P1
 - **Effort**: S
+- **Depends on**: Nothing
 
-### Guided Onboarding / First-Run Experience
-- **What**: Interactive first-run wizard that walks users through choosing exercise, theme, and animation.
-- **Why**: Lower barrier to entry for new users.
-- **Priority**: P3
+#### Guided Onboarding / First-Run Experience
+- **What**: Interactive first-run wizard that walks users through choosing exercise, theme, and animation, followed by a 5-second live demo.
+- **Why**: 1,261 clones but only 2 stars — first impression determines retention.
+- **Priority**: P1
 - **Effort**: M
+- **Depends on**: Nothing
+
+### Phase 2: Distribution
+
+#### Homebrew Formula
+- **What**: `brew install hushflow` via a Homebrew tap (`cry8a8y/homebrew-hushflow`).
+- **Why**: Zero-friction install for macOS/Linux. Higher trust than `curl | bash`. Required for landing page.
+- **Priority**: P1
+- **Effort**: S
+- **Depends on**: Nothing
+
+#### Landing Page (GitHub Pages)
+- **What**: Project website with animated demo, SEO meta tags, one-line install commands, feature highlights.
+- **Why**: Discovery is 0%. No search engine can find HushFlow today. This is the highest-leverage single change.
+- **Priority**: P1
+- **Effort**: S
+- **Depends on**: Homebrew (to show `brew install` on the page)
+
+### Phase 3: Shareability & Community
+
+#### Stats Card
+- **What**: `hushflow stats --card` generates a shareable ASCII art stats card for Twitter, Discord, GitHub profile READMEs.
+- **Why**: Community flywheel fuel — users do your marketing for you.
+- **Priority**: P2
+- **Effort**: S
+- **Depends on**: Nothing
+
+#### Awesome Lists & Community Submissions
+- **What**: Submit PRs to awesome-cli-apps, awesome-developer-tools, awesome-shell. Prepare HN/Reddit posts.
+- **Why**: Zero-cost distribution with high ROI. Each list has tens of thousands of stars.
+- **Priority**: P2
+- **Effort**: S
+- **Depends on**: Landing Page (to link to)
+
+### Phase 4: Platform Expansion
+
+#### VS Code / Cursor Extension
+- **What**: WebView sidebar panel with Canvas breathing animations. Detects AI thinking and auto-shows breathing.
+- **Why**: TAM expansion 10x — most developers use IDEs, not CLI.
+- **Priority**: P2
+- **Effort**: L
+- **Depends on**: Shared exercises.json
+- **Architecture**: Monorepo (`extension/` subdirectory), shared themes and breathing params.
+
+---
+
+## Future Items (P3 — Deferred)
 
 ### Gamification / Achievements
 - **What**: Milestones (100 cycles, 1 hour total, 7-day streak) with badge display in `hushflow stats`.
@@ -59,3 +110,10 @@
 - **What**: `hushflow stats --export json` for programmatic access.
 - **Priority**: P3
 - **Effort**: S
+
+### JetBrains / Neovim Plugin
+- **What**: IDE plugins for IntelliJ family and Neovim (Lua).
+- **Why**: Further platform expansion after VS Code proves the model.
+- **Priority**: P3
+- **Effort**: L
+- **Depends on**: VS Code Extension (proves the architecture)
