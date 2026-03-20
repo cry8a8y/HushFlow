@@ -37,7 +37,7 @@ case "${1:-help}" in
         exec bash "$SCRIPT_DIR/onboarding.sh"
         ;;
     version|--version|-V)
-        echo "hushflow 2.0.0"
+        echo "hushflow 2.1.0"
         ;;
     help|--help|-h)
         echo "HushFlow — Turn AI thinking time into mindful breathing."

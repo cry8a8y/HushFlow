@@ -155,13 +155,13 @@ section "CLI integration"
 
 # Test: version command
 out=$(bash "$SCRIPT_DIR/cli.sh" --version 2>/dev/null)
-[ "$out" = "hushflow 2.0.0" ] && pass "cli --version" || fail "cli --version, got '$out'"
+[ "$out" = "hushflow 2.1.0" ] && pass "cli --version" || fail "cli --version, got '$out'"
 
 out=$(bash "$SCRIPT_DIR/cli.sh" version 2>/dev/null)
-[ "$out" = "hushflow 2.0.0" ] && pass "cli version" || fail "cli version, got '$out'"
+[ "$out" = "hushflow 2.1.0" ] && pass "cli version" || fail "cli version, got '$out'"
 
 out=$(bash "$SCRIPT_DIR/cli.sh" -V 2>/dev/null)
-[ "$out" = "hushflow 2.0.0" ] && pass "cli -V" || fail "cli -V, got '$out'"
+[ "$out" = "hushflow 2.1.0" ] && pass "cli -V" || fail "cli -V, got '$out'"
 
 # Test: help includes onboarding
 out=$(bash "$SCRIPT_DIR/cli.sh" help 2>/dev/null)

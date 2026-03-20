@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.1.0] - 2026-03-20
+
+### Added
+- **Guided Onboarding** — First time using HushFlow? A friendly wizard walks you through choosing your breathing exercise, color theme, and shows a 5-second live demo. Triggers automatically on your first AI wait.
+- **Homebrew Install** — `brew install cry8a8y/hushflow/hushflow` for one-line setup on macOS and Linux.
+- **Version Command** — `hushflow --version` / `hushflow version` / `hushflow -V` now shows the installed version.
+- **Re-run Onboarding** — Changed your mind? `hushflow onboarding` lets you reconfigure anytime.
+- **23 New Tests** — Onboarding wizard tests covering flags, config writes, edge cases, and CLI integration.
+
+### Changed
+- **Install messages** — Post-install output now mentions the onboarding wizard and uses short `hushflow` commands instead of full script paths.
+
 ## [2.0.0] - 2026-03-18
 
 Major release — HushFlow is now a polished, production-grade breathing companion for AI-powered terminals.
